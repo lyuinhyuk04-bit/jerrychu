@@ -312,11 +312,17 @@ def crawl_june_notices(driver, notice_board_url):
         else:
             content_text = ""
             
-        # 날짜 검증: 6월 글인지 확인 (2026-06-)
+        # 날짜 검증: 6월 1일 이후 글인지 확인 (2026-06-01 이후)
         if date_text:
-            if not date_text.startswith("2026-06"):
-                print(f"6월 이전 글 감지 ({date_text}). 수집을 중단합니다.")
-                break
+            try:
+                post_date = datetime.strptime(date_text.split(" ")[0], "%Y-%m-%d").date()
+                limit_date = datetime.strptime("2026-06-01", "%Y-%m-%d").date()
+                if post_date < limit_date:
+                    print(f"6월 이전 글 감지 ({date_text}). 수집을 중단합니다.")
+                    break
+            except Exception:
+                # 상대적 시간(예: '방금 전', '1시간 전')으로 표시되는 오늘 글은 무조건 허용
+                pass
         else:
             print("[경고] 작성 날짜를 읽지 못했습니다. 일단 계속 수집합니다.")
             
@@ -333,21 +339,29 @@ def crawl_june_notices(driver, notice_board_url):
 
 def compile_weekly_schedule(notices):
     """
-    6월 공지사항 본문을 분석하여 월요일(6/1)~일요일(6/7) 주간 일정표를 동적으로 빌드합니다.
+    현재 날짜가 속한 주(월요일~일요일)를 계산하여 공지사항 본문을 분석하고 주간 일정표를 동적으로 빌드합니다.
     """
     import re
+    from datetime import datetime, timedelta
     
-    # 2026년 6월 첫째 주 (6/1 ~ 6/7)
-    schedule = [
-        {"day": "월", "date": "6/1", "time": "공지 대기", "detail": "소통 방송"},
-        {"day": "화", "date": "6/2", "time": "공지 대기", "detail": "소통 방송"},
-        {"day": "수", "date": "6/3", "time": "공지 대기", "detail": "소통 방송"},
-        {"day": "목", "date": "6/4", "time": "공지 대기", "detail": "소통 방송"},
-        {"day": "금", "date": "6/5", "time": "공지 대기", "detail": "소통 방송"},
-        {"day": "토", "date": "6/6", "time": "공지 대기", "detail": "소통 방송"},
-        {"day": "일", "date": "6/7", "time": "공지 대기", "detail": "소통 방송"},
-    ]
+    # 실행 시점의 현재 날짜 구하기
+    today = datetime.now().date()
+    # 이번 주 월요일 계산 (weekday: 0=월, 1=화, ... 6=일)
+    monday = today - timedelta(days=today.weekday())
     
+    # 7일간의 일정 템플릿 생성
+    days_of_week = ["월", "화", "수", "목", "금", "토", "일"]
+    schedule = []
+    for i in range(7):
+        day_date = monday + timedelta(days=i)
+        schedule.append({
+            "day": days_of_week[i],
+            "date": f"{day_date.month}/{day_date.day}",
+            "time": "공지 대기",
+            "detail": "소통 방송",
+            "full_date_str": day_date.strftime("%Y-%m-%d")  # 매핑용 임시 필드 (YYYY-MM-DD)
+        })
+        
     # 오래된 공지부터 처리하여 최신 수정 공지가 덮어쓰도록 함 (notices는 최신순이므로 역순 정렬)
     sorted_notices = sorted(notices, key=lambda x: x.get("date", ""))
     
@@ -359,55 +373,56 @@ def compile_weekly_schedule(notices):
         if not date_str or not content:
             continue
             
-        try:
-            day_num = int(date_str.split(" ")[0].split("-")[2])
-        except Exception:
-            continue
-            
-        # 6/1 ~ 6/7 범위 내에 있는지 확인
-        if 1 <= day_num <= 7:
-            day_index = day_num - 1
-            
-            # 방송 시간 또는 휴방 키워드 파싱
-            time_val = "방송 진행 (공지 확인)"
-            
-            if "휴방" in content or "휴뱅" in content or "휴방" in title or "휴뱅" in title:
-                time_val = "휴방"
-            else:
-                # regex로 시간 추출
-                time_pattern = r'(오후|오전)\s*(\d+)\s*시(?:\s*(\d+)\s*분)?'
-                matches = re.findall(time_pattern, content)
-                if matches:
-                    formatted_times = []
-                    for ampm, hr, mn in matches:
-                        min_part = f":{mn.strip()}" if mn else ":00"
-                        formatted_times.append(f"{ampm} {hr}{min_part}")
-                    time_val = " / ".join(formatted_times) + " 방송"
-                    
-            # 일정 상세 내용 간략히 요약 (예: 롤 CK, 배그 등 키워드 추출)
-            detail_val = "소통 방송"
-            detail_keywords = ["CK", "배그", "종겜", "합방", "음주", "술먹방", "여우도시", "고래시티", "방셀"]
-            matched_details = []
-            for kw in detail_keywords:
-                if kw in content or kw in title:
-                    matched_details.append(kw)
-            if matched_details:
-                detail_val = ", ".join(matched_details)
+        # date_str: "2026-06-07 10:23:57" -> "2026-06-07"
+        notice_date_part = date_str.split(" ")[0]
+        
+        # 이번 주 일정 템플릿의 날짜와 매칭되는지 확인
+        for day_index, item in enumerate(schedule):
+            if item["full_date_str"] == notice_date_part:
+                # 방송 시간 또는 휴방 키워드 파싱
+                time_val = "방송 진행 (공지 확인)"
                 
-            # 만약 기존에 분석된 구체적인 방송 시간 정보가 있고 이번 글은 일반 공지글인 경우, 덮어쓰지 않음
-            current_time = schedule[day_index]["time"]
-            if current_time != "공지 대기" and time_val == "방송 진행 (공지 확인)":
-                pass
-            else:
-                schedule[day_index]["time"] = time_val
+                if "휴방" in content or "휴뱅" in content or "휴방" in title or "휴뱅" in title:
+                    time_val = "휴방"
+                else:
+                    # regex로 시간 추출
+                    time_pattern = r'(오후|오전)\s*(\d+)\s*시(?:\s*(\d+)\s*분)?'
+                    matches = re.findall(time_pattern, content)
+                    if matches:
+                        formatted_times = []
+                        for ampm, hr, mn in matches:
+                            min_part = f":{mn.strip()}" if mn else ":00"
+                            formatted_times.append(f"{ampm} {hr}{min_part}")
+                        time_val = " / ".join(formatted_times) + " 방송"
+                        
+                # 일정 상세 내용 간략히 요약
+                detail_val = "소통 방송"
+                detail_keywords = ["CK", "배그", "종겜", "합방", "음주", "술먹방", "여우도시", "고래시티", "방셀"]
+                matched_details = []
+                for kw in detail_keywords:
+                    if kw in content or kw in title:
+                        matched_details.append(kw)
+                if matched_details:
+                    detail_val = ", ".join(matched_details)
+                    
+                # 만약 기존에 분석된 구체적인 방송 시간 정보가 있고 이번 글은 일반 공지글인 경우, 덮어쓰지 않음
+                current_time = schedule[day_index]["time"]
+                if current_time != "공지 대기" and time_val == "방송 진행 (공지 확인)":
+                    pass
+                else:
+                    schedule[day_index]["time"] = time_val
 
-            # 상세 요약 정보도 구체적인 정보가 있으면 일반 fallback으로 덮어쓰지 않음
-            current_detail = schedule[day_index]["detail"]
-            if current_detail != "소통 방송" and detail_val == "소통 방송":
-                pass
-            else:
-                schedule[day_index]["detail"] = detail_val
-            
+                # 상세 요약 정보도 구체적인 정보가 있으면 일반 fallback으로 덮어쓰지 않음
+                current_detail = schedule[day_index]["detail"]
+                if current_detail != "소통 방송" and detail_val == "소통 방송":
+                    pass
+                else:
+                    schedule[day_index]["detail"] = detail_val
+                    
+    # 프론트엔드로 전달할 데이터에서는 매핑용 임시 필드 제거
+    for item in schedule:
+        del item["full_date_str"]
+        
     return schedule
 
 
