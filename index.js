@@ -4,8 +4,8 @@
 document.addEventListener("DOMContentLoaded", () => {
     loadDataAndBind();
     
-    // 2분마다 데이터를 백그라운드에서 자동으로 다시 로드하여 갱신합니다.
-    setInterval(loadDataAndBind, 120000); 
+    // 1분마다 데이터를 백그라운드에서 자동으로 다시 로드하여 갱신합니다.
+    setInterval(loadDataAndBind, 60000); 
 });
 
 function loadDataAndBind() {
