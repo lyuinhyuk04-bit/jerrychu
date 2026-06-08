@@ -76,11 +76,12 @@ function initDataBinding() {
                         noticeItem.classList.add("expanded"); // 가장 최근 글은 기본적으로 펼쳐둠
                     }
                     
+                    const cleanTitle = notice.title.replace(/^\[?공지\]?\s*/, "").replace(/^\[?Notice\]?\s*/i, "").trim();
                     noticeItem.innerHTML = `
                         <div class="notice-item-header">
                             <div class="notice-item-title">
                                 <i class="fa-solid fa-bullhorn"></i>
-                                <span>${notice.title}</span>
+                                <span>${cleanTitle}</span>
                             </div>
                             <div style="display: flex; align-items: center; gap: 15px;">
                                 <span class="notice-item-date">${notice.date.split(" ")[0]}</span>
@@ -115,44 +116,149 @@ function initDataBinding() {
             }
         }
 
-        // 3. 주간 일정표 (캘린더 그리드) 동적 바인딩
+        // 3. 주간 일정표 (캘린더 그리드) 동적 바인딩 및 히스토리 네비게이션
         const calendarGrid = document.getElementById("calendar-grid");
         if (calendarGrid) {
-            if (JERRY_DATA.schedule && JERRY_DATA.schedule.length > 0) {
+            // 주차별 일정 목록 구축
+            let availableWeeks = [];
+            
+            if (JERRY_DATA.schedules && Object.keys(JERRY_DATA.schedules).length > 0) {
+                const sortedKeys = Object.keys(JERRY_DATA.schedules).sort();
+                sortedKeys.forEach(key => {
+                    availableWeeks.push({
+                         key: key,
+                         schedule: JERRY_DATA.schedules[key]
+                    });
+                });
+            }
+            
+            if (availableWeeks.length === 0 && JERRY_DATA.schedule && JERRY_DATA.schedule.length > 0) {
+                const todayDate = new Date();
+                const day = todayDate.getDay();
+                const diff = todayDate.getDate() - day + (day === 0 ? -6 : 1);
+                const monday = new Date(todayDate.setDate(diff));
+                const mondayStr = monday.getFullYear() + "-" + String(monday.getMonth() + 1).padStart(2, '0') + "-" + String(monday.getDate()).padStart(2, '0');
+                availableWeeks.push({
+                    key: mondayStr,
+                    schedule: JERRY_DATA.schedule
+                });
+            }
+            
+            window.availableWeeks = availableWeeks;
+            
+            if (availableWeeks.length > 0) {
                 schedulePlaceholder.style.display = "none";
                 calendarGrid.style.display = "grid";
-                calendarGrid.innerHTML = "";
                 
-                // 오늘 요일 구하기
-                const todayDate = new Date();
-                const todayDayNum = todayDate.getDate();
-                const todayMonth = todayDate.getMonth() + 1; // 1-indexed
-                
-                JERRY_DATA.schedule.forEach(item => {
-                    const dayCard = document.createElement("div");
-                    dayCard.className = "calendar-day-card";
+                // 현재 보고 있는 주차 인덱스 초기값 설정 (오늘이 속한 주차 찾기, 없으면 가장 최신 주차)
+                if (typeof window.currentWeekIndex === "undefined") {
+                    const todayZero = new Date();
+                    todayZero.setHours(0, 0, 0, 0);
+                    const dayNum = todayZero.getDay();
+                    const diff = todayZero.getDate() - dayNum + (dayNum === 0 ? -6 : 1);
+                    const curMonday = new Date(todayZero.getFullYear(), todayZero.getMonth(), diff);
+                    const curMondayStr = curMonday.getFullYear() + "-" + String(curMonday.getMonth() + 1).padStart(2, '0') + "-" + String(curMonday.getDate()).padStart(2, '0');
                     
-                    // 오늘 날짜인지 체크
-                    const [m, d] = item.date.split("/").map(Number);
-                    if (m === todayMonth && d === todayDayNum) {
-                        dayCard.classList.add("today");
+                    const foundIdx = availableWeeks.findIndex(w => w.key === curMondayStr);
+                    window.currentWeekIndex = (foundIdx !== -1) ? foundIdx : (availableWeeks.length - 1);
+                }
+                
+                // 네비게이션 버튼 이벤트 바인딩 (최초 1회만)
+                if (!window.scheduleNavInitialized) {
+                    window.scheduleNavInitialized = true;
+                    const prevBtn = document.getElementById("btn-prev-week");
+                    const nextBtn = document.getElementById("btn-next-week");
+                    
+                    if (prevBtn) {
+                        prevBtn.addEventListener("click", () => {
+                            if (window.currentWeekIndex > 0) {
+                                window.currentWeekIndex--;
+                                renderSelectedSchedule();
+                            }
+                        });
+                    }
+                    if (nextBtn) {
+                        nextBtn.addEventListener("click", () => {
+                            if (window.currentWeekIndex < window.availableWeeks.length - 1) {
+                                window.currentWeekIndex++;
+                                renderSelectedSchedule();
+                            }
+                        });
+                    }
+                }
+                
+                // 실제 주차 일정 렌더링 함수 정의 및 호출
+                window.renderSelectedSchedule = function() {
+                    const idx = window.currentWeekIndex;
+                    const selectedWeek = window.availableWeeks[idx];
+                    if (!selectedWeek) return;
+                    
+                    calendarGrid.innerHTML = "";
+                    
+                    // 1) 헤더 및 버튼 갱신
+                    const todayZero = new Date();
+                    todayZero.setHours(0, 0, 0, 0);
+                    const todayDayNum = todayZero.getDate();
+                    const todayMonth = todayZero.getMonth() + 1;
+                    
+                    const dayNum = todayZero.getDay();
+                    const diff = todayZero.getDate() - dayNum + (dayNum === 0 ? -6 : 1);
+                    const curMonday = new Date(todayZero.getFullYear(), todayZero.getMonth(), diff);
+                    const curMondayStr = curMonday.getFullYear() + "-" + String(curMonday.getMonth() + 1).padStart(2, '0') + "-" + String(curMonday.getDate()).padStart(2, '0');
+                    
+                    const [y, m, d] = selectedWeek.key.split("-").map(Number);
+                    const monDate = new Date(y, m - 1, d);
+                    const sunDate = new Date(y, m - 1, d + 6);
+                    
+                    const isThisWeek = (selectedWeek.key === curMondayStr);
+                    const weekTitleText = (isThisWeek ? "이번 주" : `${monDate.getMonth() + 1}/${monDate.getDate()} ~ ${sunDate.getMonth() + 1}/${sunDate.getDate()}`);
+                    
+                    const weekTitleElem = document.getElementById("schedule-week-title");
+                    if (weekTitleElem) {
+                        weekTitleElem.innerText = weekTitleText;
                     }
                     
-                    // 휴방인지 체크
-                    if (item.time === "휴방") {
-                        dayCard.classList.add("rest");
-                    } else if (item.time && item.time !== "공지 대기") {
-                        dayCard.classList.add("active");
-                    }
+                    const prevBtn = document.getElementById("btn-prev-week");
+                    const nextBtn = document.getElementById("btn-next-week");
+                    if (prevBtn) prevBtn.disabled = (idx <= 0);
+                    if (nextBtn) nextBtn.disabled = (idx >= window.availableWeeks.length - 1);
                     
-                    dayCard.innerHTML = `
-                        <div class="calendar-day-week">${item.day}</div>
-                        <div class="calendar-day-date">${item.date}</div>
-                        <div class="calendar-day-time">${item.time}</div>
-                        <div class="calendar-day-detail">${item.detail}</div>
-                    `;
-                    calendarGrid.appendChild(dayCard);
-                });
+                    // 2) 7일 렌더링
+                    selectedWeek.schedule.forEach(item => {
+                        const dayCard = document.createElement("div");
+                        dayCard.className = "calendar-day-card";
+                        
+                        // 오늘 날짜인지 체크
+                        const [itemMonth, itemDay] = item.date.split("/").map(Number);
+                        if (itemMonth === todayMonth && itemDay === todayDayNum) {
+                            dayCard.classList.add("today");
+                         }
+                         
+                         // 지난 날이고 "공지 대기" 상태이면 "휴방" 처리
+                         let displayTime = item.time;
+                         const itemZero = new Date(todayZero.getFullYear(), itemMonth - 1, itemDay);
+                         if (itemZero < todayZero && displayTime === "공지 대기") {
+                             displayTime = "휴방";
+                         }
+                         
+                         // 휴방 및 액티브 디자인 분기
+                         if (displayTime === "휴방") {
+                             dayCard.classList.add("rest");
+                         } else if (displayTime && displayTime !== "공지 대기") {
+                             dayCard.classList.add("active");
+                         }
+                         
+                         dayCard.innerHTML = `
+                             <div class="calendar-day-week">${item.day}</div>
+                             <div class="calendar-day-date">${item.date}</div>
+                             <div class="calendar-day-time">${displayTime}</div>
+                             <div class="calendar-day-detail">${item.detail}</div>
+                         `;
+                         calendarGrid.appendChild(dayCard);
+                    });
+                };
+                
+                window.renderSelectedSchedule();
             } else {
                 calendarGrid.style.display = "none";
                 schedulePlaceholder.innerHTML = `<i class="fa-regular fa-folder-open"></i> 이번 주 일정이 아직 업로드되지 않았습니다.`;

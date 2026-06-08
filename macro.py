@@ -196,6 +196,11 @@ def crawl_june_notices(driver, notice_board_url):
             title_elem = soup.select_one("[class*='PostTitle_title']") or soup.select_one("[class*='Title_title']") or soup.select_one(".title") or soup.select_one("h2")
             title = title_elem.text.strip() if title_elem else "제목 없음"
             
+            # 제목에서 '공지', '[공지]', 'Notice' 등 접두사 제거
+            title = re.sub(r'^\[?공지\]?\s*', '', title)
+            title = re.sub(r'^\[?Notice\]?\s*', '', title, flags=re.IGNORECASE)
+            title = title.strip()
+            
             # 2. 날짜 추출
             date_elem = soup.select_one("span[class*='regDate']") or soup.select_one("[class*='writeDate']") or soup.select_one("span.date")
             date_text = date_elem.text.strip() if date_elem else ""
@@ -324,8 +329,20 @@ def compile_weekly_schedule(notices):
                 else:
                     schedule[day_index]["detail"] = detail_val
                     
+    # 지난 요일 중 "공지 대기" 상태인 것을 "휴방"으로 일괄 변경
     for item in schedule:
-        del item["full_date_str"]
+        item_date_part = item.get("full_date_str", "")
+        if item_date_part:
+            try:
+                item_date = datetime.strptime(item_date_part, "%Y-%m-%d").date()
+                if item_date < today and item.get("time") == "공지 대기":
+                    item["time"] = "휴방"
+            except Exception:
+                pass
+
+    for item in schedule:
+        if "full_date_str" in item:
+            del item["full_date_str"]
         
     return schedule
 
@@ -575,6 +592,35 @@ def main():
 
         # --- [5] 데이터 보존 처리 (일부 모듈 실패 시에도 안전하게 실행) ---
         notice_text = june_notices[0]["content"] if june_notices else ""
+        
+        # 파일 저장 경로 설정
+        json_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data.json")
+        js_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data.js")
+        
+        # 기존 데이터 로드하여 주간 일정 아카이브(schedules) 보존
+        existing_schedules = {}
+        if os.path.exists(json_path):
+            try:
+                with open(json_path, "r", encoding="utf-8") as f:
+                    old_data = json.load(f)
+                    existing_schedules = old_data.get("schedules", {})
+                    # 기존 schedules 가 비어있고 schedule 항목이 있는 경우 마이그레이션
+                    if not existing_schedules and "schedule" in old_data and old_data["schedule"]:
+                        today_temp = datetime.now().date()
+                        monday_temp = today_temp - timedelta(days=today_temp.weekday())
+                        existing_schedules[monday_temp.strftime("%Y-%m-%d")] = old_data["schedule"]
+            except Exception as e:
+                print(f"[경고] 기존 data.json 로딩 오류 (히스토리 보존 스킵): {e}")
+
+        # 현재 주의 월요일 구하기
+        today = datetime.now().date()
+        monday = today - timedelta(days=today.weekday())
+        current_week_key = monday.strftime("%Y-%m-%d")
+        
+        # 현재 주 일정을 아카이브에 갱신/추가
+        if schedule_data:
+            existing_schedules[current_week_key] = schedule_data
+            
         collected_data = {
             "updated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
             "is_live": is_live,
@@ -582,12 +628,9 @@ def main():
             "images": [],
             "notices": june_notices,
             "schedule": schedule_data,
+            "schedules": existing_schedules,
             "fanarts": fanart_images
         }
-        
-        # 파일 저장 경로 설정
-        json_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data.json")
-        js_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data.js")
         
         try:
             # 1. JSON 파일 저장

@@ -60,7 +60,12 @@
                 <!-- 일정표 카드 -->
                 <div id="card-schedule" class="card glass-card">
                     <div class="card-header">
-                        <h2><i class="fa-regular fa-calendar-days"></i> 이번 주 주간 일정표</h2>
+                        <h2><i class="fa-regular fa-calendar-days"></i> 주간 일정표</h2>
+                        <div class="schedule-nav">
+                            <button id="btn-prev-week" class="btn-nav" title="이전 주"><i class="fa-solid fa-chevron-left"></i></button>
+                            <span id="schedule-week-title" class="schedule-week-title">이번 주</span>
+                            <button id="btn-next-week" class="btn-nav" title="다음 주"><i class="fa-solid fa-chevron-right"></i></button>
+                        </div>
                         <span id="update-badge" class="badge">동기화 대기 중</span>
                     </div>
                     <div class="calendar-container">

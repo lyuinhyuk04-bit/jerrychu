@@ -324,6 +324,51 @@ body {
     font-weight: 600;
 }
 
+.schedule-nav {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: auto;
+    margin-right: 15px;
+}
+
+.btn-nav {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 8px;
+    color: var(--text-light);
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-nav:hover {
+    background: rgba(255, 255, 255, 0.16);
+    border-color: rgba(255, 255, 255, 0.25);
+    color: #fff;
+    transform: translateY(-1px);
+}
+
+.btn-nav:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+    transform: none;
+    background: rgba(255, 255, 255, 0.03);
+    border-color: rgba(255, 255, 255, 0.05);
+}
+
+.schedule-week-title {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--primary-cheese);
+    min-width: 140px;
+    text-align: center;
+}
+
 /* ==============================================================================
    [SCHEDULE COMPONENT (CALENDAR GRID)]
    ============================================================================== */
