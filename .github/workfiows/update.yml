@@ -41,3 +41,4 @@ jobs:
           # 변경사항이 있는 경우에만 커밋 및 푸시 진행 (오류 방지)
           git diff-index --quiet HEAD || git commit -m "Auto-update SOOP data [skip ci]"
           git push
+ 
