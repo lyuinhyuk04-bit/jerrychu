@@ -1,0 +1,42 @@
+name: Update SOOP Data
+
+on:
+  schedule:
+    - cron: '* * * * *'  # 1분마다 실행
+  workflow_dispatch:        # 수동 실행 지원
+
+permissions:
+  contents: write           # 변경된 data.json, data.js 파일을 리포지토리에 푸시할 수 있도록 권한 부여
+
+jobs:
+  update-data:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+          cache: 'pip'
+
+      - name: Install Dependencies
+        run: |
+          pip install selenium webdriver-manager beautifulsoup4
+
+      - name: Run Crawler
+        env:
+          GITHUB_ACTIONS: "true"
+        run: |
+          python macro.py
+
+      - name: Commit and Push Changes
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data.json data.js
+          # 변경사항이 있는 경우에만 커밋 및 푸시 진행 (오류 방지)
+          git diff-index --quiet HEAD || git commit -m "Auto-update SOOP data [skip ci]"
+          git push

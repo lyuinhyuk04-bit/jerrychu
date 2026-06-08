@@ -1,5 +1,5 @@
 const JERRY_DATA = {
-    "updated_at": "2026-06-08 03:31:06",
+    "updated_at": "2026-06-08 11:51:29",
     "is_live": false,
     "notice_text": "제리가 옵니다\n\n\n \n말씀드렸던대로\n8일까지는 낮방을 챙겨보려고해요 ㅎ-ㅎ❤️\n \n9일부터는 챈나룽이 있어서\n저녁뱅일 것 같아용\n \n그 전까지는 \n낮방 야무지개 챙겨볼게여\n \n오늘은 고정시간인\n오후 12시에 오도록 하겠습니당\n \n와서 소통하다가\n카페나 시네티 볼 수 있움\n \n그럼 오늘도 쫗은하루 보내세요~~\n \n(아 그리고 33, 330개 챈나룽 방셀)\n많관부❤️",
     "images": [],
@@ -86,6 +86,7 @@ const JERRY_DATA = {
         }
     ],
     "fanarts": [
+        "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/13366a260c9927bb3.png",
         "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/29726a25ac8a0cdbf.jpeg",
         "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/22646a1a66b0bc519.png",
         "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/94476a1a66ca75ead.png",
