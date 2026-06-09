@@ -9,7 +9,10 @@ import time
 import json
 import re
 import traceback
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
+
+def get_kst_now():
+    return datetime.now(timezone.utc).astimezone(timezone(timedelta(hours=9)))
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
@@ -121,21 +124,30 @@ def crawl_latest_post_urls(driver, board_url, max_count=8):
         print(f"[경고] 게시판 요소 로딩 대기 시간 초과: {e}")
         print(f"현재 브라우저 타이틀: '{driver.title}'")
         
-    list_containers = [
-        "ul.post_list", "div.post_list", "table.board_list", "div.board_list_all",
-        "div.list_wrap", "div.post_list_all", "ul.bbs_list", "div.board_list"
-    ]
-    
     post_elements = []
-    for container in list_containers:
-        try:
-            elements = driver.find_elements(By.CSS_SELECTOR, f"{container} a[href*='/post/']")
-            if elements:
-                post_elements = elements
-                break
-        except Exception:
-            continue
-            
+    
+    # 1. 메인 포스트 리스트 영역에서 먼저 탐색 시도 (SOOP의 최신 게시판 구조 대응)
+    try:
+        post_elements = driver.find_elements(By.CSS_SELECTOR, "[class*='PostListSection_sectionBox'] a[href*='/post/']")
+    except Exception:
+        pass
+        
+    # 2. 기존 클래스 목록 순차 매칭 시도
+    if not post_elements:
+        list_containers = [
+            "ul.post_list", "div.post_list", "table.board_list", "div.board_list_all",
+            "div.list_wrap", "div.post_list_all", "ul.bbs_list", "div.board_list"
+        ]
+        for container in list_containers:
+            try:
+                elements = driver.find_elements(By.CSS_SELECTOR, f"{container} a[href*='/post/']")
+                if elements:
+                    post_elements = elements
+                    break
+            except Exception:
+                continue
+                
+    # 3. 찾지 못한 경우 페이지 전체에서 모든 post 링크 탐색 (최종 폴백)
     if not post_elements:
         try:
             post_elements = driver.find_elements(By.CSS_SELECTOR, "a[href*='/post/']")
@@ -247,7 +259,7 @@ def crawl_june_notices(driver, notice_board_url):
                 
             june_notices.append({
                 "title": title,
-                "date": date_text if date_text else datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                "date": date_text if date_text else get_kst_now().strftime("%Y-%m-%d %H:%M:%S"),
                 "url": post_url,
                 "content": content_text
             })
@@ -260,7 +272,7 @@ def crawl_june_notices(driver, notice_board_url):
     return june_notices
 
 def compile_weekly_schedule(notices):
-    today = datetime.now().date()
+    today = get_kst_now().date()
     monday = today - timedelta(days=today.weekday())
     
     days_of_week = ["월", "화", "수", "목", "금", "토", "일"]
@@ -606,14 +618,14 @@ def main():
                     existing_schedules = old_data.get("schedules", {})
                     # 기존 schedules 가 비어있고 schedule 항목이 있는 경우 마이그레이션
                     if not existing_schedules and "schedule" in old_data and old_data["schedule"]:
-                        today_temp = datetime.now().date()
+                        today_temp = get_kst_now().date()
                         monday_temp = today_temp - timedelta(days=today_temp.weekday())
                         existing_schedules[monday_temp.strftime("%Y-%m-%d")] = old_data["schedule"]
             except Exception as e:
                 print(f"[경고] 기존 data.json 로딩 오류 (히스토리 보존 스킵): {e}")
 
         # 현재 주의 월요일 구하기
-        today = datetime.now().date()
+        today = get_kst_now().date()
         monday = today - timedelta(days=today.weekday())
         current_week_key = monday.strftime("%Y-%m-%d")
         
@@ -622,7 +634,7 @@ def main():
             existing_schedules[current_week_key] = schedule_data
             
         collected_data = {
-            "updated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "updated_at": get_kst_now().strftime("%Y-%m-%d %H:%M:%S"),
             "is_live": is_live,
             "notice_text": notice_text,
             "images": [],
