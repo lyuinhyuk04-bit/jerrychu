@@ -1,10 +1,8 @@
-
 name: Update SOOP Data
 
-'on':
-  push:                    #저장소에 파일이 수정/푸시될 때 즉시 가동
+on:
   schedule:
-    - cron: '* * * * *'  # 1분마다 실행
+    - cron: '*/5 * * * *'  # 5분마다 실행
   workflow_dispatch:        # 수동 실행 지원
 
 permissions:
@@ -41,4 +39,3 @@ jobs:
           # 변경사항이 있는 경우에만 커밋 및 푸시 진행 (오류 방지)
           git diff-index --quiet HEAD || git commit -m "Auto-update SOOP data [skip ci]"
           git push
- 
