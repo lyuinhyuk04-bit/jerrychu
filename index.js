@@ -77,6 +77,16 @@ function initDataBinding() {
                     }
                     
                     const cleanTitle = notice.title.replace(/^\[?공지\]?\s*/, "").replace(/^\[?Notice\]?\s*/i, "").trim();
+                    
+                    // 본문 내의 URL 주소를 클릭 가능한 링크로 변환하는 함수
+                    const linkify = (text) => {
+                        if (!text) return "";
+                        const urlPattern = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
+                        return text.replace(urlPattern, '<a href="$1" target="_blank" class="notice-link">$1 <i class="fa-solid fa-up-right-from-square" style="font-size: 0.75rem;"></i></a>');
+                    };
+                    
+                    const formattedContent = linkify(notice.content);
+                    
                     noticeItem.innerHTML = `
                         <div class="notice-item-header">
                             <div class="notice-item-title">
@@ -88,7 +98,14 @@ function initDataBinding() {
                                 <span class="notice-item-toggle">내용보기 <i class="fa-solid fa-chevron-down"></i></span>
                             </div>
                         </div>
-                        <div class="notice-item-body">${notice.content}</div>
+                        <div class="notice-item-body">
+                            <div class="notice-text-content" style="white-space: pre-wrap; word-break: break-word;">${formattedContent}</div>
+                            <div class="notice-action-area" style="margin-top: 15px; padding-top: 10px; border-top: 1px dashed rgba(255, 255, 255, 0.1); display: flex; justify-content: flex-end;">
+                                <a href="${notice.url}" target="_blank" class="btn-soop-link">
+                                    <i class="fa-solid fa-square-arrow-up-right"></i> SOOP에서 원문 보기
+                                </a>
+                            </div>
+                        </div>
                     `;
                     
                     noticeItem.addEventListener("click", () => {

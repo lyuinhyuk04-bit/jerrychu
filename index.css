@@ -581,6 +581,38 @@ body {
     color: var(--text-main);
 }
 
+.notice-link {
+    color: var(--primary-cheese);
+    text-decoration: underline;
+    word-break: break-all;
+    font-weight: 600;
+}
+
+.notice-link:hover {
+    color: #fff;
+}
+
+.btn-soop-link {
+    font-size: 0.8rem;
+    color: var(--primary-cheese) !important;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: rgba(253, 197, 0, 0.1);
+    padding: 5px 12px;
+    border-radius: 8px;
+    border: 1px solid rgba(253, 197, 0, 0.2);
+    transition: all 0.2s ease;
+    font-weight: 600;
+}
+
+.btn-soop-link:hover {
+    background: rgba(253, 197, 0, 0.2) !important;
+    border-color: rgba(253, 197, 0, 0.4) !important;
+    transform: translateY(-1px);
+}
+
 .notice-item.expanded .notice-item-toggle i {
     transform: rotate(180deg);
 }
