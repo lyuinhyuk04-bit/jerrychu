@@ -13,6 +13,23 @@ from datetime import datetime, timedelta, timezone
 
 def get_kst_now():
     return datetime.now(timezone.utc).astimezone(timezone(timedelta(hours=9)))
+
+def adjust_to_kst(date_str, timezone_offset):
+    if not date_str:
+        return date_str
+    try:
+        date_str = date_str.replace(".", "-").strip()
+        parts = date_str.split()
+        if len(parts) >= 2:
+            time_part = parts[1]
+            if time_part.count(':') == 1:
+                date_str = f"{parts[0]} {time_part}:00"
+        dt = datetime.strptime(date_str, "%Y-%m-%d %H:%M:%S")
+        adjusted_dt = dt + timedelta(minutes=timezone_offset + 540)
+        return adjusted_dt.strftime("%Y-%m-%d %H:%M:%S")
+    except Exception:
+        return date_str
+
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
@@ -194,6 +211,13 @@ def crawl_june_notices(driver, notice_board_url):
         print("[경고] 공지글 목록이 비어있습니다. 수집을 진행하지 않습니다.")
         return []
         
+    timezone_offset = 0
+    try:
+        timezone_offset = driver.execute_script("return new Date().getTimezoneOffset();")
+        print(f"[알림] 브라우저 타임존 오프셋: {timezone_offset}분 (0: UTC, -540: KST)")
+    except Exception as e:
+        print(f"[경고] 브라우저 타임존 오프셋 가져오기 실패: {e}")
+
     june_notices = []
     
     for idx, post_url in enumerate(post_urls):
@@ -216,6 +240,8 @@ def crawl_june_notices(driver, notice_board_url):
             # 2. 날짜 추출
             date_elem = soup.select_one("span[class*='regDate']") or soup.select_one("[class*='writeDate']") or soup.select_one("span.date")
             date_text = date_elem.text.strip() if date_elem else ""
+            if date_text:
+                date_text = adjust_to_kst(date_text, timezone_offset)
             
             # 3. 본문 추출
             post_body = None
