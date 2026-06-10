@@ -932,3 +932,90 @@ body {
     transform: translateX(5px);
 }
 
+/* ==============================================================================
+   [GUILD GOOGLE SHEETS SECTION]
+   ============================================================================== */
+.sheets-content-area {
+    padding: 10px 0;
+}
+
+.sheets-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.sheet-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px 20px;
+    background: hsla(250, 20%, 20%, 0.25);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    text-decoration: none;
+    color: var(--text-main);
+    transition: var(--transition-smooth);
+}
+
+.sheet-item:hover {
+    background: var(--bg-card-hover);
+    border-color: var(--border-hover);
+    box-shadow: 0 5px 15px rgba(142, 68, 232, 0.15);
+    transform: translateY(-2px);
+}
+
+.sheet-icon {
+    font-size: 1.8rem;
+    color: hsl(140, 75%, 50%); /* Google Sheets green */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: hsla(140, 75%, 50%, 0.1);
+    width: 45px;
+    height: 45px;
+    border-radius: 10px;
+    transition: var(--transition-smooth);
+}
+
+.sheet-item:hover .sheet-icon {
+    background: hsla(140, 75%, 50%, 0.2);
+    transform: scale(1.05);
+}
+
+.sheet-info {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    flex: 1;
+}
+
+.sheet-title {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: 1.1rem;
+    transition: var(--transition-micro);
+}
+
+.sheet-item:hover .sheet-title {
+    color: var(--primary-cheese);
+}
+
+.sheet-desc {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.sheet-arrow {
+    font-size: 1.1rem;
+    color: var(--text-muted);
+    transition: var(--transition-smooth);
+}
+
+.sheet-item:hover .sheet-arrow {
+    color: var(--text-main);
+    transform: translateX(3px);
+}
+
+
