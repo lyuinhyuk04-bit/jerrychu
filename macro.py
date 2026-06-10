@@ -338,13 +338,46 @@ def compile_weekly_schedule(notices):
                     time_val = "휴방"
                 else:
                     time_pattern = r'(오후|오전)\s*(\d+)\s*시(?:\s*(\d+)\s*분)?'
-                    matches = re.findall(time_pattern, content)
-                    if matches:
-                        formatted_times = []
-                        for ampm, hr, mn in matches:
-                            min_part = f":{mn.strip()}" if mn else ":00"
-                            formatted_times.append(f"{ampm} {hr}{min_part}")
-                        time_val = " / ".join(formatted_times) + " 방송"
+                    action_keywords = ["오도록", "올게요", "오겠습니다", "오겠습니당", "올게용", "킬게요", "킬게용", "키도록", "켜도록", "켜겠습니다", "켜겠습니당", "옵니다", "온다", "와서", "올라나", "켰", "킬", "켤", "시작", "뱅온"]
+                    
+                    # re.finditer를 사용하여 본문 전체에서 시간 패턴의 위치와 값 탐색
+                    time_matches = list(re.finditer(time_pattern, content))
+                    best_match = None
+                    min_distance = 999999
+                    
+                    if time_matches:
+                        for m in time_matches:
+                            start, end = m.span()
+                            # 매칭된 시간 앞뒤로 50글자 범위의 텍스트 추출 (개행 분리 대응)
+                            win_start = max(0, start - 50)
+                            win_end = min(len(content), end + 50)
+                            window_text = content[win_start:win_end]
+                            
+                            # 해당 범위 내에 방송 시작 행동 동사가 있는지 검사하고 가장 거리(글자 수 차이)가 가까운 시간 매치 선택
+                            for kw in action_keywords:
+                                if kw in window_text:
+                                    kw_idx = window_text.find(kw)
+                                    kw_abs_idx = win_start + kw_idx
+                                    # 시간과 행동 동사 간의 최소 인덱스 차이 계산
+                                    dist = min(abs(kw_abs_idx - start), abs(kw_abs_idx - end))
+                                    if dist < min_distance:
+                                        min_distance = dist
+                                        best_match = m
+                                        
+                    # 2단계: 행동 동사와 가장 가까운 거리에 있는 매칭 시간을 우선 적용
+                    if best_match:
+                        ampm, hr, mn = best_match.groups()
+                        min_part = f":{mn.strip()}" if mn else ":00"
+                        time_val = f"{ampm} {hr}{min_part} 방송"
+                    else:
+                        # 3단계: 행동 동사가 근처에 매칭되지 않았을 때의 기존 폴백
+                        matches = re.findall(time_pattern, content)
+                        if matches:
+                            formatted_times = []
+                            for ampm, hr, mn in matches:
+                                min_part = f":{mn.strip()}" if mn else ":00"
+                                formatted_times.append(f"{ampm} {hr}{min_part}")
+                            time_val = " / ".join(formatted_times) + " 방송"
                         
                 detail_val = "소통 방송"
                 detail_keywords = ["CK", "배그", "종겜", "합방", "음주", "술먹방", "여우도시", "고래시티", "방셀"]
