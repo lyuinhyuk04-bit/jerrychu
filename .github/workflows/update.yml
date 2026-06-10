@@ -1,12 +1,12 @@
 name: Update SOOP Data
 
-on:
+'on':
   schedule:
-    - cron: '*/5 * * * *'  # 5분마다 실행
-  workflow_dispatch:        # 수동 실행 지원
+    - cron: '*/5 * * * *'
+  workflow_dispatch:
 
 permissions:
-  contents: write           # 변경된 data.json, data.js 파일을 리포지토리에 푸시할 수 있도록 권한 부여
+  contents: write
 
 jobs:
   update-data:
@@ -37,4 +37,4 @@ jobs:
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add data.json data.js
           git diff-index --quiet HEAD || git commit -m "Auto-update SOOP data"
-          git push
+          git push || echo "No changes to push"
