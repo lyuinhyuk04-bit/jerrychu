@@ -332,80 +332,117 @@ def compile_weekly_schedule(notices):
         
         for day_index, item in enumerate(schedule):
             if item["full_date_str"] == notice_date_part:
-                time_val = "방송 진행 (공지 확인)"
+                time_pattern = r'(?:(오후|오전)\s*)?(\d+)\s*(?:~\s*(?:(오후|오전)\s*)?(\d+)\s*)?시(?:\s*(\d+)\s*분)?'
+                action_keywords = ["오도록", "올게", "오겠", "킬게", "키도록", "켜도록", "켜겠", "옵니", "온다", "와서", "와보", "올라나", "켰", "킬", "켤", "시작", "뱅온"]
                 
-                if "휴방" in content or "휴뱅" in content or "휴방" in title or "휴뱅" in title:
-                    time_val = "휴방"
-                else:
-                    time_pattern = r'(오후|오전)\s*(\d+)\s*시(?:\s*(\d+)\s*분)?'
-                    action_keywords = ["오도록", "올게", "오겠", "킬게", "키도록", "켜도록", "켜겠", "옵니", "온다", "와서", "와보", "올라나", "켰", "킬", "켤", "시작", "뱅온"]
-                    
-                    # re.finditer를 사용하여 본문 전체에서 시간 패턴의 위치와 값 탐색
-                    time_matches = list(re.finditer(time_pattern, content))
-                    best_match = None
-                    max_score = -1
-                    min_distance_for_best_score = 999999
-                    
-                    if time_matches:
-                        for m in time_matches:
-                            start, end = m.span()
-                            # 매칭된 시간 앞뒤로 50글자 범위의 텍스트 추출 (개행 분리 대응)
-                            win_start = max(0, start - 50)
-                            win_end = min(len(content), end + 50)
-                            window_text = content[win_start:win_end]
+                # re.finditer를 사용하여 본문 전체에서 시간 패턴의 위치와 값 탐색
+                time_matches = list(re.finditer(time_pattern, content))
+                best_match = None
+                max_score = -1
+                min_distance_for_best_score = 999999
+                
+                if time_matches:
+                    for m in time_matches:
+                        start, end = m.span()
+                        # 매칭된 시간 앞뒤로 50글자 범위의 텍스트 추출 (개행 분리 대응)
+                        win_start = max(0, start - 50)
+                        win_end = min(len(content), end + 50)
+                        window_text = content[win_start:win_end]
+                        
+                        score = 0
+                        has_action = False
+                        min_dist = 999999
+                        
+                        # 1. 행동 동사가 있는지 검사하고 거리 계산
+                        for kw in action_keywords:
+                            if kw in window_text:
+                                has_action = True
+                                kw_idx = window_text.find(kw)
+                                kw_abs_idx = win_start + kw_idx
+                                # 시간과 행동 동사 간의 최소 인덱스 차이 계산
+                                dist = min(abs(kw_abs_idx - start), abs(kw_abs_idx - end))
+                                if dist < min_dist:
+                                    min_dist = dist
+                                    
+                        if has_action:
+                            # 가까울수록 더 높은 기본 점수 부여 (기본 100점 + 거리 패널티 차감)
+                            score += max(50, 150 - min_dist)
+                        
+                        # 2. 하지만, 그래서, 일단, 대신, 다만, 결국, 그래도, 변경 등 인과/반전 부사어 검사 (보너스 점수)
+                        transition_keywords = ["하지만", "그래서", "대신", "다만", "일단", "결국", "그래도", "변경"]
+                        if any(t_kw in window_text for t_kw in transition_keywords):
+                            score += 50
                             
-                            score = 0
-                            has_action = False
-                            min_dist = 999999
+                        # 3. 본문 뒤쪽에 위치할수록 최종 업데이트 내용일 확률이 높으므로 가산점 부여
+                        if len(content) > 0:
+                            score += (start / len(content)) * 20
                             
-                            # 1. 행동 동사가 있는지 검사하고 거리 계산
-                            for kw in action_keywords:
-                                if kw in window_text:
-                                    has_action = True
-                                    kw_idx = window_text.find(kw)
-                                    kw_abs_idx = win_start + kw_idx
-                                    # 시간과 행동 동사 간의 최소 인덱스 차이 계산
-                                    dist = min(abs(kw_abs_idx - start), abs(kw_abs_idx - end))
-                                    if dist < min_dist:
-                                        min_dist = dist
-                                        
-                            if has_action:
-                                # 가까울수록 더 높은 기본 점수 부여 (기본 100점 + 거리 패널티 차감)
-                                score += max(50, 150 - min_dist)
-                            
-                            # 2. 하지만, 그래서, 일단, 대신, 다만, 결국, 그래도, 변경 등 인과/반전 부사어 검사 (보너스 점수)
-                            transition_keywords = ["하지만", "그래서", "대신", "다만", "일단", "결국", "그래도", "변경"]
-                            if any(t_kw in window_text for t_kw in transition_keywords):
-                                score += 50
-                                
-                            # 3. 본문 뒤쪽에 위치할수록 최종 업데이트 내용일 확률이 높으므로 가산점 부여
-                            if len(content) > 0:
-                                score += (start / len(content)) * 20
-                                
-                            # 최고 점수를 가진 시간 매치 선택 (점수가 같으면 거리가 더 가까운 것 우선)
-                            if score > max_score:
-                                max_score = score
+                        # 최고 점수를 가진 시간 매치 선택 (점수가 같으면 거리가 더 가까운 것 우선)
+                        if score > max_score:
+                            max_score = score
+                            best_match = m
+                            min_distance_for_best_score = min_dist
+                        elif score == max_score:
+                            if min_dist < min_distance_for_best_score:
                                 best_match = m
                                 min_distance_for_best_score = min_dist
-                            elif score == max_score:
-                                if min_dist < min_distance_for_best_score:
-                                    best_match = m
-                                    min_distance_for_best_score = min_dist
-                                    
-                    # 2단계: 최적의 스코어를 기록한 시간을 최종 방송 시간으로 적용
-                    if best_match:
-                        ampm, hr, mn = best_match.groups()
-                        min_part = f":{mn.strip()}" if mn else ":00"
-                        time_val = f"{ampm} {hr}{min_part} 방송"
+
+                # 시간 표시를 포맷팅하는 헬퍼 함수
+                def format_match(m):
+                    ampm1, hr1, ampm2, hr2, mn = m.groups()
+                    h1 = int(hr1)
+                    if ampm1:
+                        resolved_ampm1 = ampm1
                     else:
-                        # 3단계: 행동 동사가 근처에 매칭되지 않았을 때의 기존 폴백
-                        matches = re.findall(time_pattern, content)
-                        if matches:
-                            formatted_times = []
-                            for ampm, hr, mn in matches:
-                                min_part = f":{mn.strip()}" if mn else ":00"
-                                formatted_times.append(f"{ampm} {hr}{min_part}")
-                            time_val = " / ".join(formatted_times) + " 방송"
+                        if 13 <= h1 <= 24:
+                            resolved_ampm1 = "오후"
+                            h1 = h1 - 12 if h1 > 12 else h1
+                        elif 1 <= h1 <= 11:
+                            resolved_ampm1 = "오후"
+                        else:
+                            resolved_ampm1 = "오후"
+                            
+                    min_part = f":{mn.strip()}" if mn else ":00"
+                    
+                    if hr2:
+                        h2 = int(hr2)
+                        if ampm2:
+                            resolved_ampm2 = ampm2
+                        else:
+                            resolved_ampm2 = resolved_ampm1
+                            
+                        if 13 <= h2 <= 24:
+                            resolved_ampm2 = "오후"
+                            h2 = h2 - 12 if h2 > 12 else h2
+                        elif 1 <= h2 <= 11 and not ampm2:
+                            resolved_ampm2 = resolved_ampm1
+                            
+                        return f"{resolved_ampm1} {h1}{min_part} ~ {resolved_ampm2} {h2}:00"
+                    else:
+                        return f"{resolved_ampm1} {h1}{min_part}"
+
+                has_resting_keyword = "휴방" in content or "휴뱅" in content or "휴방" in title or "휴뱅" in title
+
+                # 최종 결과 결정
+                if best_match and max_score >= 50:
+                    time_val = format_match(best_match) + " 방송"
+                    if has_resting_keyword:
+                        time_val = "휴방 -> " + time_val
+                elif has_resting_keyword:
+                    time_val = "휴방"
+                elif best_match:
+                    time_val = format_match(best_match) + " 방송"
+                    if has_resting_keyword:
+                        time_val = "휴방 -> " + time_val
+                elif time_matches:
+                    formatted_times = []
+                    for m in time_matches:
+                        formatted_times.append(format_match(m))
+                    time_val = " / ".join(formatted_times) + " 방송"
+                    if has_resting_keyword:
+                        time_val = "휴방 -> " + time_val
+                else:
+                    time_val = "방송 진행 (공지 확인)"
                         
                 detail_val = "소통 방송"
                 detail_keywords = ["CK", "배그", "종겜", "합방", "음주", "술먹방", "여우도시", "고래시티", "방셀"]
