@@ -46,6 +46,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 USER_DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "chrome_profile")
 PROFILE_DIR = "Default"
 NOTICE_BOARD_URL = "https://www.sooplive.com/station/rariruro/board/111790159"
+SCHEDULE_NOTICE_BOARD_URL = "https://www.sooplive.com/station/rariruro/board/117292929"
 SCHEDULE_BOARD_URL = "https://www.sooplive.com/station/rariruro/board/90430481"
 FANART_BOARD_URL = "https://www.sooplive.com/station/rariruro/board/123988475"
 MY_POST_MODIFY_URL = "https://www.sooplive.com/station/본인아이디/post/게시글번호/modify"
@@ -694,7 +695,16 @@ def main():
         # --- [1] 공지사항 크롤링 (예외 차단 격리) ---
         june_notices = []
         try:
-            june_notices = crawl_june_notices(driver, NOTICE_BOARD_URL)
+            print("[알림] 첫 번째 공지사항 게시판 크롤링 중...")
+            notices1 = crawl_june_notices(driver, NOTICE_BOARD_URL)
+            print("[알림] 두 번째 일정/공지 게시판 크롤링 중...")
+            notices2 = crawl_june_notices(driver, SCHEDULE_NOTICE_BOARD_URL)
+            
+            # 두 게시판의 공지글을 병합하고 중복 제거 (URL 기준)
+            merged = {n["url"]: n for n in (notices1 + notices2)}.values()
+            
+            # 작성일 기준 내림차순(최신순) 정렬하여 june_notices 생성
+            june_notices = sorted(merged, key=lambda x: x.get("date", ""), reverse=True)
         except Exception as e:
             print(f"[오류] 공지사항 크롤링 단계 실패: {e}")
             traceback.print_exc()
