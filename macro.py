@@ -333,7 +333,7 @@ def compile_weekly_schedule(notices):
         
         for day_index, item in enumerate(schedule):
             if item["full_date_str"] == notice_date_part:
-                time_pattern = r'(?:(오후|오전)\s*)?(\d+)\s*(?:~\s*(?:(오후|오전)\s*)?(\d+)\s*)?시(?:\s*(\d+)\s*분)?'
+                time_pattern = r'(?:(오후|오전)\s*)?(\d+)\s*(?:~\s*(?:(오후|오전)\s*)?(\d+)\s*)?시(?!간)(?:\s*(\d+)\s*분)?'
                 action_keywords = ["오도록", "올게", "오겠", "킬게", "키도록", "켜도록", "켜겠", "옵니", "온다", "와서", "와보", "올라나", "켰", "킬", "켤", "시작", "뱅온"]
                 
                 # re.finditer를 사용하여 본문 전체에서 시간 패턴의 위치와 값 탐색
