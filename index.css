@@ -385,6 +385,20 @@ body {
     align-items: center;
 }
 
+.card-info-text {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    margin-top: 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding-left: 4px;
+}
+
+.card-info-text i {
+    color: var(--primary-cheese);
+}
+
 .calendar-grid {
     width: 100%;
     display: grid;
