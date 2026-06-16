@@ -2,6 +2,10 @@
 // [DATA BINDING] - 크롤러가 생성하는 data.js 로부터 데이터를 로드
 // ==============================================================================
 document.addEventListener("DOMContentLoaded", () => {
+    const today = new Date();
+    window.currentYear = today.getFullYear();
+    window.currentMonth = today.getMonth() + 1;
+    
     loadDataAndBind();
     
     // 1분마다 데이터를 백그라운드에서 자동으로 다시 로드하여 갱신합니다.
@@ -20,6 +24,9 @@ function loadDataAndBind() {
     script.src = "data.js?t=" + new Date().getTime();
     script.onload = () => {
         initDataBinding();
+        initMonthlyEditor();
+        initTabNavigation();
+        renderMonthlyCalendar();
         initImageModal();
     };
     script.onerror = () => {
@@ -249,29 +256,45 @@ function initDataBinding() {
                         const [itemMonth, itemDay] = item.date.split("/").map(Number);
                         if (itemMonth === todayMonth && itemDay === todayDayNum) {
                             dayCard.classList.add("today");
-                         }
+                        }
                          
-                         // 지난 날이고 "공지 대기" 상태이면 "휴방" 처리
-                         let displayTime = item.time;
-                         const itemZero = new Date(todayZero.getFullYear(), itemMonth - 1, itemDay);
-                         if (itemZero < todayZero && displayTime === "공지 대기") {
-                             displayTime = "휴방";
-                         }
+                        // Construct targetDateStr to search in overrides
+                        const itemYear = y;
+                        const dateStr = `${itemYear}-${String(itemMonth).padStart(2, '0')}-${String(itemDay).padStart(2, '0')}`;
+                        
+                        const overrides = window.LOCAL_OVERRIDES || window.SCHEDULE_OVERRIDES || {};
+                        let displayTime = item.time;
+                        let displayDetail = item.detail;
+                        
+                        if (overrides[dateStr]) {
+                            const ov = overrides[dateStr];
+                            if (typeof ov === "string") {
+                                displayTime = ov;
+                                displayDetail = "";
+                            } else {
+                                displayTime = ov.time || "공지 대기";
+                                displayDetail = ov.detail || "";
+                            }
+                        } else {
+                            const itemZero = new Date(todayZero.getFullYear(), itemMonth - 1, itemDay);
+                            if (itemZero < todayZero && displayTime === "공지 대기") {
+                                displayTime = "휴방";
+                            }
+                        }
                          
-                         // 휴방 및 액티브 디자인 분기
-                         if (displayTime === "휴방") {
-                             dayCard.classList.add("rest");
-                         } else if (displayTime && displayTime !== "공지 대기") {
-                             dayCard.classList.add("active");
-                         }
+                        if (displayTime === "휴방" || displayTime.startsWith("휴방")) {
+                            dayCard.classList.add("rest");
+                        } else if (displayTime && displayTime !== "공지 대기") {
+                            dayCard.classList.add("active");
+                        }
                          
-                         dayCard.innerHTML = `
-                             <div class="calendar-day-week">${item.day}</div>
-                             <div class="calendar-day-date">${item.date}</div>
-                             <div class="calendar-day-time">${displayTime}</div>
-                             <div class="calendar-day-detail">${item.detail}</div>
-                         `;
-                         calendarGrid.appendChild(dayCard);
+                        dayCard.innerHTML = `
+                            <div class="calendar-day-week">${item.day}</div>
+                            <div class="calendar-day-date">${item.date}</div>
+                            <div class="calendar-day-time">${displayTime}</div>
+                            <div class="calendar-day-detail">${displayDetail}</div>
+                        `;
+                        calendarGrid.appendChild(dayCard);
                     });
                 };
                 
@@ -365,4 +388,327 @@ function initImageModal() {
             closeModal();
         }
     });
+}
+
+// ==============================================================================
+// [MONTHLY CALENDAR RENDERING & EDITING LOGIC]
+// ==============================================================================
+function initTabNavigation() {
+    const tabMonthly = document.getElementById("tab-monthly");
+    const tabWeekly = document.getElementById("tab-weekly");
+    const viewMonthly = document.getElementById("view-monthly");
+    const viewWeekly = document.getElementById("view-weekly");
+
+    if (tabMonthly && tabWeekly && viewMonthly && viewWeekly) {
+        tabMonthly.addEventListener("click", () => {
+            tabMonthly.classList.add("active");
+            tabWeekly.classList.remove("active");
+            viewMonthly.classList.add("active");
+            viewWeekly.classList.remove("active");
+        });
+
+        tabWeekly.addEventListener("click", () => {
+            tabWeekly.classList.add("active");
+            tabMonthly.classList.remove("active");
+            viewWeekly.classList.add("active");
+            viewMonthly.classList.remove("active");
+        });
+    }
+}
+
+function renderMonthlyCalendar() {
+    const titleElem = document.getElementById("monthly-title");
+    const gridElem = document.getElementById("calendar-month-grid");
+    if (!titleElem || !gridElem) return;
+
+    const year = window.currentYear;
+    const month = window.currentMonth;
+
+    titleElem.innerText = `${year}년 ${month}월`;
+    gridElem.innerHTML = "";
+
+    const firstDay = new Date(year, month - 1, 1);
+    const startDayOfWeek = firstDay.getDay();
+    const totalDays = new Date(year, month, 0).getDate();
+
+    const prevMonthTotalDays = new Date(year, month - 1, 0).getDate();
+    for (let i = startDayOfWeek - 1; i >= 0; i--) {
+        const dayCard = document.createElement("div");
+        dayCard.className = "monthly-day-card other-month";
+        dayCard.innerHTML = `<div class="day-number">${prevMonthTotalDays - i}</div>`;
+        gridElem.appendChild(dayCard);
+    }
+
+    const today = new Date();
+    const isCurrentMonth = (today.getFullYear() === year && today.getMonth() + 1 === month);
+    const todayDay = today.getDate();
+
+    const overrides = window.LOCAL_OVERRIDES || window.SCHEDULE_OVERRIDES || {};
+
+    for (let day = 1; day <= totalDays; day++) {
+        const dateStr = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+        const dayCard = document.createElement("div");
+        dayCard.className = "monthly-day-card";
+        
+        const currentDayDate = new Date(year, month - 1, day);
+        const dayOfWeek = currentDayDate.getDay();
+        if (dayOfWeek === 0) dayCard.classList.add("sunday");
+        if (dayOfWeek === 6) dayCard.classList.add("saturday");
+
+        if (isCurrentMonth && day === todayDay) {
+            dayCard.classList.add("today");
+        }
+
+        let scheduleItem = null;
+        if (overrides[dateStr]) {
+            scheduleItem = overrides[dateStr];
+        } else {
+            scheduleItem = findParsedScheduleForDate(year, month, day);
+        }
+
+        let timeText = "공지 대기";
+        let detailText = "";
+        let status = "tbd";
+
+        if (scheduleItem) {
+            if (typeof scheduleItem === "string") {
+                timeText = scheduleItem;
+                if (scheduleItem === "휴방") {
+                    status = "rest";
+                } else if (scheduleItem !== "공지 대기") {
+                    status = "stream";
+                }
+            } else {
+                timeText = scheduleItem.time || "공지 대기";
+                detailText = scheduleItem.detail || "";
+                status = scheduleItem.status || "tbd";
+            }
+        }
+
+        if (status === "rest" || timeText.startsWith("휴방")) {
+            dayCard.classList.add("rest");
+        } else if (status === "stream" || (timeText && timeText !== "공지 대기")) {
+            dayCard.classList.add("stream");
+        }
+
+        dayCard.innerHTML = `
+            <div class="day-number">${day}</div>
+            <div class="day-time-text">${timeText}</div>
+            ${detailText ? `<div class="day-detail-text" title="${detailText}">${detailText}</div>` : ''}
+        `;
+
+        dayCard.addEventListener("click", () => {
+            if (window.isEditModeActive) {
+                openEditModal(dateStr, timeText, detailText, status);
+            }
+        });
+
+        gridElem.appendChild(dayCard);
+    }
+}
+
+function findParsedScheduleForDate(year, month, day) {
+    if (typeof JERRY_DATA === "undefined" || !JERRY_DATA || !JERRY_DATA.schedules) return null;
+    
+    const targetDateStr = `${month}/${day}`;
+    
+    for (let mondayKey in JERRY_DATA.schedules) {
+        const [mYear, mMonth, mDay] = mondayKey.split("-").map(Number);
+        
+        const monDate = new Date(mYear, mMonth - 1, mDay);
+        const targetDate = new Date(year, month - 1, day);
+        
+        const diffTime = targetDate - monDate;
+        const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
+        
+        if (diffDays >= 0 && diffDays < 7) {
+            const weekSchedule = JERRY_DATA.schedules[mondayKey];
+            if (weekSchedule) {
+                const matchedDay = weekSchedule.find(item => item.date === targetDateStr);
+                if (matchedDay) {
+                    let timeVal = matchedDay.time;
+                    const todayZero = new Date();
+                    todayZero.setHours(0,0,0,0);
+                    if (targetDate < todayZero && timeVal === "공지 대기") {
+                        timeVal = "휴방";
+                    }
+                    return {
+                        time: timeVal,
+                        detail: matchedDay.detail || "",
+                        status: (timeVal === "휴방" || timeVal.startsWith("휴방")) ? "rest" : ((timeVal !== "공지 대기") ? "stream" : "tbd")
+                    };
+                }
+            }
+        }
+    }
+    return null;
+}
+
+function initMonthlyEditor() {
+    const btnToggleEdit = document.getElementById("btn-toggle-edit");
+    const btnDownloadOverrides = document.getElementById("btn-download-overrides");
+    const gridElem = document.getElementById("calendar-month-grid");
+
+    if (typeof window.LOCAL_OVERRIDES === "undefined") {
+        try {
+            const saved = localStorage.getItem("schedule_overrides");
+            window.LOCAL_OVERRIDES = saved ? JSON.parse(saved) : {};
+        } catch (e) {
+            window.LOCAL_OVERRIDES = {};
+        }
+        
+        if (typeof window.SCHEDULE_OVERRIDES !== "undefined") {
+            window.LOCAL_OVERRIDES = Object.assign({}, window.SCHEDULE_OVERRIDES, window.LOCAL_OVERRIDES);
+        }
+    }
+
+    if (btnToggleEdit) {
+        window.isEditModeActive = false;
+        
+        // Remove any old event listeners by replacing the element
+        const newBtnToggleEdit = btnToggleEdit.cloneNode(true);
+        btnToggleEdit.parentNode.replaceChild(newBtnToggleEdit, btnToggleEdit);
+        
+        newBtnToggleEdit.addEventListener("click", () => {
+            window.isEditModeActive = !window.isEditModeActive;
+            const downloadBtn = document.getElementById("btn-download-overrides");
+            const grid = document.getElementById("calendar-month-grid");
+            
+            if (window.isEditModeActive) {
+                newBtnToggleEdit.innerHTML = `<i class="fa-solid fa-lock"></i> 수정 모드 끄기`;
+                newBtnToggleEdit.style.background = "rgba(255, 75, 75, 0.15)";
+                newBtnToggleEdit.style.color = "hsl(0, 85%, 65%)";
+                newBtnToggleEdit.style.borderColor = "hsla(0, 85%, 65%, 0.3)";
+                if (downloadBtn) downloadBtn.style.display = "inline-flex";
+                if (grid) grid.classList.add("edit-mode-active");
+            } else {
+                newBtnToggleEdit.innerHTML = `<i class="fa-solid fa-pen-to-square"></i> 수정 모드 켜기`;
+                newBtnToggleEdit.style.background = "rgba(255, 255, 255, 0.06)";
+                newBtnToggleEdit.style.color = "#fff";
+                newBtnToggleEdit.style.borderColor = "rgba(255, 255, 255, 0.1)";
+                if (downloadBtn) downloadBtn.style.display = "none";
+                if (grid) grid.classList.remove("edit-mode-active");
+            }
+            renderMonthlyCalendar();
+        });
+    }
+
+    if (btnDownloadOverrides) {
+        const newBtnDownloadOverrides = btnDownloadOverrides.cloneNode(true);
+        btnDownloadOverrides.parentNode.replaceChild(newBtnDownloadOverrides, btnDownloadOverrides);
+        newBtnDownloadOverrides.addEventListener("click", () => {
+            downloadOverridesJS();
+        });
+    }
+
+    const editModal = document.getElementById("edit-modal");
+    const editModalClose = document.getElementById("edit-modal-close");
+    const btnSaveEdit = document.getElementById("btn-save-edit");
+
+    if (editModalClose) {
+        editModalClose.addEventListener("click", () => {
+            editModal.style.display = "none";
+        });
+    }
+
+    window.addEventListener("click", (e) => {
+        if (e.target === editModal) {
+            editModal.style.display = "none";
+        }
+    });
+
+    if (btnSaveEdit) {
+        const newBtnSaveEdit = btnSaveEdit.cloneNode(true);
+        btnSaveEdit.parentNode.replaceChild(newBtnSaveEdit, btnSaveEdit);
+        newBtnSaveEdit.addEventListener("click", () => {
+            const dateStr = window.activeEditDate;
+            const status = document.getElementById("edit-status").value;
+            const time = document.getElementById("edit-time").value.trim();
+            const detail = document.getElementById("edit-detail").value.trim();
+
+            if (!window.LOCAL_OVERRIDES) window.LOCAL_OVERRIDES = {};
+
+            if (status === "tbd") {
+                delete window.LOCAL_OVERRIDES[dateStr];
+            } else {
+                window.LOCAL_OVERRIDES[dateStr] = {
+                    time: (status === "rest") ? "휴방" : (time || "오후 7:00 방송"),
+                    detail: detail,
+                    status: status
+                };
+            }
+
+            try {
+                localStorage.setItem("schedule_overrides", JSON.stringify(window.LOCAL_OVERRIDES));
+            } catch (e) {}
+
+            editModal.style.display = "none";
+            renderMonthlyCalendar();
+            
+            if (typeof window.renderSelectedSchedule === "function") {
+                window.renderSelectedSchedule();
+            }
+        });
+    }
+
+    const prevMonthBtn = document.getElementById("btn-prev-month");
+    const nextMonthBtn = document.getElementById("btn-next-month");
+    
+    if (prevMonthBtn) {
+        const newPrevMonthBtn = prevMonthBtn.cloneNode(true);
+        prevMonthBtn.parentNode.replaceChild(newPrevMonthBtn, prevMonthBtn);
+        newPrevMonthBtn.addEventListener("click", () => {
+            if (window.currentMonth === 1) {
+                window.currentMonth = 12;
+                window.currentYear--;
+            } else {
+                window.currentMonth--;
+            }
+            renderMonthlyCalendar();
+        });
+    }
+    
+    if (nextMonthBtn) {
+        const newNextMonthBtn = nextMonthBtn.cloneNode(true);
+        nextMonthBtn.parentNode.replaceChild(newNextMonthBtn, nextMonthBtn);
+        newNextMonthBtn.addEventListener("click", () => {
+            if (window.currentMonth === 12) {
+                window.currentMonth = 1;
+                window.currentYear++;
+            } else {
+                window.currentMonth++;
+            }
+            renderMonthlyCalendar();
+        });
+    }
+}
+
+function openEditModal(dateStr, timeText, detailText, status) {
+    const editModal = document.getElementById("edit-modal");
+    const titleElem = document.getElementById("edit-modal-title");
+    if (!editModal || !titleElem) return;
+
+    window.activeEditDate = dateStr;
+    const [y, m, d] = dateStr.split("-").map(Number);
+    titleElem.innerText = `${y}년 ${m}월 ${d}일 일정 수정`;
+
+    const statusSelect = document.getElementById("edit-status");
+    const timeInput = document.getElementById("edit-time");
+    const detailInput = document.getElementById("edit-detail");
+
+    statusSelect.value = status || "tbd";
+    timeInput.value = (status === "rest" || timeText === "휴방") ? "" : timeText;
+    detailInput.value = detailText || "";
+
+    editModal.style.display = "flex";
+}
+
+function downloadOverridesJS() {
+    const overrides = window.LOCAL_OVERRIDES || {};
+    const content = `const SCHEDULE_OVERRIDES = ${JSON.stringify(overrides, null, 4)};\n`;
+    const blob = new Blob([content], { type: "application/javascript;charset=utf-8" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = "overrides.js";
+    link.click();
 }

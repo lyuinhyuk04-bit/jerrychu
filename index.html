@@ -8,6 +8,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Inter:wght@300;400;600&family=Noto+Sans+KR:wght@300;400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="index.css">
+    <script src="overrides.js"></script>
 </head>
 <body>
     <!-- 배경을 채우는 네온 블러 서클들 -->
@@ -53,8 +54,44 @@
             <i class="fa-solid fa-chevron-right live-arrow"></i>
         </a>
 
-        <!-- 메인 콘텐츠 영역 (2단 그리드 구성) -->
-        <main class="main-content">
+        <!-- 페이지 탭 네비게이션 -->
+        <nav class="nav-tabs">
+            <button id="tab-monthly" class="tab-btn active"><i class="fa-regular fa-calendar"></i> 한달 일정표</button>
+            <button id="tab-weekly" class="tab-btn"><i class="fa-solid fa-list-check"></i> 소식 모음</button>
+        </nav>
+
+        <!-- 메인 콘텐츠 영역 (탭별 뷰패널 분리) -->
+        <div id="view-monthly" class="view-panel active">
+            <!-- 한달 일정표 메인 카드 -->
+            <div id="card-monthly-schedule" class="card glass-card">
+                <div class="card-header">
+                    <h2><i class="fa-solid fa-calendar-days"></i> 한달 일정표</h2>
+                    <div class="monthly-controls">
+                        <button id="btn-prev-month" class="btn-nav" title="이전 달"><i class="fa-solid fa-chevron-left"></i></button>
+                        <span id="monthly-title" class="monthly-title">2026년 6월</span>
+                        <button id="btn-next-month" class="btn-nav" title="다음 달"><i class="fa-solid fa-chevron-right"></i></button>
+                    </div>
+                    <div class="editor-buttons">
+                        <button id="btn-toggle-edit" class="btn-editor"><i class="fa-solid fa-pen-to-square"></i> 수정 모드 켜기</button>
+                        <button id="btn-download-overrides" class="btn-editor save-btn" style="display: none;"><i class="fa-solid fa-download"></i> 변경사항 다운로드</button>
+                    </div>
+                </div>
+                <div class="calendar-month-container">
+                    <div class="calendar-month-header">
+                        <div>일</div><div>월</div><div>화</div><div>수</div><div>목</div><div>금</div><div>토</div>
+                    </div>
+                    <div id="calendar-month-grid" class="calendar-month-grid">
+                        <!-- 달력 그리드가 자바스크립트로 생성됨 -->
+                    </div>
+                </div>
+                <div class="card-info-text">
+                    <i class="fa-solid fa-circle-info"></i> 방송 일정은 당일 공지가 올라온 후 자동으로 블로그에 반영되며, <b>수정 모드</b>를 켜서 원하는 날짜를 수동으로 조정할 수 있습니다.
+                </div>
+            </div>
+        </div>
+
+        <div id="view-weekly" class="view-panel">
+            <main class="main-content">
             <!-- 왼쪽: 일정표 & 공지사항 -->
             <section class="left-panel">
                 <!-- 일정표 카드 -->
@@ -78,7 +115,7 @@
                         </div>
                     </div>
                     <div class="card-info-text">
-                        <i class="fa-solid fa-circle-info"></i> 일정은 당일 공지가 올라온 후 자동으로 업데이트됩니다.
+                        <i class="fa-solid fa-circle-info"></i> 일정은 당일 공지가 올라온 후 자동으로 블로그에 반영됩니다.
                     </div>
                 </div>
 
@@ -136,6 +173,7 @@
                 </div>
             </section>
         </main>
+        </div>
 
         <!-- 푸터 영역 -->
         <footer class="footer">
@@ -148,6 +186,33 @@
     <div id="image-modal" class="modal">
         <span id="modal-close" class="modal-close">&times;</span>
         <img class="modal-content" id="modal-target-img" src="" alt="확대 일정표">
+    </div>
+
+    <!-- 일정 개별 수정 모달 -->
+    <div id="edit-modal" class="modal">
+        <div class="modal-content-wrapper glass-card">
+            <span id="edit-modal-close" class="modal-close">&times;</span>
+            <h3 id="edit-modal-title">일정 수정</h3>
+            <div class="edit-form">
+                <div class="form-group">
+                    <label for="edit-status">방송 구분</label>
+                    <select id="edit-status" class="form-input">
+                        <option value="stream">방송 진행</option>
+                        <option value="rest">휴방</option>
+                        <option value="tbd">공지 대기 (미정)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="edit-time">방송 시작 시간</label>
+                    <input type="text" id="edit-time" class="form-input" placeholder="예: 오후 7:00" />
+                </div>
+                <div class="form-group">
+                    <label for="edit-detail">방송 내용 / 비고</label>
+                    <input type="text" id="edit-detail" class="form-input" placeholder="예: 마크 하코 대결" />
+                </div>
+                <button id="btn-save-edit" class="btn-submit">저장하기</button>
+            </div>
+        </div>
     </div>
 
     <script src="index.js"></script>

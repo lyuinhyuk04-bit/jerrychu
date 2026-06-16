@@ -1032,4 +1032,363 @@ body {
     transform: translateX(3px);
 }
 
+/* ==============================================================================
+   [TAB PAGES NAVIGATION & VIEW PANELS]
+   ============================================================================== */
+.nav-tabs {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin: 20px 0 30px 0;
+    padding: 6px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 50px;
+    backdrop-filter: blur(10px);
+    width: fit-content;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.tab-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 24px;
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--text-muted);
+    font-family: var(--font-heading);
+    font-size: 0.95rem;
+    font-weight: 600;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: var(--transition-smooth);
+}
+
+.tab-btn:hover {
+    color: var(--text-main);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.tab-btn.active {
+    color: var(--text-dark);
+    background: var(--gradient-cheese);
+    border-color: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 15px rgba(255, 208, 0, 0.3);
+}
+
+.view-panel {
+    display: none;
+}
+
+.view-panel.active {
+    display: block;
+    animation: fadeIn 0.4s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ==============================================================================
+   [MONTHLY CALENDAR GRID & CELLS]
+   ============================================================================== */
+.calendar-month-container {
+    width: 100%;
+    margin-top: 15px;
+    background: rgba(0, 0, 0, 0.15);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 20px;
+}
+
+.calendar-month-header {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 8px;
+    text-align: center;
+    font-family: var(--font-heading);
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: var(--primary-cheese);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+}
+
+.calendar-month-header div:first-child {
+    color: var(--primary-pink); /* Sunday */
+}
+
+.calendar-month-header div:last-child {
+    color: #00bfff; /* Saturday */
+}
+
+.calendar-month-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    grid-auto-rows: minmax(110px, auto);
+    gap: 8px;
+}
+
+.monthly-day-card {
+    position: relative;
+    background: hsla(250, 20%, 12%, 0.4);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: stretch;
+    gap: 6px;
+    transition: var(--transition-micro);
+}
+
+.monthly-day-card.other-month {
+    opacity: 0.15;
+    pointer-events: none;
+}
+
+.monthly-day-card .day-number {
+    font-family: var(--font-heading);
+    font-size: 0.9rem;
+    font-weight: 800;
+    color: var(--text-muted);
+    align-self: flex-start;
+}
+
+.monthly-day-card.sunday .day-number {
+    color: var(--primary-pink);
+}
+
+.monthly-day-card.saturday .day-number {
+    color: #00bfff;
+}
+
+.monthly-day-card.today {
+    border-color: var(--primary-pink-dark);
+    background: hsla(330, 80%, 60%, 0.05);
+}
+
+.monthly-day-card.today::after {
+    content: '';
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 6px;
+    height: 6px;
+    background: var(--primary-pink);
+    border-radius: 50%;
+    box-shadow: 0 0 10px var(--primary-pink);
+}
+
+.monthly-day-card.stream {
+    border-color: hsla(43, 100%, 62%, 0.25);
+    background: hsla(43, 100%, 62%, 0.03);
+}
+
+.monthly-day-card.rest {
+    border-color: hsla(0, 85%, 55%, 0.25);
+    background: hsla(0, 85%, 55%, 0.03);
+}
+
+.monthly-day-card .day-time-text {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-main);
+    background: rgba(255, 255, 255, 0.04);
+    padding: 4px 6px;
+    border-radius: 4px;
+    text-align: center;
+    word-break: keep-all;
+}
+
+.monthly-day-card.rest .day-time-text {
+    background: rgba(230, 33, 23, 0.08);
+    color: var(--primary-pink);
+}
+
+.monthly-day-card .day-detail-text {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* ==============================================================================
+   [MONTH CONTROLS & EDITOR BUTTONS]
+   ============================================================================== */
+.monthly-controls {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.monthly-title {
+    font-family: var(--font-heading);
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: #fff;
+    min-width: 110px;
+    text-align: center;
+}
+
+.editor-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+.btn-editor {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.06);
+    color: #fff;
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: var(--transition-smooth);
+}
+
+.btn-editor:hover {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.btn-editor.save-btn {
+    background: linear-gradient(135deg, #02c25b, #008f3f);
+    border-color: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 15px rgba(2, 194, 91, 0.2);
+}
+
+.btn-editor.save-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(2, 194, 91, 0.4);
+}
+
+/* 수정 모드 활성화 시 달력 셀 효과 */
+.calendar-month-grid.edit-mode-active .monthly-day-card:not(.other-month) {
+    cursor: pointer;
+    border-color: rgba(255, 255, 255, 0.18);
+}
+
+.calendar-month-grid.edit-mode-active .monthly-day-card:not(.other-month):hover {
+    border-color: var(--primary-cheese);
+    transform: translateY(-2px);
+    background: hsla(250, 20%, 16%, 0.6);
+    box-shadow: 0 4px 15px rgba(255, 208, 0, 0.15);
+}
+
+/* ==============================================================================
+   [EDIT OVERRIDES MODAL FORM]
+   ============================================================================== */
+.modal-content-wrapper {
+    position: relative;
+    width: 90%;
+    max-width: 400px;
+    padding: 30px;
+    background: hsla(250, 25%, 10%, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(20px);
+    animation: zoomIn 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    color: var(--text-main);
+}
+
+.modal-content-wrapper .modal-close {
+    top: 15px;
+    right: 20px;
+    font-size: 2rem;
+}
+
+#edit-modal-title {
+    font-family: var(--font-heading);
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: var(--primary-cheese);
+    margin-bottom: 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    padding-bottom: 12px;
+}
+
+.edit-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.form-group label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-muted);
+}
+
+.form-input {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    color: #fff;
+    padding: 10px 14px;
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    outline: none;
+    transition: var(--transition-micro);
+}
+
+.form-input:focus {
+    border-color: var(--primary-cheese);
+    background: rgba(255, 255, 255, 0.08);
+}
+
+select.form-input {
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    background-size: 16px;
+    padding-right: 40px;
+}
+
+select.form-input option {
+    background-color: #16141c;
+    color: #fff;
+}
+
+.btn-submit {
+    margin-top: 10px;
+    padding: 12px;
+    background: var(--gradient-cheese);
+    border: none;
+    border-radius: 8px;
+    color: var(--text-dark);
+    font-family: var(--font-heading);
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(255, 208, 0, 0.2);
+    transition: var(--transition-smooth);
+}
+
+.btn-submit:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(255, 208, 0, 0.4);
+}
+
+
 
