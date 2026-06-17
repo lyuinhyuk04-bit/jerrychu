@@ -301,23 +301,26 @@ function initDataBinding() {
                             <div class="calendar-day-detail">${displayDetail}</div>
                         `;
                         
-                        dayCard.addEventListener("click", () => {
-                            if (window.isWeeklyEditModeActive) {
-                                let status = "tbd";
-                                if (displayTime === "휴방" || displayTime.startsWith("휴방")) {
-                                    status = "rest";
-                                    // Remove the '휴방 -> ' prefix for editing time if present
-                                    let cleanTime = displayTime.replace(/^휴방\s*->\s*/, "");
-                                    if (cleanTime === "휴방") cleanTime = "";
-                                    openEditModal(dateStr, cleanTime, displayDetail, status);
-                                } else {
-                                    if (displayTime !== "공지 대기") {
-                                        status = "stream";
-                                    }
-                                    openEditModal(dateStr, displayTime, displayDetail, status);
+                        const timeElem = dayCard.querySelector(".calendar-day-time");
+                        const detailElem = dayCard.querySelector(".calendar-day-detail");
+                        
+                        if (timeElem) {
+                            timeElem.addEventListener("click", (e) => {
+                                if (window.isWeeklyEditModeActive) {
+                                    e.stopPropagation();
+                                    makeElementEditable(timeElem, dateStr, "time");
                                 }
-                            }
-                        });
+                            });
+                        }
+                        
+                        if (detailElem) {
+                            detailElem.addEventListener("click", (e) => {
+                                if (window.isWeeklyEditModeActive) {
+                                    e.stopPropagation();
+                                    makeElementEditable(detailElem, dateStr, "detail");
+                                }
+                            });
+                        }
                         
                         calendarGrid.appendChild(dayCard);
                     });
@@ -519,14 +522,29 @@ function renderMonthlyCalendar() {
         dayCard.innerHTML = `
             <div class="day-number">${day}</div>
             <div class="day-time-text">${timeText}</div>
-            ${detailText ? `<div class="day-detail-text" title="${detailText}">${detailText}</div>` : ''}
+            <div class="day-detail-text" title="${detailText || ''}">${detailText || ''}</div>
         `;
 
-        dayCard.addEventListener("click", () => {
-            if (window.isEditModeActive) {
-                openEditModal(dateStr, timeText, detailText, status);
-            }
-        });
+        const timeElem = dayCard.querySelector(".day-time-text");
+        const detailElem = dayCard.querySelector(".day-detail-text");
+
+        if (timeElem) {
+            timeElem.addEventListener("click", (e) => {
+                if (window.isEditModeActive) {
+                    e.stopPropagation();
+                    makeElementEditable(timeElem, dateStr, "time");
+                }
+            });
+        }
+
+        if (detailElem) {
+            detailElem.addEventListener("click", (e) => {
+                if (window.isEditModeActive) {
+                    e.stopPropagation();
+                    makeElementEditable(detailElem, dateStr, "detail");
+                }
+            });
+        }
 
         gridElem.appendChild(dayCard);
     }
@@ -596,7 +614,6 @@ function initMonthlyEditor() {
         
         newBtnToggleEdit.addEventListener("click", () => {
             window.isEditModeActive = !window.isEditModeActive;
-            const downloadBtn = document.getElementById("btn-download-overrides");
             const grid = document.getElementById("calendar-month-grid");
             
             if (window.isEditModeActive) {
@@ -604,25 +621,15 @@ function initMonthlyEditor() {
                 newBtnToggleEdit.style.background = "rgba(255, 75, 75, 0.15)";
                 newBtnToggleEdit.style.color = "hsl(0, 85%, 45%)";
                 newBtnToggleEdit.style.borderColor = "hsla(0, 85%, 45%, 0.3)";
-                if (downloadBtn) downloadBtn.style.display = "inline-flex";
                 if (grid) grid.classList.add("edit-mode-active");
             } else {
                 newBtnToggleEdit.innerHTML = `<i class="fa-solid fa-pen-to-square"></i> 수정 모드 켜기`;
                 newBtnToggleEdit.style.background = "";
                 newBtnToggleEdit.style.color = "";
                 newBtnToggleEdit.style.borderColor = "";
-                if (downloadBtn) downloadBtn.style.display = "none";
                 if (grid) grid.classList.remove("edit-mode-active");
             }
             renderMonthlyCalendar();
-        });
-    }
-
-    if (btnDownloadOverrides) {
-        const newBtnDownloadOverrides = btnDownloadOverrides.cloneNode(true);
-        btnDownloadOverrides.parentNode.replaceChild(newBtnDownloadOverrides, btnDownloadOverrides);
-        newBtnDownloadOverrides.addEventListener("click", () => {
-            downloadOverridesJS();
         });
     }
 
@@ -688,7 +695,6 @@ function initMonthlyEditor() {
         
         newBtnToggleEditWeekly.addEventListener("click", () => {
             window.isWeeklyEditModeActive = !window.isWeeklyEditModeActive;
-            const downloadBtn = document.getElementById("btn-download-overrides-weekly");
             const grid = document.getElementById("calendar-grid");
             
             if (window.isWeeklyEditModeActive) {
@@ -696,27 +702,17 @@ function initMonthlyEditor() {
                 newBtnToggleEditWeekly.style.background = "rgba(255, 75, 75, 0.15)";
                 newBtnToggleEditWeekly.style.color = "hsl(0, 85%, 45%)";
                 newBtnToggleEditWeekly.style.borderColor = "hsla(0, 85%, 45%, 0.3)";
-                if (downloadBtn) downloadBtn.style.display = "inline-flex";
                 if (grid) grid.classList.add("edit-mode-active");
             } else {
                 newBtnToggleEditWeekly.innerHTML = `<i class="fa-solid fa-pen-to-square"></i> 수정 모드 켜기`;
                 newBtnToggleEditWeekly.style.background = "";
                 newBtnToggleEditWeekly.style.color = "";
                 newBtnToggleEditWeekly.style.borderColor = "";
-                if (downloadBtn) downloadBtn.style.display = "none";
                 if (grid) grid.classList.remove("edit-mode-active");
             }
             if (typeof window.renderSelectedSchedule === "function") {
                 window.renderSelectedSchedule();
             }
-        });
-    }
-
-    if (btnDownloadOverridesWeekly) {
-        const newBtnDownloadOverridesWeekly = btnDownloadOverridesWeekly.cloneNode(true);
-        btnDownloadOverridesWeekly.parentNode.replaceChild(newBtnDownloadOverridesWeekly, btnDownloadOverridesWeekly);
-        newBtnDownloadOverridesWeekly.addEventListener("click", () => {
-            downloadOverridesJS();
         });
     }
 
@@ -772,12 +768,125 @@ function openEditModal(dateStr, timeText, detailText, status) {
     editModal.style.display = "flex";
 }
 
-function downloadOverridesJS() {
-    const overrides = window.LOCAL_OVERRIDES || {};
-    const content = `const SCHEDULE_OVERRIDES = ${JSON.stringify(overrides, null, 4)};\n`;
-    const blob = new Blob([content], { type: "application/javascript;charset=utf-8" });
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = "overrides.js";
-    link.click();
+function makeElementEditable(element, dateStr, fieldType) {
+    if (element.querySelector("input")) return;
+    
+    const originValue = element.innerText.trim();
+    element.innerHTML = "";
+    
+    const input = document.createElement("input");
+    input.type = "text";
+    input.className = "inline-edit-input";
+    input.value = (originValue === "공지 대기" || (originValue === "소통 방송" && fieldType === "detail")) ? "" : originValue;
+    
+    element.appendChild(input);
+    input.focus();
+    input.select();
+    
+    let isCommitted = false;
+    
+    const commitChange = () => {
+        if (isCommitted) return;
+        isCommitted = true;
+        
+        const newValue = input.value.trim();
+        
+        if (!window.LOCAL_OVERRIDES) window.LOCAL_OVERRIDES = {};
+        
+        let target = window.LOCAL_OVERRIDES[dateStr];
+        if (!target) {
+            target = { time: "공지 대기", detail: "", status: "tbd" };
+        } else if (typeof target === "string") {
+            target = { time: target, detail: "", status: target === "휴방" ? "rest" : "stream" };
+        }
+        
+        if (fieldType === "time") {
+            target.time = newValue || "공지 대기";
+            if (target.time === "휴방" || target.time.startsWith("휴방")) {
+                target.status = "rest";
+            } else if (target.time === "공지 대기") {
+                target.status = "tbd";
+            } else {
+                target.status = "stream";
+            }
+        } else if (fieldType === "detail") {
+            target.detail = newValue;
+        }
+        
+        // 원래 데이터와 수정본이 완벽하게 같아지면 overrides에서 해당 날짜를 완전히 삭제하여 청소
+        const defaultSched = findParsedScheduleForDateStr(dateStr);
+        const defaultTime = defaultSched ? defaultSched.time : "공지 대기";
+        const defaultDetail = defaultSched ? defaultSched.detail : "";
+        
+        if (target.time === defaultTime && target.detail === defaultDetail) {
+            delete window.LOCAL_OVERRIDES[dateStr];
+        } else {
+            window.LOCAL_OVERRIDES[dateStr] = target;
+        }
+        
+        try {
+            localStorage.setItem("schedule_overrides", JSON.stringify(window.LOCAL_OVERRIDES));
+        } catch (e) {}
+        
+        renderMonthlyCalendar();
+        if (typeof renderSelectedSchedule === "function") {
+            renderSelectedSchedule();
+        }
+    };
+    
+    const cancelChange = () => {
+        if (isCommitted) return;
+        isCommitted = true;
+        
+        renderMonthlyCalendar();
+        if (typeof renderSelectedSchedule === "function") {
+            renderSelectedSchedule();
+        }
+    };
+    
+    input.addEventListener("blur", commitChange);
+    
+    input.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+            e.preventDefault();
+            commitChange();
+        } else if (e.key === "Escape") {
+            e.preventDefault();
+            cancelChange();
+        }
+    });
+}
+
+function findParsedScheduleForDateStr(dateStr) {
+    if (typeof JERRY_DATA === "undefined" || !JERRY_DATA || !JERRY_DATA.schedules) return null;
+    const [year, month, day] = dateStr.split("-").map(Number);
+    const targetDateStr = `${month}/${day}`;
+    
+    for (let mondayKey in JERRY_DATA.schedules) {
+        const [mYear, mMonth, mDay] = mondayKey.split("-").map(Number);
+        const monDate = new Date(mYear, mMonth - 1, mDay);
+        const targetDate = new Date(year, month - 1, day);
+        const diffTime = targetDate - monDate;
+        const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
+        
+        if (diffDays >= 0 && diffDays < 7) {
+            const weekSchedule = JERRY_DATA.schedules[mondayKey];
+            if (weekSchedule) {
+                const matchedDay = weekSchedule.find(item => item.date === targetDateStr);
+                if (matchedDay) {
+                    let timeVal = matchedDay.time;
+                    const todayZero = new Date();
+                    todayZero.setHours(0,0,0,0);
+                    if (targetDate < todayZero && timeVal === "공지 대기") {
+                        timeVal = "휴방";
+                    }
+                    return {
+                        time: timeVal,
+                        detail: matchedDay.detail || ""
+                    };
+                }
+            }
+        }
+    }
+    return null;
 }
