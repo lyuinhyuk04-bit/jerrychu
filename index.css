@@ -2,21 +2,21 @@
    [DESIGN SYSTEM & TOKENS]
    ============================================================================== */
 :root {
-    --bg-main: hsl(250, 24%, 9%);
-    --bg-card: hsla(250, 20%, 15%, 0.45);
-    --bg-card-hover: hsla(250, 20%, 20%, 0.6);
-    --border-color: hsla(250, 20%, 30%, 0.3);
-    --border-hover: hsla(265, 80%, 65%, 0.5);
+    --bg-main: #eef3f9;
+    --bg-card: rgba(255, 255, 255, 0.65);
+    --bg-card-hover: rgba(255, 255, 255, 0.8);
+    --border-color: rgba(255, 255, 255, 0.5);
+    --border-hover: rgba(142, 68, 232, 0.3);
     
     /* Harmonious Color Palette */
-    --primary-purple: hsl(265, 80%, 65%);
-    --primary-pink: hsl(325, 85%, 65%);
-    --primary-cheese: hsl(43, 100%, 62%);
-    --primary-cheese-dark: hsl(43, 90%, 50%);
+    --primary-purple: hsl(265, 75%, 55%);
+    --primary-pink: hsl(325, 80%, 55%);
+    --primary-cheese: hsl(43, 100%, 45%);
+    --primary-cheese-dark: hsl(43, 90%, 40%);
     
-    --text-main: hsl(210, 20%, 95%);
-    --text-muted: hsl(210, 10%, 70%);
-    --text-dark: hsl(250, 20%, 15%);
+    --text-main: #2b2b35;
+    --text-muted: #62627a;
+    --text-dark: #121217;
     
     --gradient-hero: linear-gradient(135deg, var(--primary-purple), var(--primary-pink));
     --gradient-cheese: linear-gradient(135deg, var(--primary-cheese), var(--primary-cheese-dark));
@@ -38,6 +38,11 @@
 }
 
 body {
+    background-image: url('background.png');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
     background-color: var(--bg-main);
     color: var(--text-main);
     font-family: var(--font-body);
@@ -50,12 +55,7 @@ body {
 
 /* 네온 발광 백그라운드 데코레이션 */
 .bg-glow {
-    position: absolute;
-    border-radius: 50%;
-    filter: blur(140px);
-    z-index: -1;
-    opacity: 0.18;
-    pointer-events: none;
+    display: none;
 }
 .bg-glow-1 {
     width: 450px;
@@ -229,7 +229,7 @@ body {
 
 .btn-social.youtube {
     background: linear-gradient(135deg, hsl(0, 85%, 50%), hsl(0, 75%, 40%));
-    color: var(--text-main);
+    color: #fff !important;
     box-shadow: 0 4px 15px rgba(230, 33, 23, 0.2);
 }
 
@@ -239,7 +239,7 @@ body {
 
 .btn-social.cafe {
     background: linear-gradient(135deg, hsl(140, 80%, 42%), hsl(140, 75%, 33%));
-    color: var(--text-main);
+    color: #fff !important;
     box-shadow: 0 4px 15px rgba(2, 194, 91, 0.2);
 }
 
@@ -275,7 +275,7 @@ body {
     border: 1px solid var(--border-color);
     border-radius: 24px;
     padding: 30px;
-    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    box-shadow: 0 8px 32px 0 rgba(142, 68, 232, 0.08);
     transition: var(--transition-smooth);
     display: flex;
     flex-direction: column;
@@ -285,7 +285,7 @@ body {
 .glass-card:hover {
     border-color: var(--border-hover);
     transform: translateY(-2px);
-    box-shadow: 0 12px 40px 0 rgba(142, 68, 232, 0.15);
+    box-shadow: 0 12px 40px 0 rgba(142, 68, 232, 0.18);
 }
 
 .card-header {
@@ -334,10 +334,10 @@ body {
 }
 
 .btn-nav {
-    background: rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.4);
+    border: 1px solid var(--border-color);
     border-radius: 8px;
-    color: var(--text-light);
+    color: var(--primary-purple);
     width: 32px;
     height: 32px;
     display: flex;
@@ -348,9 +348,9 @@ body {
 }
 
 .btn-nav:hover {
-    background: rgba(255, 255, 255, 0.16);
-    border-color: rgba(255, 255, 255, 0.25);
-    color: #fff;
+    background: rgba(255, 255, 255, 0.8);
+    border-color: var(--primary-purple);
+    color: var(--primary-purple);
     transform: translateY(-1px);
 }
 
@@ -358,8 +358,9 @@ body {
     opacity: 0.35;
     cursor: not-allowed;
     transform: none;
-    background: rgba(255, 255, 255, 0.03);
-    border-color: rgba(255, 255, 255, 0.05);
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--border-color);
+    color: var(--text-muted);
 }
 
 .schedule-week-title {
@@ -377,7 +378,7 @@ body {
     width: 100%;
     min-height: 150px;
     border-radius: 16px;
-    background: rgba(0, 0, 0, 0.15);
+    background: rgba(255, 255, 255, 0.25);
     border: 1px solid var(--border-color);
     padding: 20px;
     display: flex;
@@ -407,7 +408,7 @@ body {
 }
 
 .calendar-day-card {
-    background: hsla(250, 20%, 12%, 0.5);
+    background: rgba(255, 255, 255, 0.4);
     border: 1px solid var(--border-color);
     border-radius: 12px;
     padding: 15px 10px;
@@ -421,7 +422,7 @@ body {
 .calendar-day-card:hover {
     border-color: var(--primary-cheese);
     transform: translateY(-2px);
-    background: hsla(250, 20%, 15%, 0.7);
+    background: rgba(255, 255, 255, 0.7);
     box-shadow: 0 4px 15px rgba(255, 208, 0, 0.1);
 }
 
@@ -429,16 +430,16 @@ body {
     font-family: var(--font-heading);
     font-size: 1.1rem;
     font-weight: 800;
-    color: var(--text-muted);
+    color: var(--text-main); /* Dark text for day names */
 }
 
 .calendar-day-card.today .calendar-day-week {
-    color: var(--primary-cheese);
+    color: var(--primary-purple); /* Nice purple for today */
 }
 
 .calendar-day-card.today {
-    border-color: var(--primary-cheese-dark);
-    background: hsla(43, 100%, 62%, 0.08);
+    border-color: var(--primary-purple);
+    background: rgba(142, 68, 232, 0.08);
 }
 
 .calendar-day-date {
@@ -452,7 +453,7 @@ body {
     color: var(--text-main);
     padding: 8px 4px;
     border-radius: 6px;
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(0, 0, 0, 0.04);
     min-height: 48px;
     display: flex;
     justify-content: center;
@@ -461,13 +462,13 @@ body {
 }
 
 .calendar-day-card.rest .calendar-day-time {
-    background: rgba(230, 33, 23, 0.1);
-    color: hsl(0, 85%, 65%);
+    background: rgba(255, 75, 75, 0.12);
+    color: hsl(350, 80%, 45%);
 }
 
 .calendar-day-card.active .calendar-day-time {
     background: rgba(43, 194, 83, 0.15);
-    color: hsl(135, 75%, 65%);
+    color: hsl(135, 75%, 32%);
 }
 
 .calendar-day-detail {
@@ -528,7 +529,7 @@ body {
 }
 
 .notice-item {
-    background: hsla(250, 20%, 12%, 0.4);
+    background: rgba(255, 255, 255, 0.4);
     border: 1px solid var(--border-color);
     border-radius: 16px;
     padding: 15px;
@@ -538,7 +539,7 @@ body {
 
 .notice-item:hover {
     border-color: var(--border-hover);
-    background: hsla(250, 20%, 16%, 0.6);
+    background: rgba(255, 255, 255, 0.6);
 }
 
 .notice-item-header {
@@ -965,7 +966,7 @@ body {
     align-items: center;
     gap: 15px;
     padding: 15px 20px;
-    background: hsla(250, 20%, 20%, 0.25);
+    background: rgba(255, 255, 255, 0.4);
     border: 1px solid var(--border-color);
     border-radius: 12px;
     text-decoration: none;
@@ -1041,8 +1042,8 @@ body {
     gap: 15px;
     margin: 20px 0 30px 0;
     padding: 6px;
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    background: rgba(255, 255, 255, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.6);
     border-radius: 50px;
     backdrop-filter: blur(10px);
     width: fit-content;
@@ -1068,14 +1069,14 @@ body {
 
 .tab-btn:hover {
     color: var(--text-main);
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(0, 0, 0, 0.05);
 }
 
 .tab-btn.active {
-    color: var(--text-dark);
-    background: var(--gradient-cheese);
+    color: #fff;
+    background: var(--gradient-hero);
     border-color: rgba(255, 255, 255, 0.1);
-    box-shadow: 0 4px 15px rgba(255, 208, 0, 0.3);
+    box-shadow: 0 4px 15px rgba(142, 68, 232, 0.3);
 }
 
 .view-panel {
@@ -1098,7 +1099,7 @@ body {
 .calendar-month-container {
     width: 100%;
     margin-top: 15px;
-    background: rgba(0, 0, 0, 0.15);
+    background: rgba(255, 255, 255, 0.25);
     border: 1px solid var(--border-color);
     border-radius: 16px;
     padding: 20px;
@@ -1135,7 +1136,7 @@ body {
 
 .monthly-day-card {
     position: relative;
-    background: hsla(250, 20%, 12%, 0.4);
+    background: rgba(255, 255, 255, 0.4);
     border: 1px solid var(--border-color);
     border-radius: 10px;
     padding: 10px;
@@ -1169,8 +1170,8 @@ body {
 }
 
 .monthly-day-card.today {
-    border-color: var(--primary-pink-dark);
-    background: hsla(330, 80%, 60%, 0.05);
+    border-color: var(--primary-pink);
+    background: rgba(232, 68, 142, 0.15);
 }
 
 .monthly-day-card.today::after {
@@ -1186,20 +1187,20 @@ body {
 }
 
 .monthly-day-card.stream {
-    border-color: hsla(43, 100%, 62%, 0.25);
-    background: hsla(43, 100%, 62%, 0.03);
+    border-color: rgba(253, 197, 0, 0.4);
+    background: rgba(253, 197, 0, 0.08);
 }
 
 .monthly-day-card.rest {
-    border-color: hsla(0, 85%, 55%, 0.25);
-    background: hsla(0, 85%, 55%, 0.03);
+    border-color: rgba(255, 75, 75, 0.4);
+    background: rgba(255, 75, 75, 0.08);
 }
 
 .monthly-day-card .day-time-text {
     font-size: 0.8rem;
     font-weight: 600;
     color: var(--text-main);
-    background: rgba(255, 255, 255, 0.04);
+    background: rgba(0, 0, 0, 0.04);
     padding: 4px 6px;
     border-radius: 4px;
     text-align: center;
@@ -1207,8 +1208,8 @@ body {
 }
 
 .monthly-day-card.rest .day-time-text {
-    background: rgba(230, 33, 23, 0.08);
-    color: var(--primary-pink);
+    background: rgba(255, 75, 75, 0.12);
+    color: hsl(350, 80%, 45%);
 }
 
 .monthly-day-card .day-detail-text {
@@ -1233,7 +1234,7 @@ body {
     font-family: var(--font-heading);
     font-size: 1.15rem;
     font-weight: 800;
-    color: #fff;
+    color: var(--text-main);
     min-width: 110px;
     text-align: center;
 }
@@ -1248,9 +1249,9 @@ body {
     align-items: center;
     gap: 6px;
     padding: 8px 16px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    background: rgba(255, 255, 255, 0.06);
-    color: #fff;
+    border: 1px solid var(--border-color);
+    background: rgba(255, 255, 255, 0.4);
+    color: var(--text-main);
     font-family: var(--font-body);
     font-size: 0.85rem;
     font-weight: 600;
@@ -1260,45 +1261,48 @@ body {
 }
 
 .btn-editor:hover {
-    background: rgba(255, 255, 255, 0.12);
-    border-color: rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.8);
+    border-color: var(--primary-purple);
+    color: var(--primary-purple);
 }
 
 .btn-editor.save-btn {
     background: linear-gradient(135deg, #02c25b, #008f3f);
     border-color: rgba(255, 255, 255, 0.1);
     box-shadow: 0 4px 15px rgba(2, 194, 91, 0.2);
+    color: #fff !important;
 }
 
 .btn-editor.save-btn:hover {
     transform: translateY(-1px);
     box-shadow: 0 6px 20px rgba(2, 194, 91, 0.4);
+    color: #fff !important;
 }
 
 /* 수정 모드 활성화 시 달력 셀 효과 */
 .calendar-month-grid.edit-mode-active .monthly-day-card:not(.other-month) {
     cursor: pointer;
-    border-color: rgba(255, 255, 255, 0.18);
+    border-color: var(--border-color);
 }
 
 .calendar-month-grid.edit-mode-active .monthly-day-card:not(.other-month):hover {
-    border-color: var(--primary-cheese);
+    border-color: var(--primary-purple);
     transform: translateY(-2px);
-    background: hsla(250, 20%, 16%, 0.6);
-    box-shadow: 0 4px 15px rgba(255, 208, 0, 0.15);
+    background: rgba(255, 255, 255, 0.9);
+    box-shadow: 0 4px 15px rgba(142, 68, 232, 0.2);
 }
 
 /* 주간 수정 모드 활성화 시 달력 셀 효과 */
 .calendar-grid.edit-mode-active .calendar-day-card {
     cursor: pointer;
-    border-color: rgba(255, 255, 255, 0.18);
+    border-color: var(--border-color);
 }
 
 .calendar-grid.edit-mode-active .calendar-day-card:hover {
-    border-color: var(--primary-cheese);
+    border-color: var(--primary-purple);
     transform: translateY(-2px);
-    background: hsla(250, 20%, 16%, 0.6);
-    box-shadow: 0 4px 15px rgba(255, 208, 0, 0.15);
+    background: rgba(255, 255, 255, 0.9);
+    box-shadow: 0 4px 15px rgba(142, 68, 232, 0.2);
 }
 
 /* ==============================================================================
@@ -1309,10 +1313,10 @@ body {
     width: 90%;
     max-width: 400px;
     padding: 30px;
-    background: hsla(250, 25%, 10%, 0.95);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.5);
     border-radius: 16px;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
     backdrop-filter: blur(20px);
     animation: zoomIn 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
     color: var(--text-main);
@@ -1328,9 +1332,9 @@ body {
     font-family: var(--font-heading);
     font-size: 1.3rem;
     font-weight: 800;
-    color: var(--primary-cheese);
+    color: var(--primary-purple);
     margin-bottom: 20px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
     padding-bottom: 12px;
 }
 
@@ -1353,10 +1357,10 @@ body {
 }
 
 .form-input {
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(0, 0, 0, 0.03);
+    border: 1px solid rgba(0, 0, 0, 0.1);
     border-radius: 8px;
-    color: #fff;
+    color: var(--text-main);
     padding: 10px 14px;
     font-family: var(--font-body);
     font-size: 0.9rem;
@@ -1365,13 +1369,13 @@ body {
 }
 
 .form-input:focus {
-    border-color: var(--primary-cheese);
-    background: rgba(255, 255, 255, 0.08);
+    border-color: var(--primary-purple);
+    background: rgba(0, 0, 0, 0.05);
 }
 
 select.form-input {
     appearance: none;
-    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232b2b35' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
     background-repeat: no-repeat;
     background-position: right 14px center;
     background-size: 16px;
@@ -1379,8 +1383,8 @@ select.form-input {
 }
 
 select.form-input option {
-    background-color: #16141c;
-    color: #fff;
+    background-color: #ffffff;
+    color: var(--text-main);
 }
 
 .btn-submit {

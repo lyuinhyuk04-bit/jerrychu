@@ -66,8 +66,8 @@ function initDataBinding() {
         if (JERRY_DATA.updated_at) {
             updateBadge.innerText = `${JERRY_DATA.updated_at} 동기화 완료`;
             updateBadge.style.background = "rgba(43, 194, 83, 0.15)";
-            updateBadge.style.color = "hsl(135, 75%, 65%)";
-            updateBadge.style.borderColor = "hsla(135, 75%, 65%, 0.3)";
+            updateBadge.style.color = "hsl(135, 75%, 35%)";
+            updateBadge.style.borderColor = "hsla(135, 75%, 35%, 0.3)";
         }
 
         // 2. 공지사항 (6월~) 아코디언 리스트 바인딩
@@ -602,15 +602,15 @@ function initMonthlyEditor() {
             if (window.isEditModeActive) {
                 newBtnToggleEdit.innerHTML = `<i class="fa-solid fa-lock"></i> 수정 모드 끄기`;
                 newBtnToggleEdit.style.background = "rgba(255, 75, 75, 0.15)";
-                newBtnToggleEdit.style.color = "hsl(0, 85%, 65%)";
-                newBtnToggleEdit.style.borderColor = "hsla(0, 85%, 65%, 0.3)";
+                newBtnToggleEdit.style.color = "hsl(0, 85%, 45%)";
+                newBtnToggleEdit.style.borderColor = "hsla(0, 85%, 45%, 0.3)";
                 if (downloadBtn) downloadBtn.style.display = "inline-flex";
                 if (grid) grid.classList.add("edit-mode-active");
             } else {
                 newBtnToggleEdit.innerHTML = `<i class="fa-solid fa-pen-to-square"></i> 수정 모드 켜기`;
-                newBtnToggleEdit.style.background = "rgba(255, 255, 255, 0.06)";
-                newBtnToggleEdit.style.color = "#fff";
-                newBtnToggleEdit.style.borderColor = "rgba(255, 255, 255, 0.1)";
+                newBtnToggleEdit.style.background = "";
+                newBtnToggleEdit.style.color = "";
+                newBtnToggleEdit.style.borderColor = "";
                 if (downloadBtn) downloadBtn.style.display = "none";
                 if (grid) grid.classList.remove("edit-mode-active");
             }
@@ -694,15 +694,15 @@ function initMonthlyEditor() {
             if (window.isWeeklyEditModeActive) {
                 newBtnToggleEditWeekly.innerHTML = `<i class="fa-solid fa-lock"></i> 수정 모드 끄기`;
                 newBtnToggleEditWeekly.style.background = "rgba(255, 75, 75, 0.15)";
-                newBtnToggleEditWeekly.style.color = "hsl(0, 85%, 65%)";
-                newBtnToggleEditWeekly.style.borderColor = "hsla(0, 85%, 65%, 0.3)";
+                newBtnToggleEditWeekly.style.color = "hsl(0, 85%, 45%)";
+                newBtnToggleEditWeekly.style.borderColor = "hsla(0, 85%, 45%, 0.3)";
                 if (downloadBtn) downloadBtn.style.display = "inline-flex";
                 if (grid) grid.classList.add("edit-mode-active");
             } else {
                 newBtnToggleEditWeekly.innerHTML = `<i class="fa-solid fa-pen-to-square"></i> 수정 모드 켜기`;
-                newBtnToggleEditWeekly.style.background = "rgba(255, 255, 255, 0.06)";
-                newBtnToggleEditWeekly.style.color = "#fff";
-                newBtnToggleEditWeekly.style.borderColor = "rgba(255, 255, 255, 0.1)";
+                newBtnToggleEditWeekly.style.background = "";
+                newBtnToggleEditWeekly.style.color = "";
+                newBtnToggleEditWeekly.style.borderColor = "";
                 if (downloadBtn) downloadBtn.style.display = "none";
                 if (grid) grid.classList.remove("edit-mode-active");
             }
