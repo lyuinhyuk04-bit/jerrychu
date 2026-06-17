@@ -1407,34 +1407,7 @@ select.form-input option {
     box-shadow: 0 6px 20px rgba(255, 208, 0, 0.4);
 }
 
-/* 인라인 편집 입력창 스타일 */
-.inline-edit-input {
-    width: 100%;
-    max-width: 180px;
-    padding: 3px 6px;
-    border: 1.5px solid var(--primary-purple);
-    border-radius: 6px;
-    background: rgba(255, 255, 255, 0.95);
-    color: var(--text-dark);
-    font-family: inherit;
-    font-size: 0.85rem;
-    font-weight: 600;
-    text-align: center;
-    outline: none;
-    box-shadow: 0 0 8px rgba(142, 68, 232, 0.25);
-    box-sizing: border-box;
-    margin: 2px 0;
-}
 
-/* 수정 모드 활성화 시 요일/달력 내 개별 텍스트 영역 호버 효과 */
-.edit-mode-active .calendar-day-time:hover,
-.edit-mode-active .calendar-day-detail:hover,
-.edit-mode-active .day-time-text:hover,
-.edit-mode-active .day-detail-text:hover {
-    background: rgba(142, 68, 232, 0.08);
-    border-radius: 4px;
-    outline: 1px dashed var(--primary-purple);
-}
 
 
 
