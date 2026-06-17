@@ -57,7 +57,7 @@
         <!-- 페이지 탭 네비게이션 -->
         <nav class="nav-tabs">
             <button id="tab-monthly" class="tab-btn active"><i class="fa-regular fa-calendar"></i> 한달 일정표</button>
-            <button id="tab-weekly" class="tab-btn"><i class="fa-solid fa-list-check"></i> 소식 모음</button>
+            <button id="tab-weekly" class="tab-btn"><i class="fa-regular fa-calendar-check"></i> 주간 일정표</button>
         </nav>
 
         <!-- 메인 콘텐츠 영역 (탭별 뷰패널 분리) -->
@@ -102,6 +102,10 @@
                             <button id="btn-prev-week" class="btn-nav" title="이전 주"><i class="fa-solid fa-chevron-left"></i></button>
                             <span id="schedule-week-title" class="schedule-week-title">이번 주</span>
                             <button id="btn-next-week" class="btn-nav" title="다음 주"><i class="fa-solid fa-chevron-right"></i></button>
+                        </div>
+                        <div class="editor-buttons">
+                            <button id="btn-toggle-edit-weekly" class="btn-editor"><i class="fa-solid fa-pen-to-square"></i> 수정 모드 켜기</button>
+                            <button id="btn-download-overrides-weekly" class="btn-editor save-btn" style="display: none;"><i class="fa-solid fa-download"></i> 변경사항 다운로드</button>
                         </div>
                         <span id="update-badge" class="badge">동기화 대기 중</span>
                     </div>

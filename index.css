@@ -1288,6 +1288,19 @@ body {
     box-shadow: 0 4px 15px rgba(255, 208, 0, 0.15);
 }
 
+/* 주간 수정 모드 활성화 시 달력 셀 효과 */
+.calendar-grid.edit-mode-active .calendar-day-card {
+    cursor: pointer;
+    border-color: rgba(255, 255, 255, 0.18);
+}
+
+.calendar-grid.edit-mode-active .calendar-day-card:hover {
+    border-color: var(--primary-cheese);
+    transform: translateY(-2px);
+    background: hsla(250, 20%, 16%, 0.6);
+    box-shadow: 0 4px 15px rgba(255, 208, 0, 0.15);
+}
+
 /* ==============================================================================
    [EDIT OVERRIDES MODAL FORM]
    ============================================================================== */

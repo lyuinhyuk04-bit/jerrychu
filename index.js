@@ -219,6 +219,12 @@ function initDataBinding() {
                     
                     calendarGrid.innerHTML = "";
                     
+                    if (window.isWeeklyEditModeActive) {
+                        calendarGrid.classList.add("edit-mode-active");
+                    } else {
+                        calendarGrid.classList.remove("edit-mode-active");
+                    }
+                    
                     // 1) 헤더 및 버튼 갱신
                     const todayZero = new Date();
                     todayZero.setHours(0, 0, 0, 0);
@@ -294,6 +300,25 @@ function initDataBinding() {
                             <div class="calendar-day-time">${displayTime}</div>
                             <div class="calendar-day-detail">${displayDetail}</div>
                         `;
+                        
+                        dayCard.addEventListener("click", () => {
+                            if (window.isWeeklyEditModeActive) {
+                                let status = "tbd";
+                                if (displayTime === "휴방" || displayTime.startsWith("휴방")) {
+                                    status = "rest";
+                                    // Remove the '휴방 -> ' prefix for editing time if present
+                                    let cleanTime = displayTime.replace(/^휴방\s*->\s*/, "");
+                                    if (cleanTime === "휴방") cleanTime = "";
+                                    openEditModal(dateStr, cleanTime, displayDetail, status);
+                                } else {
+                                    if (displayTime !== "공지 대기") {
+                                        status = "stream";
+                                    }
+                                    openEditModal(dateStr, displayTime, displayDetail, status);
+                                }
+                            }
+                        });
+                        
                         calendarGrid.appendChild(dayCard);
                     });
                 };
@@ -648,6 +673,50 @@ function initMonthlyEditor() {
             if (typeof window.renderSelectedSchedule === "function") {
                 window.renderSelectedSchedule();
             }
+        });
+    }
+
+    // 주간 일정 수정 버튼 바인딩
+    const btnToggleEditWeekly = document.getElementById("btn-toggle-edit-weekly");
+    const btnDownloadOverridesWeekly = document.getElementById("btn-download-overrides-weekly");
+
+    if (btnToggleEditWeekly) {
+        window.isWeeklyEditModeActive = false;
+        
+        const newBtnToggleEditWeekly = btnToggleEditWeekly.cloneNode(true);
+        btnToggleEditWeekly.parentNode.replaceChild(newBtnToggleEditWeekly, btnToggleEditWeekly);
+        
+        newBtnToggleEditWeekly.addEventListener("click", () => {
+            window.isWeeklyEditModeActive = !window.isWeeklyEditModeActive;
+            const downloadBtn = document.getElementById("btn-download-overrides-weekly");
+            const grid = document.getElementById("calendar-grid");
+            
+            if (window.isWeeklyEditModeActive) {
+                newBtnToggleEditWeekly.innerHTML = `<i class="fa-solid fa-lock"></i> 수정 모드 끄기`;
+                newBtnToggleEditWeekly.style.background = "rgba(255, 75, 75, 0.15)";
+                newBtnToggleEditWeekly.style.color = "hsl(0, 85%, 65%)";
+                newBtnToggleEditWeekly.style.borderColor = "hsla(0, 85%, 65%, 0.3)";
+                if (downloadBtn) downloadBtn.style.display = "inline-flex";
+                if (grid) grid.classList.add("edit-mode-active");
+            } else {
+                newBtnToggleEditWeekly.innerHTML = `<i class="fa-solid fa-pen-to-square"></i> 수정 모드 켜기`;
+                newBtnToggleEditWeekly.style.background = "rgba(255, 255, 255, 0.06)";
+                newBtnToggleEditWeekly.style.color = "#fff";
+                newBtnToggleEditWeekly.style.borderColor = "rgba(255, 255, 255, 0.1)";
+                if (downloadBtn) downloadBtn.style.display = "none";
+                if (grid) grid.classList.remove("edit-mode-active");
+            }
+            if (typeof window.renderSelectedSchedule === "function") {
+                window.renderSelectedSchedule();
+            }
+        });
+    }
+
+    if (btnDownloadOverridesWeekly) {
+        const newBtnDownloadOverridesWeekly = btnDownloadOverridesWeekly.cloneNode(true);
+        btnDownloadOverridesWeekly.parentNode.replaceChild(newBtnDownloadOverridesWeekly, btnDownloadOverridesWeekly);
+        newBtnDownloadOverridesWeekly.addEventListener("click", () => {
+            downloadOverridesJS();
         });
     }
 
