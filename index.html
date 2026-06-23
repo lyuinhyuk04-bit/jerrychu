@@ -1,406 +1,222 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>오아팀 지통실</title>
-  <meta name="description" content="오아팀 스트리머 크루의 실시간 지휘통제실 대시보드입니다. LIVE 방송 및 주간 일정을 모니터링합니다.">
-  
-  <!-- Font Awesome for Icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <!-- Google Fonts (Outfit & Noto Sans KR) -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
-  
-  <!-- Favicon -->
-  <link rel="icon" href="logo.png" type="image/png">
-  
-  <!-- Main Stylesheet -->
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>제리츄(JerryChu) 팬 스페이스 :: 츄앙이들의 쉼터</title>
+    <!-- Google Fonts 및 FontAwesome 아이콘 연동 -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Inter:wght@300;400;600&family=Noto+Sans+KR:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="index.css">
+    <script src="overrides.js"></script>
 </head>
-<body class="dark-theme">
-  
-  <div class="app-container">
-    
-    <!-- 1. 좌측 사이드바 (Navigation & Selection) -->
-    <aside class="sidebar" id="sidebar">
-      <div class="sidebar-header">
-        <div class="logo">
-          <i class="fa-solid fa-shield-halved logo-icon"></i>
-          <div class="logo-text">
-            <h1>오아팀 지통실</h1>
-            <p>OPS CONTROL PANEL</p>
-          </div>
-        </div>
-        <button class="sidebar-close-btn" id="sidebarCloseBtn"><i class="fa-solid fa-xmark"></i></button>
-      </div>
-      
-      <!-- 사이드바 메뉴 탭 -->
-      <nav class="sidebar-menu">
-        <button class="menu-item active" data-tab="dashboard">
-          <i class="fa-solid fa-chart-line"></i> 대시보드
-        </button>
-        <button class="menu-item" data-tab="members">
-          <i class="fa-solid fa-users"></i> 멤버 현황
-        </button>
-        <button class="menu-item" data-tab="schedule">
-          <i class="fa-solid fa-calendar-days"></i> 일정표
-        </button>
-        <button class="menu-item" data-tab="daily-work">
-          <i class="fa-solid fa-file-signature"></i> 오늘 한 일
-        </button>
-        <button class="menu-item" data-tab="admin">
-          <i class="fa-solid fa-user-gear"></i> 관리자
-        </button>
-      </nav>
-      
-      <!-- 멤버 스케줄 선택 (일정표 관련) -->
-      <div class="sidebar-section" id="membersSection">
-        <h2 class="section-title">SCHEDULE SELECT</h2>
-        <div class="members-list" id="membersListContainer">
-          <!-- Dynamically populated members -->
-          <div class="loading-spinner-small"></div>
-        </div>
-      </div>
-      
-      <!-- Crew Public Links Section (Hidden here, shown under Links Tab) -->
-      <div class="sidebar-section" id="crewLinksSection" style="display: none;">
-        <div class="crew-links-grid" id="crewLinksContainer"></div>
-      </div>
-      
-      <div class="sidebar-footer">
-        <p>© 2026 OA TEAM Operations</p>
-      </div>
-    </aside>
-    
-    <!-- 2. 메인 컨텐츠 영역 -->
-    <main class="main-content">
-      
-      <!-- 상단 헤더 -->
-      <header class="topbar">
-        <button class="menu-toggle-btn" id="menuToggleBtn"><i class="fa-solid fa-bars"></i></button>
-        
-        <div class="header-logo-wrap">
-          <span class="ops-badge"><i class="fa-solid fa-circle-nodes"></i> LIVE STREAM DECK</span>
-        </div>
-        
-        <!-- 검색창 -->
-        <div class="search-box">
-          <i class="fa-solid fa-magnifying-glass search-icon"></i>
-          <input type="text" id="searchInput" placeholder="방송 날짜, 제목, 키워드로 검색...">
-          <button class="clear-search-btn" id="clearSearchBtn"><i class="fa-solid fa-xmark"></i></button>
-        </div>
+<body>
+    <!-- 배경을 채우는 네온 블러 서클들 -->
+    <div class="bg-glow bg-glow-1"></div>
+    <div class="bg-glow bg-glow-2"></div>
 
-        <!-- 실시간 시간 표시 -->
-        <div class="live-clock" id="liveClock" title="지통실 표준시">
-          <i class="fa-regular fa-clock"></i>
-          <span id="liveClockTime">00:00:00</span>
-        </div>
-      </header>
-      
-      <!-- 컨텐츠 바디 -->
-      <div class="content-body">
-        
-        <!-- 탭 컨텐츠 1: 대시보드 (실시간 모니터링 + 주간 일정표) -->
-        <div class="tab-pane active" id="pane-dashboard">
-          
-          <!-- 실시간 방송 상태 섹션 -->
-          <section class="live-status-section" id="liveStatusSection">
-            <div class="section-header">
-              <h2>
-                <i class="fa-solid fa-tower-broadcast" style="color:var(--accent-orange);margin-right:8px;font-size:18px;"></i>
-                멤버 실시간 모니터링
-              </h2>
-              <button class="refresh-btn" id="liveRefreshBtn" title="방송 정보 새로고침">
-                <i class="fa-solid fa-rotate-right"></i>
-                <span id="liveRefreshText">새로고침</span>
-              </button>
-            </div>
-            <div class="live-grid" id="liveGridContainer">
-              <div class="loading-container" style="grid-column: 1 / -1;">
-                <div class="loading-spinner-small"></div>
-                <p style="font-size: 13px; color: var(--color-text-secondary);">방송 정보를 불러오는 중입니다...</p>
-              </div>
-            </div>
-          </section>
-
-          <!-- 일정표 가이드 및 프로필 헤더 -->
-          <div class="active-member-profile-wrap">
-            <div class="active-member-profile" id="activeMemberProfile">
-              <!-- Dynamically populated -->
-            </div>
-          </div>
-          
-          <!-- 주간 일정 섹션 -->
-          <section class="schedule-section" id="scheduleViewSection">
-            <div class="section-header">
-              <div class="week-navigator">
-                <button class="nav-btn" id="prevWeekBtn" title="이전 주"><i class="fa-solid fa-chevron-left"></i></button>
-                <h2 class="current-week-label" id="currentWeekLabel">2026년 06월 3째주</h2>
-                <button class="nav-btn" id="nextWeekBtn" title="다음 주"><i class="fa-solid fa-chevron-right"></i></button>
-                <button class="today-btn" id="todayBtn">오늘</button>
-                <button class="notepad-btn" id="openNotepadBtn"><i class="fa-solid fa-note-sticky"></i> 메모장 편집</button>
-              </div>
-              
-              <div class="data-status-badge">
-                <span class="status-dot"></span>
-                <span class="status-text">통제 시스템 정상 작동</span>
-              </div>
-            </div>
-            
-            <div class="schedule-info-banner">
-              <i class="fa-solid fa-circle-info info-icon"></i>
-              <span class="info-text">지통실 일정표는 구글 시트와 SOOP 공지 데이터를 기반으로 실시간 최신화됩니다.</span>
-            </div>
-            
-            <!-- 주간 달력 그리드 -->
-            <div class="weekly-grid" id="weeklyGridContainer">
-              <div class="loading-container">
-                <div class="loading-spinner"></div>
-                <p>일정표를 불러오는 중입니다...</p>
-              </div>
-            </div>
-          </section>
-
-        </div>
-
-        <!-- 탭 컨텐츠 2: 멤버 현황 -->
-        <div class="tab-pane" id="pane-members">
-          <section class="ops-section">
-            <div class="ops-section-header">
-              <h2><i class="fa-solid fa-users"></i> 크루 멤버 현황</h2>
-              <p>오아팀 소속 스트리머 목록 및 방송 상태 개요</p>
-            </div>
-            <div class="members-grid-all" id="membersGridAll">
-              <!-- JS dynamically generates all member cards -->
-            </div>
-          </section>
-        </div>
-
-
-
-        <!-- 탭 컨텐츠 4: 일정표 (단독 조회 탭 - 대시보드와 유기적으로 동기화됨) -->
-        <div class="tab-pane" id="pane-schedule">
-          <section class="ops-section">
-            <div class="ops-section-header">
-              <h2><i class="fa-solid fa-calendar-days"></i> 멤버 주간 일정 상세</h2>
-              <p>좌측 리스트에서 멤버를 선택하여 일정을 확인하십시오.</p>
-            </div>
-            <div class="schedule-tab-content-placeholder" id="scheduleTabPlaceholder">
-              <!-- JavaScript will mirror the schedule UI here -->
-            </div>
-          </section>
-        </div>
-
-        <!-- 탭 컨텐츠 5: 오늘 한 일 -->
-        <!-- 탭 컨텐츠 5: 오늘 한 일 -->
-        <div class="tab-pane" id="pane-daily-work">
-          <!-- 잠금 화면 -->
-          <div class="security-lock-screen" id="dailyWorkLockScreen" style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 60px 20px; text-align: center; gap: 16px;">
-            <i class="fa-solid fa-lock" style="font-size: 40px; color: var(--accent-orange); text-shadow: 0 0 10px rgba(249,115,22,0.3);"></i>
-            <h2 style="font-size: 16px; font-weight: 700; color: #fff;">보안 구역 (오늘 한 일)</h2>
-            <p style="font-size: 12px; color: var(--color-text-secondary); max-width: 300px; line-height: 1.5;">이 구역에 접근하려면 비밀번호를 입력하십시오.</p>
-            <div style="display: flex; gap: 8px; width: 100%; max-width: 280px;">
-              <input type="password" id="dailyWorkPasswordInput" placeholder="비밀번호 입력..." style="flex-grow: 1; background: var(--bg-primary); border: 1px solid var(--glass-border); border-radius: 6px; padding: 8px 12px; color: #fff; font-size: 13px; outline: none; text-align: center;">
-              <button id="dailyWorkUnlockBtn" style="background: var(--accent-orange); border: none; border-radius: 6px; padding: 8px 16px; color: #fff; font-weight: 700; font-size: 13px; cursor: pointer;">확인</button>
-            </div>
-            <div id="dailyWorkLockError" style="color: var(--accent-pink); font-size: 11px; font-weight: 600; display: none;">❌ 비밀번호가 올바르지 않습니다.</div>
-          </div>
-
-          <!-- 실제 콘텐츠 (기본 숨김) -->
-          <div class="security-unlocked-content" id="dailyWorkActualContent" style="display: none;">
-            <section class="ops-section">
-              <div class="ops-section-header">
-                <h2><i class="fa-solid fa-file-signature"></i> 오늘 한 일 작성</h2>
-                <p>각 멤버가 오늘 진행한 업무 및 방송 활동 내역을 기록하는 대장입니다.</p>
-              </div>
-              
-              <div class="daily-work-layout glass-card" style="padding: 20px; border-radius: 12px; margin-top: 16px; display:flex; flex-direction:column; gap:12px;">
-                <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
-                  <label for="dailyWorkMemberSelect" style="color: var(--accent-orange); font-size: 14px; font-weight: 700; cursor: pointer;"><i class="fa-solid fa-user-pen"></i> 활동 기록 대상 멤버 선택:</label>
-                  <select id="dailyWorkMemberSelect" style="background: var(--bg-primary); border: 1px solid var(--glass-border); border-radius: 6px; padding: 6px 12px; color: #fff; font-size: 13px; font-weight: 600; outline: none; cursor: pointer;">
-                    <!-- Dynamically populated -->
-                  </select>
+    <div class="container">
+        <!-- 헤더 영역 -->
+        <header class="header">
+            <div class="profile-area">
+                <div class="profile-img-container">
+                    <img id="profile-img" src="profile.jpg?v=2" alt="제리츄 프로필" class="profile-img">
+                    <span id="profile-live-badge" class="profile-live-badge" style="display: none;">LIVE</span>
                 </div>
-                <textarea id="dailyWorkInput" placeholder="오늘 진행한 활동이나 작업 내용을 간단히 기록해 주세요." style="width:100%; height:100px; background:var(--bg-primary); border:1px solid var(--glass-border); border-radius:8px; padding:12px; color:#fff; font-size:13px; resize:none; outline:none;"></textarea>
-                <button class="btn btn-save" id="saveDailyWorkBtn" style="font-weight:700; width:fit-content;"><i class="fa-solid fa-check"></i> 기록 저장</button>
-              </div>
+                <h1 class="profile-name">제리츄</h1>
+            </div>
+            <p class="subtitle">스트리머 제리츄님과 츄앙이들을 위한 아늑한 소통 블로그</p>
+            
+            <!-- 소셜 링크 버튼 모음 -->
+            <div class="social-links">
+                <a id="btn-soop" href="https://www.sooplive.com/station/rariruro" target="_blank" class="btn-social">
+                    <i class="fa-solid fa-play"></i> SOOP 방송국 바로가기
+                </a>
+                <a id="btn-cafe" href="https://cafe.naver.com/jerrychu" target="_blank" class="btn-social cafe">
+                    <i class="fa-solid fa-mug-saucer"></i> 네이버 카페
+                </a>
+                <a id="btn-youtube" href="https://www.youtube.com/@jerryChu2" target="_blank" class="btn-social youtube">
+                    <i class="fa-brands fa-youtube"></i> 유튜브 채널
+                </a>
+            </div>
+        </header>
 
-              <div class="ops-section-header" style="margin-top: 32px;">
-                <h2><i class="fa-solid fa-list-check"></i> 전체 멤버 금일 활동 대장</h2>
-                <p>오아팀 크루원들이 오늘 기록한 전체 한 일 목록입니다.</p>
-              </div>
-              <div class="daily-work-list" id="dailyWorkList">
-                <!-- Dynamically populated daily works of all members -->
-              </div>
+        <!-- 라이브 온에어 인디케이터 (생방송 중일 때만 노출) -->
+        <a id="live-indicator" href="https://www.sooplive.com/station/rariruro" target="_blank" class="live-banner" style="display: none;">
+            <div class="live-badge-glow"></div>
+            <div class="live-content">
+                <span class="live-ping-container">
+                    <span class="live-ping-circle"></span>
+                    <span class="live-ping-dot"></span>
+                </span>
+                <span class="live-text"><span class="live-highlight">LIVE ON</span> 제리츄님이 지금 방송 중입니다!</span>
+            </div>
+            <i class="fa-solid fa-chevron-right live-arrow"></i>
+        </a>
+
+        <!-- 페이지 탭 네비게이션 -->
+        <nav class="nav-tabs">
+            <button id="tab-monthly" class="tab-btn active"><i class="fa-regular fa-calendar"></i> 한달 일정표</button>
+            <button id="tab-weekly" class="tab-btn"><i class="fa-regular fa-calendar-check"></i> 주간 일정표</button>
+        </nav>
+
+        <!-- 메인 콘텐츠 영역 (탭별 뷰패널 분리) -->
+        <div id="view-monthly" class="view-panel active">
+            <!-- 한달 일정표 메인 카드 -->
+            <div id="card-monthly-schedule" class="card glass-card">
+                <div class="card-header">
+                    <h2><i class="fa-solid fa-calendar-days"></i> 한달 일정표</h2>
+                    <div class="monthly-controls">
+                        <button id="btn-prev-month" class="btn-nav" title="이전 달"><i class="fa-solid fa-chevron-left"></i></button>
+                        <span id="monthly-title" class="monthly-title">2026년 6월</span>
+                        <button id="btn-next-month" class="btn-nav" title="다음 달"><i class="fa-solid fa-chevron-right"></i></button>
+                    </div>
+                    <div class="editor-buttons">
+                        <button id="btn-toggle-edit" class="btn-editor"><i class="fa-solid fa-pen-to-square"></i> 수정 모드 켜기</button>
+                    </div>
+                </div>
+                <div class="calendar-month-container">
+                    <div class="calendar-month-header">
+                        <div>일</div><div>월</div><div>화</div><div>수</div><div>목</div><div>금</div><div>토</div>
+                    </div>
+                    <div id="calendar-month-grid" class="calendar-month-grid">
+                        <!-- 달력 그리드가 자바스크립트로 생성됨 -->
+                    </div>
+                </div>
+                <div class="card-info-text">
+                    <i class="fa-solid fa-circle-info"></i> 방송 일정은 당일 공지가 올라온 후 자동으로 블로그에 반영되며, <b>수정 모드</b>를 켜서 원하는 날짜를 수동으로 조정할 수 있습니다.
+                </div>
+            </div>
+        </div>
+
+        <div id="view-weekly" class="view-panel">
+            <main class="main-content">
+            <!-- 왼쪽: 일정표 & 공지사항 -->
+            <section class="left-panel">
+                <!-- 일정표 카드 -->
+                <div id="card-schedule" class="card glass-card">
+                    <div class="card-header">
+                        <h2><i class="fa-regular fa-calendar-days"></i> 주간 일정표</h2>
+                        <div class="schedule-nav">
+                            <button id="btn-prev-week" class="btn-nav" title="이전 주"><i class="fa-solid fa-chevron-left"></i></button>
+                            <span id="schedule-week-title" class="schedule-week-title">이번 주</span>
+                            <button id="btn-next-week" class="btn-nav" title="다음 주"><i class="fa-solid fa-chevron-right"></i></button>
+                        </div>
+                        <div class="editor-buttons">
+                            <button id="btn-toggle-edit-weekly" class="btn-editor"><i class="fa-solid fa-pen-to-square"></i> 수정 모드 켜기</button>
+                        </div>
+                        <span id="update-badge" class="badge">동기화 대기 중</span>
+                    </div>
+                    <div class="calendar-container">
+                        <!-- 기본 대기 상태 및 스크립트로 연동되는 실제 일정표 -->
+                        <div id="schedule-placeholder" class="placeholder-text">
+                            <i class="fa-solid fa-spinner fa-spin"></i> 일정을 불러오는 중입니다...
+                        </div>
+                        <div id="calendar-grid" class="calendar-grid" style="display: none;">
+                            <!-- 7일간의 일정 아이템이 자바스크립트로 동적 생성됨 -->
+                        </div>
+                    </div>
+                    <div class="card-info-text">
+                        <i class="fa-solid fa-circle-info"></i> 일정은 당일 공지가 올라온 후 자동으로 블로그에 반영됩니다.
+                    </div>
+                </div>
+
+                <!-- 구글 시트지 모음 카드 -->
+                <div id="card-sheets" class="card glass-card">
+                    <div class="card-header">
+                        <h2><i class="fa-solid fa-table-list"></i> 구글 시트지 모음</h2>
+                    </div>
+                    <div class="sheets-content-area">
+                        <ul class="sheets-list">
+                            <li>
+                                <a href="https://docs.google.com/spreadsheets/d/1ZBA843UsgO75w8n1QJ9Il1aZVUbKdgILG-kWxhUmkAQ/edit?gid=0#gid=0" target="_blank" class="sheet-item">
+                                    <div class="sheet-icon"><i class="fa-regular fa-file-excel"></i></div>
+                                    <div class="sheet-info">
+                                        <span class="sheet-title">업보 시트지</span>
+                                        <span class="sheet-desc">제리츄님의 업보 리스트 구글 시트</span>
+                                    </div>
+                                    <i class="fa-solid fa-chevron-right sheet-arrow"></i>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- 공지사항 카드 -->
+                <div id="card-notice" class="card glass-card">
+                    <div class="card-header">
+                        <h2><i class="fa-solid fa-bullhorn"></i> 제리츄 공지사항 (6월~)</h2>
+                    </div>
+                    <div class="notice-content-area">
+                        <div id="notice-list-container" class="notice-list">
+                            <div class="placeholder-text">
+                                <i class="fa-solid fa-spinner fa-spin"></i> 공지사항을 불러오는 중입니다...
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </section>
-          </div>
+
+            <!-- 오른쪽: 팬아트 갤러리 -->
+            <section class="right-panel">
+                <div id="card-fanart" class="card glass-card fanart-card">
+                    <div class="card-header">
+                        <h2><i class="fa-solid fa-palette"></i> 츄앙이들의 팬아트 갤러리</h2>
+                        <span id="fanart-count" class="badge count-badge">0개</span>
+                    </div>
+                    
+                    <!-- 팬아트 그리드 리스트 -->
+                    <div id="fanart-grid" class="fanart-grid">
+                        <!-- 기본 대기 로딩 표시 -->
+                        <div id="fanart-placeholder" class="placeholder-text">
+                            <i class="fa-solid fa-spinner fa-spin"></i> 팬아트를 불러오는 중입니다...
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
         </div>
 
-        <!-- 탭 컨텐츠 6: 관리자 -->
-        <div class="tab-pane" id="pane-admin">
-          <section class="ops-section">
-            <div class="ops-section-header">
-              <h2><i class="fa-solid fa-user-gear"></i> 지통실 관리자 모드</h2>
-              <p>스케줄 관리 권한 토글 및 수동 제어판</p>
-            </div>
-            <div class="admin-panel-card glass-card">
-              <h3><i class="fa-solid fa-keyboard"></i> 수동 편집 통제</h3>
-              <p>일정표 편집 모드를 활성화하면 각 요일별 카드의 캘린더 그리드에서 일정을 직접 추가, 수정 및 삭제할 수 있습니다.</p>
-              
-              <div class="admin-toggle-wrapper">
-                <span class="admin-label"><i class="fa-solid fa-shield-halved"></i> 편집 잠금 해제</span>
-                <label class="switch">
-                  <input type="checkbox" id="adminModeToggle">
-                  <span class="slider round"></span>
-                </label>
-              </div>
-            </div>
-          </section>
-        </div>
-
-        <!-- 검색 결과 섹션 (탭 독립적으로 덮어씌움) -->
-        <section class="search-results-section hidden" id="searchResultsSection">
-          <div class="section-header">
-            <h2>검색 결과 <span class="search-count" id="searchCount">0건</span></h2>
-            <button class="back-to-week-btn" id="backToWeekBtn"><i class="fa-solid fa-arrow-left"></i> 대시보드로 복귀</button>
-          </div>
-          <div class="search-results-list" id="searchResultsList">
-            <!-- Dynamically populated search result items -->
-          </div>
-        </section>
-        
-      </div>
-    </main>
-    
-    <!-- 3. 우측 정보 패널 (Today Schedule & Summaries) -->
-    <aside class="right-panel" id="rightPanel">
-      <div class="right-panel-header">
-        <h3><i class="fa-solid fa-desktop"></i> 모니터 요약</h3>
-      </div>
-      
-      <!-- 오늘 일정 -->
-      <div class="right-panel-section">
-        <h4 class="panel-title"><i class="fa-solid fa-calendar-day"></i> TODAY SCHEDULE</h4>
-        
-        <!-- 할 일 잠금 화면 -->
-        <div class="security-lock-screen" id="todoLockScreen" style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px 10px; text-align: center; gap: 10px; background: rgba(255,255,255,0.02); border: 1px dashed var(--glass-border); border-radius: 8px;">
-          <i class="fa-solid fa-lock" style="font-size: 20px; color: var(--accent-orange);"></i>
-          <span style="font-size: 11.5px; color: var(--color-text-secondary);">할 일 목록이 잠겨 있습니다.</span>
-          <div style="display: flex; gap: 6px; width: 100%;">
-            <input type="password" id="todoPasswordInput" placeholder="비밀번호..." style="flex-grow: 1; width: 50%; background: var(--bg-primary); border: 1px solid var(--glass-border); border-radius: 6px; padding: 6px 8px; color: #fff; font-size: 12px; outline: none; text-align: center;">
-            <button id="todoUnlockBtn" style="background: var(--accent-orange); border: none; border-radius: 6px; padding: 6px 12px; color: #fff; font-weight: 700; font-size: 12px; cursor: pointer;">확인</button>
-          </div>
-          <div id="todoLockError" style="color: var(--accent-pink); font-size: 10px; font-weight: 600; display: none;">❌ 비밀번호 오류</div>
-        </div>
-
-        <!-- 실제 할 일 콘텐츠 (기본 숨김) -->
-        <div class="security-unlocked-content" id="todoActualContent" style="display: none;">
-          <div class="todo-widget-container" style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px;">
-            <div style="display: flex; gap: 6px;">
-              <input type="text" id="todoInput" placeholder="오늘 할 일 입력..." style="flex-grow: 1; background: var(--bg-primary); border: 1px solid var(--glass-border); border-radius: 6px; padding: 6px 10px; color: #fff; font-size: 12.5px; outline: none;">
-              <button id="addTodoBtn" style="background: var(--accent-orange); border: none; border-radius: 6px; padding: 6px 10px; color: #fff; font-weight: 700; font-size: 12.5px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px;">
-                <i class="fa-solid fa-plus"></i> 추가
-              </button>
-            </div>
-          </div>
-          <div class="today-schedule-container" id="todayScheduleContainer">
-            <div class="no-activity">할 일이 없습니다.</div>
-          </div>
-        </div>
-      </div>
-      
-
-      
-      <!-- 최근 활동 -->
-      <div class="right-panel-section">
-        <h4 class="panel-title"><i class="fa-solid fa-chart-bar"></i> ACTIVITY LOG</h4>
-        <div class="recent-activities-container" id="recentActivitiesContainer">
-          <div class="no-activity">불러오는 중...</div>
-        </div>
-      </div>
-    </aside>
-    
-  </div>
-
-  <!-- 일정 수정/추가 모달 -->
-  <div class="modal-overlay" id="scheduleModal">
-    <div class="modal-content glass-card">
-      <div class="modal-header">
-        <h3 id="modalTitle">일정 수정</h3>
-        <button class="modal-close-btn" id="modalCloseBtn"><i class="fa-solid fa-xmark"></i></button>
-      </div>
-      <div class="modal-body">
-        <form id="scheduleForm">
-          <input type="hidden" id="editIndex" value="">
-          <input type="hidden" id="editOrigDate" value="">
-          
-          <div class="form-group">
-            <label for="editDate">날짜</label>
-            <input type="date" id="editDate" required>
-          </div>
-          <div class="form-group">
-            <label for="editTime">시간 (예: 18:00 또는 미정)</label>
-            <input type="text" id="editTime" required placeholder="예: 18:00 또는 미정">
-          </div>
-          <div class="form-group">
-            <label for="editTitle">일정 내용</label>
-            <input type="text" id="editTitle" required placeholder="일정 내용을 입력하세요">
-          </div>
-          <div class="form-group">
-            <label for="editNote">비고/참고</label>
-            <input type="text" id="editNote" placeholder="예: 수동 수정">
-          </div>
-          <div class="form-group lock-group">
-            <label class="checkbox-container">
-              <input type="checkbox" id="editLock" checked>
-              <span class="checkmark"></span>
-              수집 자동 덮어쓰기 방지 (Lock)
-            </label>
-          </div>
-          <div class="modal-actions">
-            <button type="button" class="btn btn-delete" id="deleteBtn">삭제</button>
-            <button type="submit" class="btn btn-save" id="saveBtn">저장</button>
-          </div>
-        </form>
-      </div>
+        <!-- 푸터 영역 -->
+        <footer class="footer">
+            <p>© 2026 JERRYCHU FAN SPACE. Developed for JerriChu Streamer Fandom.</p>
+            <p class="footer-notice">이 블로그는 매크로 프로그램 실행 시 자동으로 정보가 최신화됩니다.</p>
+        </footer>
     </div>
-  </div>
 
-  <!-- 메모장 편집 모달 -->
-  <div class="modal-overlay" id="notepadModal">
-    <div class="modal-content glass-card" style="max-width: 600px; width: 95%;">
-      <div class="modal-header">
-        <h3><i class="fa-solid fa-note-sticky"></i> 주간 일정 메모장 편집</h3>
-        <button class="modal-close-btn" id="notepadModalCloseBtn"><i class="fa-solid fa-xmark"></i></button>
-      </div>
-      <div class="modal-body">
-        <p style="font-size: 12px; color: var(--color-text-secondary); margin-bottom: 12px; line-height: 1.5;">
-          한 줄에 하루의 일정을 입력해 주세요. 아래 형식을 맞춰서 자유롭게 작성할 수 있습니다.<br>
-          <strong>형식 예시:</strong><br>
-          - 월: 18:00 개인 방송 (비고: 배그 시청자 참여)<br>
-          - 화: 휴방<br>
-          - 수: 20:00 합방 [비고: 멤버 전원 참석]<br>
-          - 목: 미정 잔잔한 노가리 소통
-        </p>
-        <textarea id="notepadTextArea" placeholder="예시)&#10;월: 18:00 개인 방송&#10;화: 휴방&#10;수: 20:00 합방 (비고: 합방 예정)" style="width: 100%; height: 280px; background: var(--bg-primary); border: 1px solid var(--glass-border); border-radius: 8px; padding: 12px; color: #fff; font-size: 13px; font-family: monospace; resize: none; outline: none; line-height: 1.6;"></textarea>
-        <div class="modal-actions" style="margin-top: 16px; justify-content: flex-end; gap: 8px;">
-          <button type="button" class="btn btn-delete" id="notepadCancelBtn" style="background: var(--bg-tertiary); color: var(--color-text-secondary);">취소</button>
-          <button type="button" class="btn btn-save" id="notepadSaveBtn"><i class="fa-solid fa-check"></i> 적용</button>
-        </div>
-      </div>
+    <!-- 이미지 크게 보기 모달 -->
+    <div id="image-modal" class="modal">
+        <span id="modal-close" class="modal-close">&times;</span>
+        <img class="modal-content" id="modal-target-img" src="" alt="확대 일정표">
     </div>
-  </div>
 
-  <!-- Floating Save Button -->
-  <div class="floating-save-action" id="floatingSaveAction">
-    <button class="btn-floating-save" id="floatingSaveBtn">
-      <i class="fa-solid fa-cloud-arrow-up"></i> 변경사항 지통실 서버 저장
-    </button>
-  </div>
-  
-  <!-- Main App Script -->
-  <script src="app.js"></script>
+    <!-- 일정 개별 수정 모달 -->
+    <div id="edit-modal" class="modal">
+        <div class="modal-content-wrapper glass-card">
+            <span id="edit-modal-close" class="modal-close">&times;</span>
+            <h3 id="edit-modal-title">일정 수정</h3>
+            <div class="edit-form">
+                <div class="form-group">
+                    <label for="edit-status">방송 구분</label>
+                    <select id="edit-status" class="form-input">
+                        <option value="stream">방송 진행</option>
+                        <option value="rest">휴방</option>
+                        <option value="tbd">공지 대기 (미정)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="edit-time">방송 시작 시간</label>
+                    <input type="text" id="edit-time" class="form-input" placeholder="예: 오후 7:00" />
+                </div>
+                <div class="form-group">
+                    <label for="edit-detail">방송 내용 / 비고</label>
+                    <input type="text" id="edit-detail" class="form-input" placeholder="예: 마크 하코 대결" />
+                </div>
+                <button id="btn-save-edit" class="btn-submit">저장하기</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="index.js"></script>
 </body>
 </html>
