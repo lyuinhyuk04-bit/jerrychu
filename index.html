@@ -58,6 +58,7 @@
         <nav class="nav-tabs">
             <button id="tab-monthly" class="tab-btn active"><i class="fa-regular fa-calendar"></i> 한달 일정표</button>
             <button id="tab-weekly" class="tab-btn"><i class="fa-regular fa-calendar-check"></i> 주간 일정표</button>
+            <button id="tab-events" class="tab-btn"><i class="fa-solid fa-gift"></i> 이벤트</button>
         </nav>
 
         <!-- 메인 콘텐츠 영역 (탭별 뷰패널 분리) -->
@@ -177,6 +178,20 @@
         </main>
         </div>
 
+        <div id="view-events" class="view-panel">
+            <div id="card-events" class="card glass-card">
+                <div class="card-header">
+                    <h2><i class="fa-solid fa-gift"></i> 진행 중인 이벤트</h2>
+                    <div class="editor-buttons">
+                        <button id="btn-open-event-add" class="btn-editor"><i class="fa-solid fa-plus"></i> 이벤트 등록</button>
+                    </div>
+                </div>
+                <div id="events-grid" class="events-grid">
+                    <!-- 이벤트 카드가 동적 생성됨 -->
+                </div>
+            </div>
+        </div>
+
         <!-- 푸터 영역 -->
         <footer class="footer">
             <p>© 2026 JERRYCHU FAN SPACE. Developed for JerriChu Streamer Fandom.</p>
@@ -213,6 +228,104 @@
                     <input type="text" id="edit-detail" class="form-input" placeholder="예: 마크 하코 대결" />
                 </div>
                 <button id="btn-save-edit" class="btn-submit">저장하기</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 이벤트 등록/수정 모달 -->
+    <div id="event-edit-modal" class="modal">
+        <div class="modal-content-wrapper glass-card" style="max-width: 500px;">
+            <span id="event-edit-modal-close" class="modal-close">&times;</span>
+            <h3 id="event-edit-modal-title">이벤트 등록</h3>
+            
+            <!-- 등록 방식 선택 탭 -->
+            <div class="event-type-tabs" style="display: flex; gap: 8px; margin-bottom: 15px;">
+                <button type="button" class="btn-editor event-type-btn active" data-type="direct">직접 입력</button>
+                <button type="button" class="btn-editor event-type-btn" data-type="link">링크 불러오기</button>
+                <button type="button" class="btn-editor event-type-btn" data-type="image">이미지 업로드</button>
+            </div>
+
+            <div class="edit-form">
+                <!-- 링크 불러오기 전용 인풋 -->
+                <div id="event-link-parser-area" class="form-group" style="display: none;">
+                    <label for="event-parser-url">이벤트 링크 (URL)</label>
+                    <div style="display: flex; gap: 8px;">
+                        <input type="text" id="event-parser-url" class="form-input" style="flex: 1;" placeholder="https://cafe.naver.com/..." />
+                        <button type="button" id="btn-parse-og" class="btn-editor" style="white-space: nowrap;"><i class="fa-solid fa-cloud-arrow-down"></i> 정보 불러오기</button>
+                    </div>
+                </div>
+
+                <!-- 공통 인풋 영역 -->
+                <div class="form-group">
+                    <label for="event-title">이벤트 제목 *</label>
+                    <input type="text" id="event-title" class="form-input" placeholder="이벤트 제목을 입력해 주세요" required />
+                </div>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <div class="form-group">
+                        <label for="event-start-date">시작일 *</label>
+                        <input type="date" id="event-start-date" class="form-input" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="event-end-date">종료일 *</label>
+                        <input type="date" id="event-end-date" class="form-input" required />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="event-desc">상세 설명</label>
+                    <textarea id="event-desc" class="form-input" style="height: 80px; resize: none;" placeholder="이벤트에 대한 상세 설명을 기입해 주세요"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="event-url">바로가기 링크 (URL)</label>
+                    <input type="text" id="event-url" class="form-input" placeholder="이벤트 바로가기 링크" />
+                </div>
+
+                <div class="form-group">
+                    <label for="event-thumbnail-file">썸네일 / 포스터 이미지</label>
+                    <input type="file" id="event-thumbnail-file" class="form-input" accept="image/*" />
+                    <!-- 업로드한 이미지 미리보기 -->
+                    <div id="event-thumbnail-preview-container" style="display: none; margin-top: 10px; text-align: center;">
+                        <img id="event-thumbnail-preview" src="" style="max-height: 120px; border-radius: 8px; border: 1px solid var(--border-color);" alt="미리보기" />
+                        <button type="button" id="btn-remove-preview" class="btn-editor" style="margin-top: 5px; padding: 4px 8px; font-size: 0.75rem;"><i class="fa-solid fa-trash"></i> 제거</button>
+                    </div>
+                </div>
+
+                <div class="modal-actions" style="margin-top: 15px; display: flex; justify-content: flex-end; gap: 8px;">
+                    <button type="button" id="btn-delete-event" class="btn-editor" style="display: none; background: rgba(255, 75, 75, 0.15); color: hsl(0, 85%, 45%); border-color: hsla(0, 85%, 45%, 0.3);"><i class="fa-solid fa-trash"></i> 삭제</button>
+                    <button type="button" id="btn-save-event" class="btn-submit" style="margin-top: 0; padding: 8px 20px;">저장하기</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 이벤트 상세 모달 -->
+    <div id="event-detail-modal" class="modal">
+        <div class="modal-content-wrapper glass-card" style="max-width: 550px; text-align: center;">
+            <span id="event-detail-modal-close" class="modal-close">&times;</span>
+            <h3 id="event-detail-title" style="font-size: 1.5rem; margin-bottom: 10px; color: var(--primary-purple);">이벤트 제목</h3>
+            <div id="event-detail-badge-container" style="margin-bottom: 15px;"></div>
+            
+            <div id="event-detail-img-container" style="margin-bottom: 20px; display: none;">
+                <img id="event-detail-img" src="" style="max-width: 100%; max-height: 350px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.15);" alt="포스터" />
+            </div>
+
+            <div class="form-group" style="text-align: left; margin-bottom: 20px;">
+                <label style="font-weight: 600; color: var(--text-muted); font-size: 0.85rem; display: block; margin-bottom: 5px;"><i class="fa-regular fa-clock"></i> 기간</label>
+                <div id="event-detail-date" style="font-size: 1rem; color: var(--text-main); font-weight: 600;">2026.06.28 ~ 2026.07.05</div>
+            </div>
+
+            <div class="form-group" style="text-align: left; margin-bottom: 25px;">
+                <label style="font-weight: 600; color: var(--text-muted); font-size: 0.85rem; display: block; margin-bottom: 5px;"><i class="fa-solid fa-align-left"></i> 상세 내용</label>
+                <div id="event-detail-desc" style="font-size: 0.95rem; color: var(--text-main); line-height: 1.6; white-space: pre-wrap; word-break: break-word;">상세 내용...</div>
+            </div>
+
+            <div style="display: flex; gap: 10px; justify-content: center;">
+                <button type="button" id="btn-detail-edit" class="btn-editor" style="display: none;"><i class="fa-solid fa-pen-to-square"></i> 수정하기</button>
+                <a id="btn-detail-link" href="#" target="_blank" class="btn-submit" style="margin-top: 0; padding: 10px 24px; text-decoration: none; display: inline-flex; align-items: center; gap: 8px;">
+                    <i class="fa-solid fa-up-right-from-square"></i> 바로가기 링크 열기
+                </a>
             </div>
         </div>
     </div>

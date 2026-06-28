@@ -28,6 +28,7 @@ function loadDataAndBind() {
         initTabNavigation();
         renderMonthlyCalendar();
         initImageModal();
+        initEvents();
     };
     script.onerror = () => {
         console.error("data.js 데이터를 불러오는 데 실패했습니다.");
@@ -420,23 +421,37 @@ function initImageModal() {
 function initTabNavigation() {
     const tabMonthly = document.getElementById("tab-monthly");
     const tabWeekly = document.getElementById("tab-weekly");
+    const tabEvents = document.getElementById("tab-events");
+    
     const viewMonthly = document.getElementById("view-monthly");
     const viewWeekly = document.getElementById("view-weekly");
+    const viewEvents = document.getElementById("view-events");
 
-    if (tabMonthly && tabWeekly && viewMonthly && viewWeekly) {
+    if (tabMonthly && tabWeekly && tabEvents && viewMonthly && viewWeekly && viewEvents) {
         tabMonthly.addEventListener("click", () => {
-            tabMonthly.classList.add("active");
-            tabWeekly.classList.remove("active");
-            viewMonthly.classList.add("active");
-            viewWeekly.classList.remove("active");
+            setActiveTab(tabMonthly, viewMonthly);
         });
 
         tabWeekly.addEventListener("click", () => {
-            tabWeekly.classList.add("active");
-            tabMonthly.classList.remove("active");
-            viewWeekly.classList.add("active");
-            viewMonthly.classList.remove("active");
+            setActiveTab(tabWeekly, viewWeekly);
         });
+        
+        tabEvents.addEventListener("click", () => {
+            setActiveTab(tabEvents, viewEvents);
+            renderEvents();
+        });
+    }
+    
+    function setActiveTab(activeTab, activeView) {
+        [tabMonthly, tabWeekly, tabEvents].forEach(t => {
+            if (t) t.classList.remove("active");
+        });
+        [viewMonthly, viewWeekly, viewEvents].forEach(v => {
+            if (v) v.classList.remove("active");
+        });
+        
+        activeTab.classList.add("active");
+        activeView.classList.add("active");
     }
 }
 
@@ -566,6 +581,527 @@ function findParsedScheduleForDate(year, month, day) {
         }
     }
     return null;
+}
+
+// ==============================================================================
+// [EVENTS TAB COMPONENT LOGIC]
+// ==============================================================================
+window.eventThumbnailBase64 = ""; // 전역 이미지 임시 캐시
+window.editingEventId = null; // 수정 중인 이벤트 ID
+
+function initEvents() {
+    const btnOpenEventAdd = document.getElementById("btn-open-event-add");
+    const eventEditModal = document.getElementById("event-edit-modal");
+    const eventEditModalClose = document.getElementById("event-edit-modal-close");
+    const btnSaveEvent = document.getElementById("btn-save-event");
+    const btnDeleteEvent = document.getElementById("btn-delete-event");
+    
+    const eventTypeBtns = document.querySelectorAll(".event-type-btn");
+    const fileInput = document.getElementById("event-thumbnail-file");
+    const previewContainer = document.getElementById("event-thumbnail-preview-container");
+    const previewImg = document.getElementById("event-thumbnail-preview");
+    const btnRemovePreview = document.getElementById("btn-remove-preview");
+    
+    const btnParseOg = document.getElementById("btn-parse-og");
+    const eventParserUrl = document.getElementById("event-parser-url");
+    const linkParserArea = document.getElementById("event-link-parser-area");
+    
+    const eventDetailModal = document.getElementById("event-detail-modal");
+    const eventDetailModalClose = document.getElementById("event-detail-modal-close");
+    const btnDetailEdit = document.getElementById("btn-detail-edit");
+
+    // 1) 이벤트 등록 모달 열기
+    if (btnOpenEventAdd) {
+        btnOpenEventAdd.addEventListener("click", () => {
+            window.editingEventId = null;
+            window.eventThumbnailBase64 = "";
+            document.getElementById("event-edit-modal-title").innerText = "이벤트 등록";
+            
+            // 폼 초기화
+            document.getElementById("event-title").value = "";
+            document.getElementById("event-start-date").value = "";
+            document.getElementById("event-end-date").value = "";
+            document.getElementById("event-desc").value = "";
+            document.getElementById("event-url").value = "";
+            fileInput.value = "";
+            if (eventParserUrl) eventParserUrl.value = "";
+            
+            if (previewContainer) previewContainer.style.display = "none";
+            if (btnDeleteEvent) btnDeleteEvent.style.display = "none";
+            
+            // 기본 '직접 입력' 탭 활성화
+            switchEventType("direct");
+            
+            if (eventEditModal) eventEditModal.style.display = "flex";
+        });
+    }
+
+    // 2) 모달 닫기
+    if (eventEditModalClose) {
+        eventEditModalClose.addEventListener("click", () => {
+            eventEditModal.style.display = "none";
+        });
+    }
+    
+    if (eventDetailModalClose) {
+        eventDetailModalClose.addEventListener("click", () => {
+            eventDetailModal.style.display = "none";
+        });
+    }
+
+    window.addEventListener("click", (e) => {
+        if (e.target === eventEditModal) {
+            eventEditModal.style.display = "none";
+        }
+        if (e.target === eventDetailModal) {
+            eventDetailModal.style.display = "none";
+        }
+    });
+
+    // 3) 등록 방식 탭 전환
+    eventTypeBtns.forEach(btn => {
+        btn.addEventListener("click", () => {
+            eventTypeBtns.forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
+            switchEventType(btn.dataset.type);
+        });
+    });
+
+    function switchEventType(type) {
+        if (type === "link") {
+            if (linkParserArea) linkParserArea.style.display = "block";
+        } else {
+            if (linkParserArea) linkParserArea.style.display = "none";
+        }
+    }
+
+    // 4) 썸네일 이미지 업로드 시 Base64 변환 및 압축 캐싱
+    if (fileInput) {
+        fileInput.addEventListener("change", (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                resizeAndEncodeImage(file, (base64Str) => {
+                    window.eventThumbnailBase64 = base64Str;
+                    if (previewImg) previewImg.src = base64Str;
+                    if (previewContainer) previewContainer.style.display = "block";
+                });
+            }
+        });
+    }
+
+    // 5) 이미지 미리보기 제거
+    if (btnRemovePreview) {
+        btnRemovePreview.addEventListener("click", () => {
+            window.eventThumbnailBase64 = "";
+            if (fileInput) fileInput.value = "";
+            if (previewContainer) previewContainer.style.display = "none";
+        });
+    }
+
+    // 6) 링크 불러오기 (Open Graph 파서 API 호출 및 CORS 프록시 폴백)
+    if (btnParseOg) {
+        btnParseOg.addEventListener("click", async () => {
+            const url = eventParserUrl.value.trim();
+            if (!url) {
+                alert("불러올 이벤트 URL 주소를 입력해 주세요.");
+                return;
+            }
+            
+            btnParseOg.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> 불러오는 중...`;
+            btnParseOg.disabled = true;
+
+            let result = null;
+
+            try {
+                // 1차 시도: Vercel 서버리스 함수 호출
+                try {
+                    const res = await fetch(`/api/fetch_og?url=${encodeURIComponent(url)}`);
+                    if (res.ok) {
+                        result = await res.json();
+                    }
+                } catch (apiErr) {
+                    console.warn("Vercel Serverless API not available. Trying CORS Proxy Fallback...", apiErr);
+                }
+
+                // 2차 시도: 1차 실패 시 퍼블릭 CORS 프록시로 클라이언트 측 직접 파싱 시도
+                if (!result || !result.success) {
+                    const fallbackRes = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`);
+                    if (!fallbackRes.ok) throw new Error("CORS Proxy requests failed");
+                    const json = await fallbackRes.json();
+                    
+                    if (json && json.contents) {
+                        const html = json.contents;
+                        
+                        const extractMetaContent = (htmlText, propertyName) => {
+                            const regex1 = new RegExp(`<meta[^>]*property=["']${propertyName}["'][^>]*content=["']([^"']*)["']`, 'i');
+                            const regex2 = new RegExp(`<meta[^>]*content=["']([^"']*)["'][^>]*property=["']${propertyName}["']`, 'i');
+                            const regex3 = new RegExp(`<meta[^>]*name=["']${propertyName}["'][^>]*content=["']([^"']*)["']`, 'i');
+                            const regex4 = new RegExp(`<meta[^>]*content=["']([^"']*)["'][^>]*name=["']${propertyName}["']`, 'i');
+
+                            const match = htmlText.match(regex1) || htmlText.match(regex2) || htmlText.match(regex3) || htmlText.match(regex4);
+                            return match ? match[1] : '';
+                        };
+
+                        const decodeHtmlEntities = (text) => {
+                            if (!text) return '';
+                            return text
+                                .replace(/&amp;/g, '&')
+                                .replace(/&quot;/g, '"')
+                                .replace(/&lt;/g, '<')
+                                .replace(/&gt;/g, '>')
+                                .replace(/&#39;/g, "'")
+                                .replace(/&apos;/g, "'")
+                                .replace(/&#x2F;/g, '/');
+                        };
+
+                        const titleMatch = html.match(/<title[^>]*>([^<]*)<\/title>/i);
+                        const fallbackTitle = titleMatch ? titleMatch[1] : '';
+
+                        result = {
+                            success: true,
+                            data: {
+                                title: decodeHtmlEntities(extractMetaContent(html, 'og:title') || fallbackTitle || '제목 없음'),
+                                description: decodeHtmlEntities(extractMetaContent(html, 'og:description') || extractMetaContent(html, 'description') || ''),
+                                image: extractMetaContent(html, 'og:image') || '',
+                                url: url
+                            }
+                        };
+                    }
+                }
+                
+                if (result && result.success && result.data) {
+                    const ogData = result.data;
+                    document.getElementById("event-title").value = ogData.title || "";
+                    document.getElementById("event-desc").value = ogData.description || "";
+                    document.getElementById("event-url").value = ogData.url || url;
+                    
+                    if (ogData.image) {
+                        window.eventThumbnailBase64 = ogData.image;
+                        if (previewImg) previewImg.src = ogData.image;
+                        if (previewContainer) previewContainer.style.display = "block";
+                    } else {
+                        window.eventThumbnailBase64 = "";
+                        if (previewContainer) previewContainer.style.display = "none";
+                    }
+                    alert("이벤트 정보를 정상적으로 로드했습니다!");
+                } else {
+                    alert("링크 정보를 가져오지 못했습니다. 직접 입력으로 작성해 주세요.");
+                }
+            } catch (e) {
+                console.error("Open Graph parse error:", e);
+                alert("정보를 자동으로 불러오지 못했습니다. 직접 작성해 주세요.");
+            } finally {
+                btnParseOg.innerHTML = `<i class="fa-solid fa-cloud-arrow-down"></i> 정보 불러오기`;
+                btnParseOg.disabled = false;
+            }
+        });
+    }
+
+    // 7) 이벤트 저장하기
+    if (btnSaveEvent) {
+        btnSaveEvent.addEventListener("click", () => {
+            const title = document.getElementById("event-title").value.trim();
+            const startDate = document.getElementById("event-start-date").value;
+            const endDate = document.getElementById("event-end-date").value;
+            const desc = document.getElementById("event-desc").value.trim();
+            const url = document.getElementById("event-url").value.trim();
+            
+            if (!title || !startDate || !endDate) {
+                alert("제목, 시작일, 종료일은 필수 항목입니다.");
+                return;
+            }
+
+            let events = [];
+            try {
+                const saved = localStorage.getItem("jerry_events");
+                events = saved ? JSON.parse(saved) : [];
+            } catch (e) {
+                events = [];
+            }
+
+            const eventData = {
+                id: window.editingEventId || "evt_" + new Date().getTime(),
+                title: title,
+                startDate: startDate,
+                endDate: endDate,
+                desc: desc,
+                url: url,
+                image: window.eventThumbnailBase64
+            };
+
+            if (window.editingEventId) {
+                // 수정
+                const idx = events.findIndex(e => e.id === window.editingEventId);
+                if (idx !== -1) {
+                    events[idx] = eventData;
+                }
+            } else {
+                // 신규 추가
+                events.push(eventData);
+            }
+
+            localStorage.setItem("jerry_events", JSON.stringify(events));
+            
+            if (eventEditModal) eventEditModal.style.display = "none";
+            renderEvents();
+        });
+    }
+
+    // 8) 이벤트 삭제하기
+    if (btnDeleteEvent) {
+        btnDeleteEvent.addEventListener("click", () => {
+            if (!window.editingEventId) return;
+            if (!confirm("이 이벤트를 정말로 삭제하시겠습니까?")) return;
+
+            let events = [];
+            try {
+                const saved = localStorage.getItem("jerry_events");
+                events = saved ? JSON.parse(saved) : [];
+            } catch (e) {}
+
+            events = events.filter(e => e.id !== window.editingEventId);
+            localStorage.setItem("jerry_events", JSON.stringify(events));
+            
+            if (eventEditModal) eventEditModal.style.display = "none";
+            renderEvents();
+        });
+    }
+
+    // 9) 상세 페이지 내 수정 버튼 클릭
+    if (btnDetailEdit) {
+        btnDetailEdit.addEventListener("click", () => {
+            if (eventDetailModal) eventDetailModal.style.display = "none";
+            openEventEditModal(window.editingEventId);
+        });
+    }
+}
+
+// 이미지 리사이즈 및 Base64 인코딩 헬퍼 함수
+function resizeAndEncodeImage(file, callback) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+            const canvas = document.createElement("canvas");
+            const max_size = 600; 
+            let width = img.width;
+            let height = img.height;
+            
+            if (width > height) {
+                if (width > max_size) {
+                    height *= max_size / width;
+                    width = max_size;
+                }
+            } else {
+                if (height > max_size) {
+                    width *= max_size / height;
+                    height = max_size;
+                }
+            }
+            canvas.width = width;
+            canvas.height = height;
+            
+            const ctx = canvas.getContext("2d");
+            ctx.drawImage(img, 0, 0, width, height);
+            const dataUrl = canvas.toDataURL("image/jpeg", 0.8);
+            callback(dataUrl);
+        };
+        img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+}
+
+// 특정 이벤트의 수정을 위해 모달을 여는 함수
+function openEventEditModal(eventId) {
+    let events = [];
+    try {
+        const saved = localStorage.getItem("jerry_events");
+        events = saved ? JSON.parse(saved) : [];
+    } catch (e) {}
+
+    const event = events.find(e => e.id === eventId);
+    if (!event) return;
+
+    window.editingEventId = eventId;
+    window.eventThumbnailBase64 = event.image || "";
+    
+    document.getElementById("event-edit-modal-title").innerText = "이벤트 수정";
+    document.getElementById("event-title").value = event.title;
+    document.getElementById("event-start-date").value = event.startDate;
+    document.getElementById("event-end-date").value = event.endDate;
+    document.getElementById("event-desc").value = event.desc || "";
+    document.getElementById("event-url").value = event.url || "";
+    
+    const previewContainer = document.getElementById("event-thumbnail-preview-container");
+    const previewImg = document.getElementById("event-thumbnail-preview");
+    const fileInput = document.getElementById("event-thumbnail-file");
+    const btnDeleteEvent = document.getElementById("btn-delete-event");
+    
+    if (fileInput) fileInput.value = "";
+    
+    if (event.image) {
+        if (previewImg) previewImg.src = event.image;
+        if (previewContainer) previewContainer.style.display = "block";
+    } else {
+        if (previewContainer) previewContainer.style.display = "none";
+    }
+
+    if (btnDeleteEvent) btnDeleteEvent.style.display = "inline-flex";
+    
+    const eventEditModal = document.getElementById("event-edit-modal");
+    if (eventEditModal) eventEditModal.style.display = "flex";
+}
+
+// 이벤트 상세 정보 모달 열기
+function openEventDetailModal(eventId) {
+    let events = [];
+    try {
+        const saved = localStorage.getItem("jerry_events");
+        events = saved ? JSON.parse(saved) : [];
+    } catch (e) {}
+
+    const event = events.find(e => e.id === eventId);
+    if (!event) return;
+
+    window.editingEventId = eventId;
+    
+    document.getElementById("event-detail-title").innerText = event.title;
+    
+    // 시작일 ~ 종료일 포맷팅
+    const startStr = event.startDate.replace(/-/g, ".");
+    const endStr = event.endDate.replace(/-/g, ".");
+    document.getElementById("event-detail-date").innerText = `${startStr} ~ ${endStr}`;
+    
+    document.getElementById("event-detail-desc").innerText = event.desc || "상세 설명이 등록되어 있지 않습니다.";
+    
+    const badgeContainer = document.getElementById("event-detail-badge-container");
+    const statusInfo = getEventStatus(event.startDate, event.endDate);
+    
+    badgeContainer.innerHTML = `<span class="event-badge ${statusInfo.class}" style="position:static;">${statusInfo.text}</span>`;
+    
+    const imgContainer = document.getElementById("event-detail-img-container");
+    const detailImg = document.getElementById("event-detail-img");
+    
+    if (event.image) {
+        if (detailImg) detailImg.src = event.image;
+        if (imgContainer) imgContainer.style.display = "block";
+    } else {
+        if (imgContainer) imgContainer.style.display = "none";
+    }
+    
+    const linkBtn = document.getElementById("btn-detail-link");
+    if (linkBtn) {
+        if (event.url) {
+            linkBtn.href = event.url;
+            linkBtn.style.display = "inline-flex";
+        } else {
+            linkBtn.style.display = "none";
+        }
+    }
+    
+    // 관리자(수정하기) 버튼 노출 여부
+    const btnDetailEdit = document.getElementById("btn-detail-edit");
+    if (btnDetailEdit) {
+        btnDetailEdit.style.display = "inline-flex"; // 상세 화면에서 즉시 수정이 가능하도록 노출
+    }
+
+    const eventDetailModal = document.getElementById("event-detail-modal");
+    if (eventDetailModal) eventDetailModal.style.display = "flex";
+}
+
+// 이벤트 상태 계산 헬퍼 함수
+function getEventStatus(startDateStr, endDateStr) {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // KST 자정 기준 설정
+    
+    const start = new Date(startDateStr);
+    start.setHours(0, 0, 0, 0);
+    
+    const end = new Date(endDateStr);
+    end.setHours(23, 59, 59, 999);
+
+    if (today < start) {
+        return { text: "예정", class: "upcoming", order: 1 };
+    } else if (today <= end) {
+        return { text: "진행중", class: "ongoing", order: 0 };
+    } else {
+        return { text: "종료", class: "ended", order: 2 };
+    }
+}
+
+// 이벤트 목록 렌더링 함수
+function renderEvents() {
+    const gridElem = document.getElementById("events-grid");
+    if (!gridElem) return;
+
+    let events = [];
+    try {
+        const saved = localStorage.getItem("jerry_events");
+        events = saved ? JSON.parse(saved) : [];
+    } catch (e) {}
+
+    gridElem.innerHTML = "";
+
+    // 등록된 이벤트가 완전히 비어 있을 때 안내 표시
+    if (events.length === 0) {
+        gridElem.innerHTML = `
+            <div class="placeholder-text" style="grid-column: 1 / -1; padding: 60px 20px; text-align: center; color: var(--text-muted); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; min-height: 250px;">
+                <i class="fa-solid fa-gift" style="font-size: 3.5rem; color: var(--primary-purple); opacity: 0.3; margin-bottom: 5px;"></i>
+                <span style="font-size: 1.1rem; font-weight: 600; color: var(--text-main);">등록된 이벤트가 없습니다</span>
+                <span style="font-size: 0.85rem; opacity: 0.8;">우측 상단의 '이벤트 등록' 버튼을 눌러 새로운 이벤트를 추가해 보세요!</span>
+            </div>
+        `;
+        return;
+    }
+
+    // 1) 상태 및 시작날짜 기준 정렬
+    events.forEach(e => {
+        e._statusInfo = getEventStatus(e.startDate, e.endDate);
+    });
+
+    events.sort((a, b) => {
+        // 1순위: 진행중(ongoing) > 예정(upcoming) > 종료(ended) 순서로 정렬
+        if (a._statusInfo.order !== b._statusInfo.order) {
+            return a._statusInfo.order - b._statusInfo.order;
+        }
+        // 2순위: 시작일 날짜가 빠른 순서 정렬
+        return new Date(a.startDate) - new Date(b.startDate);
+    });
+
+    events.forEach(event => {
+        const card = document.createElement("div");
+        card.className = "event-card";
+        
+        const statusInfo = event._statusInfo;
+        
+        // 썸네일 이미지 레이아웃 빌드
+        const thumbnailHtml = event.image 
+            ? `<img class="event-thumbnail" src="${event.image}" alt="썸네일" />`
+            : `<div style="width:100%; height:100%; display:flex; justify-content:center; align-items:center; background:var(--gradient-hero); color:#fff; font-size:2.5rem;"><i class="fa-solid fa-cheese"></i></div>`;
+
+        card.innerHTML = `
+            <span class="event-badge ${statusInfo.class}">${statusInfo.text}</span>
+            <div class="event-thumbnail-wrap">
+                ${thumbnailHtml}
+            </div>
+            <div class="event-card-content">
+                <h3 class="event-card-title">${event.title}</h3>
+                <div class="event-card-date">
+                    <i class="fa-regular fa-calendar-check"></i>
+                    <span>${event.startDate.replace(/-/g, ".")} ~ ${event.endDate.replace(/-/g, ".")}</span>
+                </div>
+                <button type="button" class="btn-event-go">
+                    <i class="fa-solid fa-circle-info"></i> 상세보기
+                </button>
+            </div>
+        `;
+
+        card.addEventListener("click", () => {
+            openEventDetailModal(event.id);
+        });
+
+        gridElem.appendChild(card);
+    });
 }
 
 function initMonthlyEditor() {
