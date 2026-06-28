@@ -1,6 +1,6 @@
 {
-    "updated_at": "2026-06-29 02:10:11",
-    "is_live": true,
+    "updated_at": "2026-06-29 02:30:58",
+    "is_live": false,
     "notice_text": "https://jerrychu.vercel.app/\n\n\n \n \n참고하시옵서소",
     "images": [],
     "notices": [
@@ -456,6 +456,7 @@
         ]
     },
     "fanarts": [
+        "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/58046a4156c2984fc.png",
         "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/93826a4151243f24b.png",
         "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/32116a414f584c641.png",
         "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/86416a41502e448e2.png",
@@ -464,6 +465,20 @@
         "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/67506a414c7f8d25c.png",
         "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/19496a4115b75a670.jpeg",
         "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/11456a41146ac77fd.jpeg",
-        "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/28366a26353b89c97.png"
+        "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/28366a26353b89c97.png",
+        "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/13366a260c9927bb3.png",
+        "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/22646a1a66b0bc519.png",
+        "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/94476a1a66ca75ead.png",
+        "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/36936a19a35cbd8f6.png",
+        "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/67126a196e22aa7d9.png",
+        "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/96496a186bc3ef52c.png",
+        "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/39776a183cbe15826.jpg",
+        "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/88016a183cba49608.png",
+        "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/14696a180b25eea38.png",
+        "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/95436a0e597e5bc2c.png",
+        "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/94796a0470a9d7d57.png",
+        "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/90166a02c85dcdeff.png",
+        "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/91226a029d234ff39.jpg",
+        "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/44356a013fad45d42.png"
     ]
 }
