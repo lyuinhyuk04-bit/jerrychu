@@ -483,11 +483,11 @@ def compile_weekly_schedule(notices):
         
     return schedule
 
-def crawl_fanart_images(driver, fanart_board_url, max_images=9):
+def crawl_fanart_images(driver, fanart_board_url, max_images=60):
     print(f"[3.5/5] 팬아트 게시판({fanart_board_url})에서 최신 팬아트 탐색 중...")
     post_urls = []
     try:
-        post_urls = crawl_latest_post_urls(driver, fanart_board_url, max_count=10)
+        post_urls = crawl_latest_post_urls(driver, fanart_board_url, max_count=40)
     except Exception as e:
         print(f"[오류] 팬아트 게시글 목록 가져오기 실패: {e}")
         traceback.print_exc()
@@ -720,7 +720,7 @@ def main():
         # --- [3] 최신 팬아트 이미지 크롤링 (예외 차단 격리) ---
         fanart_images = []
         try:
-            fanart_images = crawl_fanart_images(driver, FANART_BOARD_URL)
+            fanart_images = crawl_fanart_images(driver, FANART_BOARD_URL, max_images=60)
         except Exception as e:
             print(f"[오류] 팬아트 이미지 크롤링 단계 실패: {e}")
             traceback.print_exc()

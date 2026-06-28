@@ -330,26 +330,99 @@ function initDataBinding() {
             }
         }
 
-        // 4. 팬아트 갤러리 이미지 동적 바인딩
+        // 4. 팬아트 갤러리 이미지 동적 바인딩 (무한 스크롤 적용)
         if (JERRY_DATA.fanarts && JERRY_DATA.fanarts.length > 0) {
             fanartGrid.innerHTML = ""; // 기존 로딩 표시 제거
             fanartCount.innerText = `${JERRY_DATA.fanarts.length}개`;
 
-            JERRY_DATA.fanarts.forEach((imgUrl, index) => {
-                const item = document.createElement("div");
-                item.className = "fanart-item";
-                item.innerHTML = `<img src="${imgUrl}" alt="제리츄 팬아트 ${index + 1}" loading="lazy">`;
+            const fanarts = JERRY_DATA.fanarts;
+            const fanartsPerPage = 9;
+            let currentFanartPage = 0;
+            let isObserverBinding = false;
+
+            // 특정 페이지의 팬아트들을 렌더링하는 함수
+            const renderFanartPage = (page) => {
+                const startIdx = page * fanartsPerPage;
+                const endIdx = Math.min(startIdx + fanartsPerPage, fanarts.length);
+
+                for (let i = startIdx; i < endIdx; i++) {
+                    const imgUrl = fanarts[i];
+                    const item = document.createElement("div");
+                    item.className = "fanart-item";
+                    item.innerHTML = `<img src="${imgUrl}" alt="제리츄 팬아트 ${i + 1}" loading="lazy">`;
+                    
+                    item.addEventListener("click", () => {
+                        const modal = document.getElementById("image-modal");
+                        const modalImg = document.getElementById("modal-target-img");
+                        if (modal && modalImg) {
+                            modal.style.display = "flex";
+                            modalImg.src = imgUrl;
+                        }
+                    });
+                    
+                    fanartGrid.appendChild(item);
+                }
+
+                // 다음 페이지가 더 있다면 무한스크롤 감시 기포 생성 및 배치
+                if (endIdx < fanarts.length) {
+                    setupInfiniteScroll();
+                } else {
+                    removeSentinel();
+                }
+            };
+
+            // 센티널 요소 생성 및 감시 설정
+            const setupInfiniteScroll = () => {
+                let sentinel = document.getElementById("fanart-sentinel");
+                if (!sentinel) {
+                    sentinel = document.createElement("div");
+                    sentinel.id = "fanart-sentinel";
+                    sentinel.style.gridColumn = "1 / -1";
+                    sentinel.style.height = "60px";
+                    sentinel.style.display = "flex";
+                    sentinel.style.justifyContent = "center";
+                    sentinel.style.alignItems = "center";
+                    sentinel.style.color = "var(--text-muted)";
+                    sentinel.style.fontSize = "0.9rem";
+                    sentinel.innerHTML = `<i class="fa-solid fa-spinner fa-spin" style="margin-right: 8px; color: var(--primary-purple);"></i> 팬아트를 불러오는 중...`;
+                }
                 
-                // 마이크로 상호작용: 클릭 시 모달 확대 바인딩
-                item.addEventListener("click", () => {
-                    const modal = document.getElementById("image-modal");
-                    const modalImg = document.getElementById("modal-target-img");
-                    modal.style.display = "flex";
-                    modalImg.src = imgUrl;
-                });
-                
-                fanartGrid.appendChild(item);
-            });
+                // 그리드 맨 아래로 위치 조정하여 어펜드
+                fanartGrid.appendChild(sentinel);
+
+                if (!isObserverBinding && 'IntersectionObserver' in window) {
+                    isObserverBinding = true;
+                    const observer = new IntersectionObserver((entries) => {
+                        entries.forEach(entry => {
+                            if (entry.isIntersecting) {
+                                observer.unobserve(entry.target);
+                                isObserverBinding = false;
+                                
+                                setTimeout(() => {
+                                    currentFanartPage++;
+                                    renderFanartPage(currentFanartPage);
+                                }, 300);
+                            }
+                        });
+                    }, {
+                        root: fanartGrid,
+                        rootMargin: "0px 0px 200px 0px"
+                    });
+                    
+                    observer.observe(sentinel);
+                }
+            };
+
+            const removeSentinel = () => {
+                const sentinel = document.getElementById("fanart-sentinel");
+                if (sentinel) {
+                    sentinel.remove();
+                }
+            };
+
+            // 최초 1페이지 렌더링
+            renderFanartPage(0);
+
         } else {
             fanartGrid.innerHTML = `
 <div style="text-align: center; color: var(--text-muted); padding: 50px 0; font-size: 0.95rem; grid-column: 1 / -1;">
