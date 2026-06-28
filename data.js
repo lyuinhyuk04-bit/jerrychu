@@ -1,5 +1,5 @@
 const JERRY_DATA = {
-    "updated_at": "2026-06-29 02:30:58",
+    "updated_at": "2026-06-29 02:38:43",
     "is_live": false,
     "notice_text": "https://jerrychu.vercel.app/\n\n\n \n \n참고하시옵서소",
     "images": [],
