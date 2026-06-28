@@ -1,5 +1,5 @@
 const JERRY_DATA = {
-    "updated_at": "2026-06-29 01:10:34",
+    "updated_at": "2026-06-29 01:41:27",
     "is_live": true,
     "notice_text": "츄하\n \n즐거운 일요일 입니당 ㅎㅡㅎ!\n오늘은 진짜 최대한\n자고오려고 노력해써요\n근데 공지를 깜빡했어 헛..\n \n오후 12시 55분 딱\n오겠습니당!\n \n오늘은 말씀드린대로 오후 1시\n버인끼리 모이고\n오후 2시에 삼연대결 있어요!\n두근두근 ㅎㅡㅎ\n\n\n \n점심 맛있게 드시구\n곧 뵈어요!\n오늘두 쫗은하루 ~~~ ❤️",
     "images": [],
@@ -456,14 +456,14 @@ const JERRY_DATA = {
         ]
     },
     "fanarts": [
+        "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/11306a414d82db230.png",
+        "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/67506a414c7f8d25c.png",
         "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/19496a4115b75a670.jpeg",
         "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/11456a41146ac77fd.jpeg",
         "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/28366a26353b89c97.png",
         "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/13366a260c9927bb3.png",
         "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/22646a1a66b0bc519.png",
         "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/94476a1a66ca75ead.png",
-        "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/36936a19a35cbd8f6.png",
-        "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/67126a196e22aa7d9.png",
-        "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/96496a186bc3ef52c.png"
+        "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/36936a19a35cbd8f6.png"
     ]
 };
