@@ -1,9 +1,15 @@
 const JERRY_DATA = {
-    "updated_at": "2026-06-29 02:38:43",
+    "updated_at": "2026-06-29 03:51:37",
     "is_live": false,
-    "notice_text": "https://jerrychu.vercel.app/\n\n\n \n \n참고하시옵서소",
+    "notice_text": "일기 짧게 쓸거임요\n어차피 안 읽자나 -ㅁ-;\n\n\n삼연서버마크 처음으로 해봤는데\n뽀스가 팔라딘 히든 해보라고해서\n했는 데 은근 재밌는 것 같기도하고..\n \n원래 나서는 성격 아니라 오더 안하는데\n오늘 처음으로 오더츄 해보았습니다.\n대신목이 넘모아프네용...\n \n끝나고 나머지 공부도 쪼끔 했습니당\n월요일 원래 휴방인데 쌀레나로\n늦게 방송 키도록 하겠씁니당!\n \n늘 감사해요 응원해주고\n봐주셔서 ㅎ-ㅎ❤️\n \n쫗은 꿈 꿔요 츄앙이들❤️",
     "images": [],
     "notices": [
+        {
+            "title": "오늘은",
+            "date": "2026-06-29 03:21:58",
+            "url": "https://www.sooplive.com/station/rariruro/post/200002327",
+            "content": "일기 짧게 쓸거임요\n어차피 안 읽자나 -ㅁ-;\n\n\n삼연서버마크 처음으로 해봤는데\n뽀스가 팔라딘 히든 해보라고해서\n했는 데 은근 재밌는 것 같기도하고..\n \n원래 나서는 성격 아니라 오더 안하는데\n오늘 처음으로 오더츄 해보았습니다.\n대신목이 넘모아프네용...\n \n끝나고 나머지 공부도 쪼끔 했습니당\n월요일 원래 휴방인데 쌀레나로\n늦게 방송 키도록 하겠씁니당!\n \n늘 감사해요 응원해주고\n봐주셔서 ㅎ-ㅎ❤️\n \n쫗은 꿈 꿔요 츄앙이들❤️"
+        },
         {
             "title": "❤️제리츄 일정❤️",
             "date": "2026-06-29 01:43:54",
@@ -237,7 +243,7 @@ const JERRY_DATA = {
         {
             "day": "월",
             "date": "6/29",
-            "time": "방송 진행 (공지 확인)",
+            "time": "휴방",
             "detail": "소통 방송"
         },
         {
@@ -414,7 +420,7 @@ const JERRY_DATA = {
             {
                 "day": "월",
                 "date": "6/29",
-                "time": "방송 진행 (공지 확인)",
+                "time": "휴방",
                 "detail": "소통 방송"
             },
             {
@@ -456,7 +462,7 @@ const JERRY_DATA = {
         ]
     },
     "fanarts": [
-        "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/58046a4156c2984fc.png",
+        "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/13796a4166bbe19e5.png",
         "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/93826a4151243f24b.png",
         "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/32116a414f584c641.png",
         "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/86416a41502e448e2.png",
