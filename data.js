@@ -1,9 +1,15 @@
 const JERRY_DATA = {
-    "updated_at": "2026-06-29 01:41:27",
+    "updated_at": "2026-06-29 02:10:11",
     "is_live": true,
-    "notice_text": "츄하\n \n즐거운 일요일 입니당 ㅎㅡㅎ!\n오늘은 진짜 최대한\n자고오려고 노력해써요\n근데 공지를 깜빡했어 헛..\n \n오후 12시 55분 딱\n오겠습니당!\n \n오늘은 말씀드린대로 오후 1시\n버인끼리 모이고\n오후 2시에 삼연대결 있어요!\n두근두근 ㅎㅡㅎ\n\n\n \n점심 맛있게 드시구\n곧 뵈어요!\n오늘두 쫗은하루 ~~~ ❤️",
+    "notice_text": "https://jerrychu.vercel.app/\n\n\n \n \n참고하시옵서소",
     "images": [],
     "notices": [
+        {
+            "title": "❤️제리츄 일정❤️",
+            "date": "2026-06-29 01:43:54",
+            "url": "https://www.sooplive.com/station/rariruro/post/199995159",
+            "content": "https://jerrychu.vercel.app/\n\n\n \n \n참고하시옵서소"
+        },
         {
             "title": "ㅎㅡㅎ히히",
             "date": "2026-06-28 12:46:11",
@@ -209,12 +215,6 @@ const JERRY_DATA = {
             "content": "오늘은 방송끄자마자\n확 피곤하넹...ㅎㅎ?\n\n\n그래도\n너무 재밌는 하루였어요!\n오늘은 버인마을 마크를\n뽀스덕분에 하게됐는데\n \n한 번도 좀비디펜스를 해본적이 없어서\n색다르고 너무 재밌었어요!\n \n근데 아직 볼륨세팅이\n잘 되어있지 않아서\n디스코드가 넘 크거나 작아가지구\n집중을 못했어...\n \n마크소리까지 겹쳐서\n내목소리도 안들림ㅎㅡㅎ..\n다음합방때 방해안되게\n세팅좀 만져야겠어용\n \n그리구 이번 마크 플레이하는데\n제 게임컴 렉이 너무심해서\n \n확실히 컴에 문제있는 것 같아가지구\n조만간 견적받고 사던 부품을\n바꾸던 해야할 것 같아요ㅜㅜ\n \n감사하게도 춘봉씨가 견적\n도와주신다구해씀 ㅎㅡㅎ\n(감사합니다!)\n \n오늘 챈나룽도 합격하구\n 버인멤버들하고 함께즐겨서\n즐거운 하루여써요\n \n무엇보다도 생각지도 못한\nApi를 너무 많이 쏴주셔서..\n감사하고 놀랐어요..\n \n앞으로 더 잘하라는 의미로\n주신거라 생각하고 집중해서\n방송 열심히 잘 해보겠습니다!\n \n감사합니다 후원해주신 츄앙이들!\n시청자분들!\n\n\n \n오늘 방송은\n일단 자고일어나서 공지쓸게요!\n \n좋은하루 보내세요~~"
         },
         {
-            "title": "횬님들...진짜 ㄴㅓ무 무서운데",
-            "date": "2026-06-04 20:20:07",
-            "url": "https://www.sooplive.com/station/rariruro/post/197719415",
-            "content": "제발 챈나룽 업좀..\n부탁드려도 될까요...\n오늘이 마지막이래요 ....\n나 계속 떨어지네 ...\n둘다해죠... 무파 크로쓰...❤\n\n\n \nhttps://www.sooplive.com/station/chaenna02/post/196058089#comment_noti113983845\n\n\n<숩니찡>\n \nhttps://www.sooplive.com/station/chaenna02/post/196058089#comment_noti113975877\n\n\n<제리츄>"
-        },
-        {
             "title": "나 클났어",
             "date": "2026-06-03 06:15:43",
             "url": "https://www.sooplive.com/station/rariruro/post/197574269",
@@ -237,7 +237,7 @@ const JERRY_DATA = {
         {
             "day": "월",
             "date": "6/29",
-            "time": "공지 대기",
+            "time": "방송 진행 (공지 확인)",
             "detail": "소통 방송"
         },
         {
@@ -414,7 +414,7 @@ const JERRY_DATA = {
             {
                 "day": "월",
                 "date": "6/29",
-                "time": "공지 대기",
+                "time": "방송 진행 (공지 확인)",
                 "detail": "소통 방송"
             },
             {
@@ -456,14 +456,14 @@ const JERRY_DATA = {
         ]
     },
     "fanarts": [
+        "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/93826a4151243f24b.png",
+        "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/32116a414f584c641.png",
+        "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/86416a41502e448e2.png",
+        "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/29896a4150d32d73e.png",
         "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/11306a414d82db230.png",
         "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/67506a414c7f8d25c.png",
         "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/19496a4115b75a670.jpeg",
         "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/11456a41146ac77fd.jpeg",
-        "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/28366a26353b89c97.png",
-        "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/13366a260c9927bb3.png",
-        "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/22646a1a66b0bc519.png",
-        "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/94476a1a66ca75ead.png",
-        "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/36936a19a35cbd8f6.png"
+        "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/28366a26353b89c97.png"
     ]
 };
