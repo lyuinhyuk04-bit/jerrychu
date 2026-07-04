@@ -1,5 +1,5 @@
 {
-    "updated_at": "2026-07-05 05:05:55",
+    "updated_at": "2026-07-05 05:15:16",
     "is_live": true,
     "notice_text": "공겜을 하기로해써요 ㅎㅡㅎ\n약간 스토리있는 공겜이라 \n근근두두 중입니당\n목 괜챦을까...\n\n\n \n오후 10시 시작 예정이라\n오뱅운 오후 9시에\n키도록 하겠습니당!\n \n좀 더 일찍킬까 했는데 19시간에 여파가..ㅎ\n 2부로 그냥서버 찍먹만 해볼게요..\n희망이 있을지 보겠넴...\n귀인어디없나 히유...\n \n주말인데 마싯는거 마니드시구\n저두 밥 먹구올게욤\n \n그롬 곧 뵈어요\n오늘도 쫗은하루 ~~~",
     "images": [],
@@ -307,7 +307,7 @@
                 "day": "수",
                 "date": "6/10",
                 "time": "오후 1:10 방송",
-                "detail": "방셀"
+                "detail": "소통 방송"
             },
             {
                 "day": "목",
@@ -324,14 +324,14 @@
             {
                 "day": "토",
                 "date": "6/13",
-                "time": "공지 대기",
+                "time": "휴방",
                 "detail": "소통 방송"
             },
             {
                 "day": "일",
                 "date": "6/14",
-                "time": "공지 대기",
-                "detail": "소통 방송"
+                "time": "휴방 -> 오후 5:00 방송",
+                "detail": "종겜, 음주"
             }
         ],
         "2026-06-15": [
@@ -351,31 +351,31 @@
                 "day": "수",
                 "date": "6/17",
                 "time": "오후 4:00 방송",
-                "detail": "소통 방송, 마크"
+                "detail": "소통 방송"
             },
             {
                 "day": "목",
                 "date": "6/18",
                 "time": "휴방",
-                "detail": "컴퓨터 세팅"
+                "detail": "소통 방송"
             },
             {
                 "day": "금",
                 "date": "6/19",
-                "time": "휴방",
-                "detail": "컴퓨터 세팅"
+                "time": "방송 진행 (공지 확인)",
+                "detail": "음주"
             },
             {
                 "day": "토",
                 "date": "6/20",
                 "time": "오후 8:00 방송",
-                "detail": "츄스테리 괴담회"
+                "detail": "소통 방송"
             },
             {
                 "day": "일",
                 "date": "6/21",
                 "time": "오후 12:00 방송",
-                "detail": "소통 방송, 배그"
+                "detail": "배그"
             }
         ],
         "2026-06-22": [
@@ -395,31 +395,31 @@
                 "day": "수",
                 "date": "6/24",
                 "time": "오후 5:00 방송",
-                "detail": "소통 방송"
+                "detail": "배그"
             },
             {
                 "day": "목",
                 "date": "6/25",
                 "time": "오후 1:30 방송",
-                "detail": "배그 대회"
+                "detail": "배그"
             },
             {
                 "day": "금",
                 "date": "6/26",
                 "time": "오전 11:00 방송",
-                "detail": "삼국지 마크 대비"
+                "detail": "소통 방송"
             },
             {
                 "day": "토",
                 "date": "6/27",
                 "time": "오후 5:30 방송",
-                "detail": "소통 방송, 마크"
+                "detail": "소통 방송"
             },
             {
                 "day": "일",
                 "date": "6/28",
                 "time": "오후 12:55 방송",
-                "detail": "삼연대결 마크"
+                "detail": "소통 방송"
             }
         ],
         "2026-06-29": [
@@ -483,6 +483,7 @@
         "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/22646a1a66b0bc519.png",
         "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/94476a1a66ca75ead.png",
         "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/36936a19a35cbd8f6.png",
+        "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/67126a196e22aa7d9.png",
         "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/96496a186bc3ef52c.png",
         "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/39776a183cbe15826.jpg",
         "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/88016a183cba49608.png",
