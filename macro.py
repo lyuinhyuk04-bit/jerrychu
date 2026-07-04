@@ -54,6 +54,15 @@ MY_POST_MODIFY_URL = "https://www.sooplive.com/station/본인아이디/post/게�
 # ==============================================================================
 
 def setup_chrome_driver(user_data_dir, profile_dir, headless=False):
+    # 크롬 락 파일 강제 정리 (SingletonLock)
+    lock_file = os.path.join(user_data_dir, "SingletonLock")
+    if os.path.exists(lock_file):
+        try:
+            os.remove(lock_file)
+            print("[알림] 크롬 프로필 SingletonLock 락 파일을 제거했습니다.")
+        except Exception:
+            pass
+
     if headless:
         print("[1/5] Chrome 브라우저를 백그라운드(Headless) 모드로 실행하는 중...")
     else:
@@ -204,7 +213,7 @@ def crawl_june_notices(driver, notice_board_url):
     print(f"[2/5] 공지사항 게시판({notice_board_url})에서 6월 공지글 수집 중...")
     post_urls = []
     try:
-        post_urls = crawl_latest_post_urls(driver, notice_board_url, max_count=30)
+        post_urls = crawl_latest_post_urls(driver, notice_board_url, max_count=80)
     except Exception as e:
         print(f"[오류] 공지사항 목록 가져오기 실패: {e}")
         traceback.print_exc()
@@ -272,14 +281,14 @@ def crawl_june_notices(driver, notice_board_url):
                 content_text = ""
                 print(f"[경고] 본문 요소를 찾을 수 없습니다. (URL: {post_url}) | 타이틀: {driver.title}")
                 
-            # 날짜 검증: 최근 35일 이내의 글인지 확인 (달이 바뀌어도 유연하게 수집)
+            # 날짜 검증: 최근 35일 이내의 글인지 확인 (고정 공지글 스킵 대응을 위해 break 대신 continue 적용)
             if date_text:
                 try:
                     post_date = datetime.strptime(date_text.split(" ")[0], "%Y-%m-%d").date()
                     limit_date = get_kst_now().date() - timedelta(days=35)
                     if post_date < limit_date:
-                        print(f"최근 35일 이전 글 감지 ({date_text}). 수집을 중단합니다.")
-                        break
+                        print(f"최근 35일 이전 글 스킵 ({date_text})")
+                        continue
                 except Exception:
                     pass
             else:
@@ -850,6 +859,141 @@ def main():
         if schedule_data:
             existing_schedules[current_week_key] = schedule_data
             
+        # --- [과거 주간 일정 아카이브 재컴파일 (휴방 덮어쓰기 복구)] ---
+        for week_str, week_list in list(existing_schedules.items()):
+            try:
+                week_start = datetime.strptime(week_str, "%Y-%m-%d").date()
+                # 최근 35일 이내의 주간 일정 데이터만 복구 대상으로 삼아 공지사항 재매칭
+                if get_kst_now().date() - week_start <= timedelta(days=35):
+                    days_of_week = ["월", "화", "수", "목", "금", "토", "일"]
+                    temp_schedule = []
+                    for i in range(7):
+                        day_date = week_start + timedelta(days=i)
+                        
+                        existing_item = next((item for item in week_list if item.get("day") == days_of_week[i]), None)
+                        existing_time = existing_item.get("time", "공지 대기") if existing_item else "공지 대기"
+                        existing_detail = existing_item.get("detail", "소통 방송") if existing_item else "소통 방송"
+                        
+                        # "공지 대기" 이거나 "휴방"으로 변해버린 것들을 다시 분석하도록 리셋
+                        if existing_time in ["공지 대기", "휴방"]:
+                            existing_time = "공지 대기"
+                            
+                        temp_schedule.append({
+                            "day": days_of_week[i],
+                            "date": f"{day_date.month}/{day_date.day}",
+                            "time": existing_time,
+                            "detail": existing_detail,
+                            "full_date_str": day_date.strftime("%Y-%m-%d")
+                        })
+                    
+                    sorted_notices = sorted(june_notices, key=lambda x: x.get("date", ""))
+                    for notice in sorted_notices:
+                        date_str = notice.get("date", "")
+                        content = notice.get("content", "")
+                        title = notice.get("title", "")
+                        if not date_str or not content:
+                            continue
+                        notice_date_part = date_str.split(" ")[0]
+                        
+                        for day_index, item in enumerate(temp_schedule):
+                            if item["full_date_str"] == notice_date_part:
+                                time_pattern = r'(?:(오후|오전)\s*)?(\d+)\s*(?:~\s*(?:(오후|오전)\s*)?(\d+)\s*)?시(?!간)(?:\s*(\d+)\s*분)?'
+                                time_matches = list(re.finditer(time_pattern, content))
+                                best_match = None
+                                max_score = -1
+                                min_distance_for_best_score = 999999
+                                
+                                if time_matches:
+                                    for m in time_matches:
+                                        start, end = m.span()
+                                        win_start = max(0, start - 50)
+                                        win_end = min(len(content), end + 50)
+                                        window_text = content[win_start:win_end]
+                                        score = 0
+                                        has_action = False
+                                        min_dist = 999999
+                                        for kw in ["오도록", "올게", "오겠", "킬게", "키도록", "켜도록", "켜겠", "옵니", "온다", "와서", "와보", "올라나", "켰", "킬", "켤", "시작", "뱅온"]:
+                                            if kw in window_text:
+                                                has_action = True
+                                                kw_idx = window_text.find(kw)
+                                                kw_abs_idx = win_start + kw_idx
+                                                dist = min(abs(kw_abs_idx - start), abs(kw_abs_idx - end))
+                                                if dist < min_dist:
+                                                    min_dist = dist
+                                        if has_action:
+                                            score += max(50, 150 - min_dist)
+                                        for t_kw in ["하지만", "그래서", "대신", "다만", "일단", "결국", "그래도", "변경"]:
+                                            if t_kw in window_text:
+                                                score += 50
+                                        if len(content) > 0:
+                                            score += (start / len(content)) * 20
+                                        if score > max_score:
+                                            max_score = score
+                                            best_match = m
+                                            min_distance_for_best_score = min_dist
+                                
+                                def format_match_local(m):
+                                    ampm1, hr1, ampm2, hr2, mn = m.groups()
+                                    h1 = int(hr1)
+                                    resolved_ampm1 = ampm1 if ampm1 else ("오후" if 13 <= h1 <= 24 or 1 <= h1 <= 11 else "오후")
+                                    if not ampm1 and 13 <= h1 <= 24:
+                                        h1 -= 12
+                                    min_part = f":{mn.strip()}" if mn else ":00"
+                                    if hr2:
+                                        h2 = int(hr2)
+                                        resolved_ampm2 = ampm2 if ampm2 else resolved_ampm1
+                                        if not ampm2 and 13 <= h2 <= 24:
+                                            h2 -= 12
+                                        return f"{resolved_ampm1} {h1}{min_part} ~ {resolved_ampm2} {h2}:00"
+                                    else:
+                                        return f"{resolved_ampm1} {h1}{min_part}"
+
+                                has_resting_keyword = "휴방" in content or "휴뱅" in content or "휴방" in title or "휴뱅" in title
+                                if best_match and max_score >= 50:
+                                    time_val = format_match_local(best_match) + " 방송"
+                                    if has_resting_keyword:
+                                        time_val = "휴방 -> " + time_val
+                                elif has_resting_keyword:
+                                    time_val = "휴방"
+                                elif best_match:
+                                    time_val = format_match_local(best_match) + " 방송"
+                                    if has_resting_keyword:
+                                        time_val = "휴방 -> " + time_val
+                                elif time_matches:
+                                    time_val = " / ".join(format_match_local(m) for m in time_matches) + " 방송"
+                                    if has_resting_keyword:
+                                        time_val = "휴방 -> " + time_val
+                                else:
+                                    time_val = "방송 진행 (공지 확인)"
+                                
+                                detail_val = "소통 방송"
+                                matched_details = [kw for kw in ["CK", "배그", "종겜", "합방", "음주", "술먹방", "여우도시", "고래시티", "방셀"] if kw in content or kw in title]
+                                if matched_details:
+                                    detail_val = ", ".join(matched_details)
+                                
+                                if temp_schedule[day_index]["time"] != "공지 대기" and time_val == "방송 진행 (공지 확인)":
+                                    pass
+                                else:
+                                    temp_schedule[day_index]["time"] = time_val
+                                temp_schedule[day_index]["detail"] = detail_val
+
+                    # 과거 날짜 중 공지 대기인 요일만 "휴방" 처리
+                    for item in temp_schedule:
+                        item_date_part = item.get("full_date_str", "")
+                        if item_date_part:
+                            try:
+                                item_date = datetime.strptime(item_date_part, "%Y-%m-%d").date()
+                                if item_date < get_kst_now().date() and item.get("time") == "공지 대기":
+                                    item["time"] = "휴방"
+                            except Exception:
+                                pass
+                        if "full_date_str" in item:
+                            del item["full_date_str"]
+
+                    existing_schedules[week_str] = temp_schedule
+            except Exception as e:
+                print(f"[경고] 과거 일정 재컴파일 중 에러 ({week_str}): {e}")
+
         # --- [수동 수정 오버라이드 병합 후처리] ---
         existing_schedules = merge_overrides_to_schedules(existing_schedules)
         if current_week_key in existing_schedules:
