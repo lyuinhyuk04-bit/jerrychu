@@ -8,8 +8,8 @@ async function initSupabase() {
     try {
         const res = await fetch("config.json");
         const config = await res.json();
-        if (config.SUPABASE_URL && config.SUPABASE_ANON_KEY && config.SUPABASE_URL !== "https://your-project.supabase.co") {
-            window.supabaseClient = supabase.createClient(config.SUPABASE_URL, config.SUPABASE_ANON_KEY);
+        if (typeof window.supabase !== "undefined" && config.SUPABASE_URL && config.SUPABASE_ANON_KEY && config.SUPABASE_URL !== "https://your-project.supabase.co") {
+            window.supabaseClient = window.supabase.createClient(config.SUPABASE_URL, config.SUPABASE_ANON_KEY);
             console.log("Supabase Client initialized successfully.");
             return true;
         }
@@ -27,7 +27,18 @@ async function fetchAndMergeOverrides() {
         window.LOCAL_OVERRIDES = Object.assign({}, window.SCHEDULE_OVERRIDES);
     }
 
-    // 2. Supabase DB에서 실시간 오버라이드 내역 긁어와 병합
+    // 2. localStorage 로컬 수정 캐시 데이터 복구 바인딩 (Supabase 미연결 또는 로컬 테스트 환경용)
+    try {
+        const saved = localStorage.getItem("schedule_overrides");
+        if (saved) {
+            const localSaved = JSON.parse(saved);
+            window.LOCAL_OVERRIDES = Object.assign(window.LOCAL_OVERRIDES, localSaved);
+        }
+    } catch (e) {
+        console.warn("Failed to load schedule_overrides from localStorage:", e);
+    }
+
+    // 3. Supabase DB에서 실시간 오버라이드 내역 긁어와 병합 (최우선순위)
     if (window.supabaseClient) {
         try {
             const { data, error } = await window.supabaseClient
