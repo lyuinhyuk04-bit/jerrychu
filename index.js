@@ -1,6 +1,57 @@
 // ==============================================================================
 // [DATA BINDING] - 크롤러가 생성하는 data.js 로부터 데이터를 로드
 // ==============================================================================
+window.supabaseClient = null;
+
+async function initSupabase() {
+    if (window.supabaseClient) return true;
+    try {
+        const res = await fetch("config.json");
+        const config = await res.json();
+        if (config.SUPABASE_URL && config.SUPABASE_ANON_KEY && config.SUPABASE_URL !== "https://your-project.supabase.co") {
+            window.supabaseClient = supabase.createClient(config.SUPABASE_URL, config.SUPABASE_ANON_KEY);
+            console.log("Supabase Client initialized successfully.");
+            return true;
+        }
+    } catch (e) {
+        console.warn("Failed to load config.json or initialize Supabase:", e);
+    }
+    return false;
+}
+
+async function fetchAndMergeOverrides() {
+    window.LOCAL_OVERRIDES = {};
+    
+    // 1. overrides.js 파일의 정적 데이터 우선 바인딩 (폴백용)
+    if (typeof window.SCHEDULE_OVERRIDES !== "undefined") {
+        window.LOCAL_OVERRIDES = Object.assign({}, window.SCHEDULE_OVERRIDES);
+    }
+
+    // 2. Supabase DB에서 실시간 오버라이드 내역 긁어와 병합
+    if (window.supabaseClient) {
+        try {
+            const { data, error } = await window.supabaseClient
+                .from('schedule_overrides')
+                .select('date, time, detail, status');
+            
+            if (error) throw error;
+
+            if (data) {
+                data.forEach(row => {
+                    window.LOCAL_OVERRIDES[row.date] = {
+                        time: row.time,
+                        detail: row.detail || "",
+                        status: row.status
+                    };
+                });
+                console.log(`Supabase로부터 {${data.length}}개의 일정을 성공적으로 동기화했습니다.`);
+            }
+        } catch (e) {
+            console.warn("Supabase 데이터 로드 실패, 로컬 폴백을 시도합니다:", e);
+        }
+    }
+}
+
 document.addEventListener("DOMContentLoaded", () => {
     const today = new Date();
     window.currentYear = today.getFullYear();
@@ -13,7 +64,6 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 function loadDataAndBind() {
-    // 이전의 동적 스크립트 태그가 있다면 제거하여 메모리 누수를 방지합니다.
     const oldScript = document.getElementById("dynamic-data-script");
     if (oldScript) {
         oldScript.remove();
@@ -22,7 +72,9 @@ function loadDataAndBind() {
     const script = document.createElement("script");
     script.id = "dynamic-data-script";
     script.src = "data.js?t=" + new Date().getTime();
-    script.onload = () => {
+    script.onload = async () => {
+        await initSupabase();
+        await fetchAndMergeOverrides(); // 캘린더 로딩 전 Supabase 동기화
         initDataBinding();
         initMonthlyEditor();
         initTabNavigation();
@@ -1242,7 +1294,7 @@ function initMonthlyEditor() {
     if (btnSaveEdit) {
         const newBtnSaveEdit = btnSaveEdit.cloneNode(true);
         btnSaveEdit.parentNode.replaceChild(newBtnSaveEdit, btnSaveEdit);
-        newBtnSaveEdit.addEventListener("click", () => {
+        newBtnSaveEdit.addEventListener("click", async () => {
             const dateStr = window.activeEditDate;
             const status = document.getElementById("edit-status").value;
             const time = document.getElementById("edit-time").value.trim();
@@ -1250,43 +1302,74 @@ function initMonthlyEditor() {
 
             if (!window.LOCAL_OVERRIDES) window.LOCAL_OVERRIDES = {};
 
-            if (status === "tbd") {
-                delete window.LOCAL_OVERRIDES[dateStr];
+            const resolvedTime = (status === "rest") ? "휴방" : (time || "오후 7:00 방송");
+            const resolvedDetail = detail;
+
+            // 저장 처리 중 더블클릭 방지 및 UI 인디케이터
+            const originalText = newBtnSaveEdit.innerHTML;
+            newBtnSaveEdit.disabled = true;
+            newBtnSaveEdit.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> 저장 중...`;
+
+            if (window.supabaseClient) {
+                try {
+                    if (status === "tbd") {
+                        // DB에서 삭제
+                        const { error } = await window.supabaseClient
+                            .from('schedule_overrides')
+                            .delete()
+                            .eq('date', dateStr);
+                        if (error) throw error;
+                        
+                        delete window.LOCAL_OVERRIDES[dateStr];
+                    } else {
+                        // DB에 UPSERT (덮어쓰기)
+                        const { error } = await window.supabaseClient
+                            .from('schedule_overrides')
+                            .upsert({
+                                date: dateStr,
+                                time: resolvedTime,
+                                detail: resolvedDetail,
+                                status: status
+                            });
+                        if (error) throw error;
+
+                        window.LOCAL_OVERRIDES[dateStr] = {
+                            time: resolvedTime,
+                            detail: resolvedDetail,
+                            status: status
+                        };
+                    }
+                    console.log("Supabase에 일정이 성공적으로 동기화되었습니다.");
+                } catch (err) {
+                    console.error("Supabase 저장 에러:", err);
+                    alert("데이터베이스 일정 저장 실패: " + err.message);
+                    newBtnSaveEdit.disabled = false;
+                    newBtnSaveEdit.innerHTML = originalText;
+                    return;
+                }
             } else {
-                window.LOCAL_OVERRIDES[dateStr] = {
-                    time: (status === "rest") ? "휴방" : (time || "오후 7:00 방송"),
-                    detail: detail,
-                    status: status
-                };
+                // Supabase 미연결 시 로컬 폴백
+                if (status === "tbd") {
+                    delete window.LOCAL_OVERRIDES[dateStr];
+                } else {
+                    window.LOCAL_OVERRIDES[dateStr] = {
+                        time: resolvedTime,
+                        detail: resolvedDetail,
+                        status: status
+                    };
+                }
+                try {
+                    localStorage.setItem("schedule_overrides", JSON.stringify(window.LOCAL_OVERRIDES));
+                } catch (e) {}
+                console.warn("Supabase 자격 증명이 세팅되지 않았습니다. 로컬 브라우저 세션에만 반영됩니다.");
             }
 
-            try {
-                localStorage.setItem("schedule_overrides", JSON.stringify(window.LOCAL_OVERRIDES));
-            } catch (e) {}
-
-            // 로컬 자동저장 API 호출 시도 (run_forever.py 웹 서버)
-            fetch("/api/save_overrides", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(window.LOCAL_OVERRIDES)
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data.success) {
-                    console.log("Local overrides file auto-saved successfully.");
-                } else {
-                    console.warn("Failed to auto-save local overrides file:", data.error);
-                }
-            })
-            .catch(err => {
-                console.warn("Local auto-save API not available. Saved to localStorage only.", err);
-            });
-
+            newBtnSaveEdit.disabled = false;
+            newBtnSaveEdit.innerHTML = originalText;
             editModal.style.display = "none";
-            renderMonthlyCalendar();
             
+            // 즉각 화면 리렌더링
+            renderMonthlyCalendar();
             if (typeof window.renderSelectedSchedule === "function") {
                 window.renderSelectedSchedule();
             }

@@ -10,6 +10,7 @@ import json
 import re
 import traceback
 from datetime import datetime, timedelta, timezone
+import requests
 
 def get_kst_now():
     return datetime.now(timezone.utc).astimezone(timezone(timedelta(hours=9)))
@@ -564,19 +565,54 @@ def crawl_fanart_images(driver, fanart_board_url, max_images=60):
 def merge_overrides_to_schedules(schedules):
     """
     schedules = {"YYYY-MM-DD": [ {day, date, time, detail, status}, ... ]}
-    overrides.json 을 파싱하여 일치하는 날짜의 수동 오버라이드를 병합합니다.
+    Supabase DB REST API를 호출하여 수동 오버라이드를 가져온 뒤 병합합니다.
     """
-    overrides_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "overrides.json")
-    if not os.path.exists(overrides_path):
+    config_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "config.json")
+    if not os.path.exists(config_path):
+        print("[경고] config.json 파일이 존재하지 않아 Supabase 동기화를 건너뜁니다.")
         return schedules
 
     try:
-        with open(overrides_path, "r", encoding="utf-8") as f:
-            overrides = json.load(f)
-        if not overrides:
+        with open(config_path, "r", encoding="utf-8") as f:
+            config = json.load(f)
+        
+        supabase_url = config.get("SUPABASE_URL", "")
+        supabase_key = config.get("SUPABASE_ANON_KEY", "")
+
+        if not supabase_url or not supabase_key or "your-project" in supabase_url:
+            print("[알림] Supabase 연결 설정이 완료되지 않았습니다. 동기화를 스킵합니다.")
             return schedules
 
-        print(f"[동기화] 로컬 overrides.json 감지 완료. 수동 수정사항 {len(overrides)}개를 병합합니다...")
+        # Supabase PostgREST API를 직접 호출 (추가 SDK 패키지 불필요)
+        rest_url = f"{supabase_url.rstrip('/')}/rest/v1/schedule_overrides"
+        headers = {
+            "apikey": supabase_key,
+            "Authorization": f"Bearer {supabase_key}"
+        }
+
+        print(f"[동기화] Supabase DB에서 최신 일정 오버라이드를 가져오는 중... ({rest_url})")
+        response = requests.get(rest_url, headers=headers, timeout=10)
+        
+        if response.status_code != 200:
+            print(f"[경고] Supabase API 응답 에러 (상태 코드 {response.status_code}): {response.text}")
+            return schedules
+
+        overrides_list = response.json()
+        if not overrides_list:
+            print("[알림] Supabase DB에 등록된 수동 일정이 없습니다.")
+            return schedules
+
+        # 매칭하기 편하게 딕셔너리로 재구성
+        overrides = {
+            item["date"]: {
+                "time": item.get("time", ""),
+                "detail": item.get("detail", ""),
+                "status": item.get("status", "stream")
+            }
+            for item in overrides_list if "date" in item
+        }
+
+        print(f"[동기화] Supabase로부터 {len(overrides)}개의 일정을 연동해 병합합니다...")
 
         for week_start_str, week_list in list(schedules.items()):
             try:
@@ -600,11 +636,11 @@ def merge_overrides_to_schedules(schedules):
                     item["time"] = val.get("time", item.get("time", ""))
                     item["detail"] = val.get("detail", item.get("detail", ""))
                     item["status"] = val.get("status", item.get("status", "stream"))
-                    print(f"  -> [{actual_date_str} ({item_day})] 수동 수정 일정 병합 완료: {item['time']} | {item['detail']}")
+                    print(f"  -> [{actual_date_str} ({item_day})] Supabase 일정 병합: {item['time']} | {item['detail']}")
                     
         return schedules
     except Exception as e:
-        print(f"[경고] 수동 오버라이드 병합 중 에러 발생: {e}")
+        print(f"[경고] Supabase 오버라이드 병합 중 에러 발생: {e}")
         return schedules
 
 

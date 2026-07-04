@@ -30,50 +30,13 @@ def remove_pid():
 class CustomAPIHandler(http.server.SimpleHTTPRequestHandler):
     def end_headers(self):
         self.send_header('Access-Control-Allow-Origin', '*')
-        self.send_header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+        self.send_header('Access-Control-Allow-Methods', 'GET, OPTIONS')
         self.send_header('Access-Control-Allow-Headers', 'Content-Type')
         super().end_headers()
 
     def do_OPTIONS(self):
         self.send_response(200)
         self.end_headers()
-
-    def do_POST(self):
-        if self.path == '/api/save_overrides':
-            content_length = int(self.headers['Content-Length'])
-            post_data = self.rfile.read(content_length)
-            try:
-                data = json.loads(post_data.decode('utf-8'))
-                
-                # overrides.js 변수 파일 저장
-                js_content = f"const OVERRIDES_DATA = {json.dumps(data, ensure_ascii=False, indent=4)};\n"
-                js_content += "if (typeof window !== 'undefined') {\n    window.LOCAL_OVERRIDES = OVERRIDES_DATA;\n}\n"
-                
-                overrides_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "overrides.js")
-                with open(overrides_path, "w", encoding="utf-8") as f:
-                    f.write(js_content)
-                
-                # 매크로가 읽기 쉬운 json 파일로도 저장
-                json_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "overrides.json")
-                with open(json_path, "w", encoding="utf-8") as f:
-                    json.dump(data, f, ensure_ascii=False, indent=4)
-
-                self.send_response(200)
-                self.send_header('Content-Type', 'application/json')
-                self.end_headers()
-                response = {"success": True, "message": "Overrides auto-saved successfully."}
-                self.wfile.write(json.dumps(response).encode('utf-8'))
-                print("[API] 수정된 일정이 overrides.js 및 overrides.json 에 자동 저장되었습니다.")
-            except Exception as e:
-                self.send_response(500)
-                self.send_header('Content-Type', 'application/json')
-                self.end_headers()
-                response = {"success": False, "error": str(e)}
-                self.wfile.write(json.dumps(response).encode('utf-8'))
-                print(f"[API 오류] overrides.js 저장 실패: {e}")
-        else:
-            self.send_response(404)
-            self.end_headers()
 
 def start_web_server():
     port = 3000
