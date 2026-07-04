@@ -1264,6 +1264,26 @@ function initMonthlyEditor() {
                 localStorage.setItem("schedule_overrides", JSON.stringify(window.LOCAL_OVERRIDES));
             } catch (e) {}
 
+            // 로컬 자동저장 API 호출 시도 (run_forever.py 웹 서버)
+            fetch("/api/save_overrides", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(window.LOCAL_OVERRIDES)
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    console.log("Local overrides file auto-saved successfully.");
+                } else {
+                    console.warn("Failed to auto-save local overrides file:", data.error);
+                }
+            })
+            .catch(err => {
+                console.warn("Local auto-save API not available. Saved to localStorage only.", err);
+            });
+
             editModal.style.display = "none";
             renderMonthlyCalendar();
             

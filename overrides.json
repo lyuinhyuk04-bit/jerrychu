@@ -1,4 +1,4 @@
-const OVERRIDES_DATA = {
+{
     "2026-07-03": {
         "time": "오후 5:00 방송",
         "detail": "소통 방송",
@@ -9,7 +9,4 @@ const OVERRIDES_DATA = {
         "detail": "휴방",
         "status": "rest"
     }
-};
-if (typeof window !== 'undefined') {
-    window.LOCAL_OVERRIDES = OVERRIDES_DATA;
 }

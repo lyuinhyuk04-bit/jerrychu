@@ -271,13 +271,13 @@ def crawl_june_notices(driver, notice_board_url):
                 content_text = ""
                 print(f"[경고] 본문 요소를 찾을 수 없습니다. (URL: {post_url}) | 타이틀: {driver.title}")
                 
-            # 날짜 검증: 6월 1일 이후 글인지 확인
+            # 날짜 검증: 최근 35일 이내의 글인지 확인 (달이 바뀌어도 유연하게 수집)
             if date_text:
                 try:
                     post_date = datetime.strptime(date_text.split(" ")[0], "%Y-%m-%d").date()
-                    limit_date = datetime.strptime("2026-06-01", "%Y-%m-%d").date()
+                    limit_date = get_kst_now().date() - timedelta(days=35)
                     if post_date < limit_date:
-                        print(f"6월 이전 글 감지 ({date_text}). 수집을 중단합니다.")
+                        print(f"최근 35일 이전 글 감지 ({date_text}). 수집을 중단합니다.")
                         break
                 except Exception:
                     pass
@@ -295,7 +295,7 @@ def crawl_june_notices(driver, notice_board_url):
             traceback.print_exc()
             continue
             
-    print(f"총 {len(june_notices)}개의 6월 공지사항을 성공적으로 수집했습니다.")
+    print(f"총 {len(june_notices)}개의 최근 공지사항을 성공적으로 수집했습니다.")
     return june_notices
 
 def compile_weekly_schedule(notices):
@@ -561,6 +561,53 @@ def crawl_fanart_images(driver, fanart_board_url, max_images=60):
     print(f"총 {len(image_urls)}개의 팬아트 이미지를 성공적으로 추출했습니다.")
     return image_urls[:max_images]
 
+def merge_overrides_to_schedules(schedules):
+    """
+    schedules = {"YYYY-MM-DD": [ {day, date, time, detail, status}, ... ]}
+    overrides.json 을 파싱하여 일치하는 날짜의 수동 오버라이드를 병합합니다.
+    """
+    overrides_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "overrides.json")
+    if not os.path.exists(overrides_path):
+        return schedules
+
+    try:
+        with open(overrides_path, "r", encoding="utf-8") as f:
+            overrides = json.load(f)
+        if not overrides:
+            return schedules
+
+        print(f"[동기화] 로컬 overrides.json 감지 완료. 수동 수정사항 {len(overrides)}개를 병합합니다...")
+
+        for week_start_str, week_list in list(schedules.items()):
+            try:
+                week_start_date = datetime.strptime(week_start_str, "%Y-%m-%d").date()
+            except Exception:
+                continue
+
+            day_names = ["월", "화", "수", "목", "금", "토", "일"]
+
+            for item in week_list:
+                item_day = item.get("day", "")
+                if item_day not in day_names:
+                    continue
+                day_offset = day_names.index(item_day)
+                # 실제 날짜 계산 (월요일 기준 + 요일 오프셋)
+                actual_date = week_start_date + timedelta(days=day_offset)
+                actual_date_str = actual_date.strftime("%Y-%m-%d")
+
+                if actual_date_str in overrides:
+                    val = overrides[actual_date_str]
+                    item["time"] = val.get("time", item.get("time", ""))
+                    item["detail"] = val.get("detail", item.get("detail", ""))
+                    item["status"] = val.get("status", item.get("status", "stream"))
+                    print(f"  -> [{actual_date_str} ({item_day})] 수동 수정 일정 병합 완료: {item['time']} | {item['detail']}")
+                    
+        return schedules
+    except Exception as e:
+        print(f"[경고] 수동 오버라이드 병합 중 에러 발생: {e}")
+        return schedules
+
+
 def update_my_post(driver, modify_url, notice_text, schedule_images):
     print(f"[4/5] 내 유저 게시글 수정 페이지로 이동 중: {modify_url}")
     driver.get(modify_url)
@@ -766,6 +813,11 @@ def main():
         # 현재 주 일정을 아카이브에 갱신/추가
         if schedule_data:
             existing_schedules[current_week_key] = schedule_data
+            
+        # --- [수동 수정 오버라이드 병합 후처리] ---
+        existing_schedules = merge_overrides_to_schedules(existing_schedules)
+        if current_week_key in existing_schedules:
+            schedule_data = existing_schedules[current_week_key]
             
         collected_data = {
             "updated_at": get_kst_now().strftime("%Y-%m-%d %H:%M:%S"),
