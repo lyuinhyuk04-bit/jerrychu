@@ -1,6 +1,6 @@
 const JERRY_DATA = {
-    "updated_at": "2026-07-07 03:54:27",
-    "is_live": true,
+    "updated_at": "2026-07-07 05:51:02",
+    "is_live": false,
     "notice_text": "자고일어났더니\n공지에 5시까지 모두모이라는 공지\n지금 봤네...ㅎㅎ\n그래서 지금 방송킬게요ㅎ..\n곧 봐",
     "images": [],
     "notices": [
