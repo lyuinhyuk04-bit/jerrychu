@@ -1,6 +1,6 @@
 const JERRY_DATA = {
-    "updated_at": "2026-07-10 20:39:29",
-    "is_live": false,
+    "updated_at": "2026-07-10 22:37:48",
+    "is_live": true,
     "notice_text": "감기로 병원다녀오고\n푹 쉬고있는 데\n오히려 몸에 열이 계속 오르고\n코가 더 나오넴\n\n\n꼭 다 낫기전에 이렇게 더 그러던데\n낫고있나바여 ㅎ-ㅎ\n전 밥먹구 상태보려구 좀 쉬고이써용\n아마 오늘 방송은 오후 9시에 와서\n소통하구 10시에 영화 테이큰 볼 것 같아욤\n한 번도 안봤어서 기대중입니다.\n무슨 내용이지?\n\n\n그대음 후열 소통하구\n내일 오후 1시부터 길게 \n삼연서버 연습있다고 해서\n일찍이 들어가겠소\n그롬 이따가 뵈어요 ❤️",
     "images": [],
     "notices": [
@@ -512,6 +512,12 @@ const JERRY_DATA = {
         ]
     },
     "fanarts": [
+        "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/51666a50ee2c0aab6.png",
+        "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/14836a50ef673f597.gif",
+        "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/60406a50e700c9bd3.gif",
+        "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/40176a50e3b4744e5.png",
+        "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/32736a50e2a00c066.png",
+        "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/17506a50e395e28cb.gif",
         "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/75536a45d4691f5e9.png",
         "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/13796a4166bbe19e5.png",
         "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/93826a4151243f24b.png",
@@ -532,10 +538,6 @@ const JERRY_DATA = {
         "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/39776a183cbe15826.jpg",
         "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/88016a183cba49608.png",
         "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/14696a180b25eea38.png",
-        "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/95436a0e597e5bc2c.png",
-        "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/94796a0470a9d7d57.png",
-        "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/90166a02c85dcdeff.png",
-        "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/91226a029d234ff39.jpg",
-        "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/44356a013fad45d42.png"
+        "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/95436a0e597e5bc2c.png"
     ]
 };
