@@ -44,7 +44,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 # ==============================================================================
 # [사용자 설정 변수]
 # ==============================================================================
-USER_DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "chrome_profile")
+USER_DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "chrome_profile_new")
 PROFILE_DIR = "Default"
 NOTICE_BOARD_URL = "https://www.sooplive.com/station/rariruro/board/111790159"
 SCHEDULE_NOTICE_BOARD_URL = "https://www.sooplive.com/station/rariruro/board/117292929"
@@ -745,6 +745,7 @@ def crawl_fanart_images(driver, fanart_board_url, max_images=60):
     print(f"총 {len(image_urls)}개의 팬아트 이미지를 성공적으로 추출했습니다.")
     return image_urls[:max_images]
 
+
 def merge_overrides_to_schedules(schedules):
     """
     schedules = {"YYYY-MM-DD": [ {day, date, time, detail, status}, ... ]}
@@ -763,29 +764,29 @@ def merge_overrides_to_schedules(schedules):
         supabase_key = config.get("SUPABASE_ANON_KEY", "")
 
         if not supabase_url or not supabase_key or "your-project" in supabase_url:
-            print("[알림] Supabase 연결 설정이 완료되지 않았습니다. 동기화를 스킵합니다.")
+            print("[알림] Supabase 설정이 완료되지 않았습니다. 동기화를 건너뜁니다.")
             return schedules
 
-        # Supabase PostgREST API를 직접 호출 (추가 SDK 패키지 불필요)
+        # Supabase PostgREST API 직접 호출 (추가 SDK 설치가 필요 없음)
         rest_url = f"{supabase_url.rstrip('/')}/rest/v1/schedule_overrides"
         headers = {
             "apikey": supabase_key,
             "Authorization": f"Bearer {supabase_key}"
         }
 
-        print(f"[동기화] Supabase DB에서 최신 일정 오버라이드를 가져오는 중... ({rest_url})")
+        print(f"[동기화] Supabase DB에서 최신 오버라이드를 조회 중... ({rest_url})")
         response = requests.get(rest_url, headers=headers, timeout=10)
         
         if response.status_code != 200:
-            print(f"[경고] Supabase API 응답 에러 (상태 코드 {response.status_code}): {response.text}")
+            print(f"[오류] Supabase API 호출 실패 (응답코드 {response.status_code}): {response.text}")
             return schedules
 
         overrides_list = response.json()
         if not overrides_list:
-            print("[알림] Supabase DB에 등록된 수동 일정이 없습니다.")
+            print("[알림] Supabase DB에 등록된 오버라이드가 없습니다.")
             return schedules
 
-        # 매칭하기 편하게 딕셔너리로 재구성
+        # 매핑하기 쉽고 빠르게 딕셔너리로 재구성
         overrides = {
             item["date"]: {
                 "time": item.get("time", ""),
@@ -795,8 +796,8 @@ def merge_overrides_to_schedules(schedules):
             for item in overrides_list if "date" in item
         }
 
-        print(f"[동기화] Supabase로부터 {len(overrides)}개의 일정을 연동해 병합합니다...")
-
+        print(f"[동기화] Supabase로부터 {len(overrides)}개의 오버라이드 데이터를 적용합니다...")
+ 
         for week_start_str, week_list in list(schedules.items()):
             try:
                 week_start_date = datetime.strptime(week_start_str, "%Y-%m-%d").date()
@@ -819,13 +820,12 @@ def merge_overrides_to_schedules(schedules):
                     item["time"] = val.get("time", item.get("time", ""))
                     item["detail"] = val.get("detail", item.get("detail", ""))
                     item["status"] = val.get("status", item.get("status", "stream"))
-                    print(f"  -> [{actual_date_str} ({item_day})] Supabase 일정 병합: {item['time']} | {item['detail']}")
+                    print(f"  -> [{actual_date_str} ({item_day})] Supabase 반영 완료: {item['time']} | {item['detail']}")
                     
         return schedules
     except Exception as e:
-        print(f"[경고] Supabase 오버라이드 병합 중 에러 발생: {e}")
+        print(f"[경고] Supabase 오버라이드 동기화 중 예외 발생: {e}")
         return schedules
-
 
 def update_my_post(driver, modify_url, notice_text, schedule_images):
     print(f"[4/5] 내 유저 게시글 수정 페이지로 이동 중: {modify_url}")
@@ -938,7 +938,7 @@ def main():
     
     login_check_file = os.path.join(USER_DATA_DIR, ".login_done")
     is_github_actions = os.environ.get("GITHUB_ACTIONS") is not None
-    use_headless = is_github_actions or os.path.exists(login_check_file)
+    use_headless = is_github_actions
     
     driver = None
     try:
@@ -1041,11 +1041,30 @@ def main():
         if schedule_data:
             existing_schedules[current_week_key] = schedule_data
             
+        # --- [최근 5주간 누락된 아카이브 뼈대 주입] ---
+        today_date = get_kst_now().date()
+        current_monday = today_date - timedelta(days=today_date.weekday())
+        for w in range(5):
+            past_monday = current_monday - timedelta(weeks=w)
+            past_monday_str = past_monday.strftime("%Y-%m-%d")
+            if past_monday_str not in existing_schedules:
+                days_of_week = ["월", "화", "수", "목", "금", "토", "일"]
+                empty_week = []
+                for i in range(7):
+                    day_date = past_monday + timedelta(days=i)
+                    empty_week.append({
+                        "day": days_of_week[i],
+                        "date": f"{day_date.month}/{day_date.day}",
+                        "time": "공지 대기",
+                        "detail": "소통 방송"
+                    })
+                existing_schedules[past_monday_str] = empty_week
+                print(f"[보완] 누락되었던 과거 주간({past_monday_str}) 일정을 아카이브에 기본 생성해 채웠습니다.")
+
         # --- [과거 주간 일정 아카이브 재컴파일 (휴방 덮어쓰기 복구)] ---
         for week_str, week_list in list(existing_schedules.items()):
             try:
                 week_start = datetime.strptime(week_str, "%Y-%m-%d").date()
-                # 최근 35일 이내의 주간 일정 데이터만 복구 대상으로 삼아 공지사항 재매칭
                 if get_kst_now().date() - week_start <= timedelta(days=35):
                     days_of_week = ["월", "화", "수", "목", "금", "토", "일"]
                     temp_schedule = []
@@ -1056,7 +1075,6 @@ def main():
                         existing_time = existing_item.get("time", "공지 대기") if existing_item else "공지 대기"
                         existing_detail = existing_item.get("detail", "소통 방송") if existing_item else "소통 방송"
                         
-                        # "공지 대기" 이거나 "휴방"으로 변해버린 것들을 다시 분석하도록 리셋
                         if existing_time in ["공지 대기", "휴방"]:
                             existing_time = "공지 대기"
                             
@@ -1071,8 +1089,8 @@ def main():
                     sorted_notices = sorted(june_notices, key=lambda x: x.get("date", ""))
                     for notice in sorted_notices:
                         date_str = notice.get("date", "")
-                        content = notice.get("content", "")
-                        title = notice.get("title", "")
+                        content = notice.get("content", "") or ""
+                        title = notice.get("title", "") or ""
                         if not date_str or not content:
                             continue
                         notice_date_part = date_str.split(" ")[0]
