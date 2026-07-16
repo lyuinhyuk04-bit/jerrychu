@@ -213,7 +213,7 @@ def crawl_june_notices(driver, notice_board_url):
     print(f"[2/5] 공지사항 게시판({notice_board_url})에서 6월 공지글 수집 중...")
     post_urls = []
     try:
-        post_urls = crawl_latest_post_urls(driver, notice_board_url, max_count=80)
+        post_urls = crawl_latest_post_urls(driver, notice_board_url, max_count=35)
     except Exception as e:
         print(f"[오류] 공지사항 목록 가져오기 실패: {e}")
         traceback.print_exc()
@@ -307,6 +307,180 @@ def crawl_june_notices(driver, notice_board_url):
             
     print(f"총 {len(june_notices)}개의 최근 공지사항을 성공적으로 수집했습니다.")
     return june_notices
+def parse_relative_date(date_str, base_date):
+    date_str = date_str.strip()
+    if not date_str:
+        return None
+        
+    if re.match(r'^\d{4}-\d{2}-\d{2}$', date_str):
+        return date_str
+        
+    if '방금' in date_str or '분 전' in date_str or '시간 전' in date_str:
+        return base_date.strftime("%Y-%m-%d")
+        
+    m_day = re.search(r'(\d+)일\s*전', date_str)
+    if m_day:
+        days = int(m_day.group(1))
+        target_date = base_date - timedelta(days=days)
+        return target_date.strftime("%Y-%m-%d")
+        
+    m_week = re.search(r'(\d+)주\s*전', date_str)
+    if m_week:
+        weeks = int(m_week.group(1))
+        target_date = base_date - timedelta(weeks=weeks)
+        return target_date.strftime("%Y-%m-%d")
+        
+    m_month = re.search(r'(\d+)달\s*전', date_str)
+    if m_month:
+        months = int(m_month.group(1))
+        target_date = base_date - timedelta(days=months * 30)
+        return target_date.strftime("%Y-%m-%d")
+        
+    return date_str
+
+def crawl_jerry_vods(driver):
+    print("[알림] VOD(다시보기) 페이지에서 실제 생방송 내역 수집 중...")
+    vods = []
+    try:
+        url = "https://www.sooplive.com/station/rariruro/vod"
+        driver.get(url)
+        time.sleep(5)
+        
+        # 오늘 기준 날짜 (KST)
+        base_date = get_kst_now()
+        
+        a_tags = driver.find_elements(By.TAG_NAME, "a")
+        seen_urls = set()
+        
+        for a in a_tags:
+            try:
+                href = a.get_attribute("href") or ""
+                if "vod.sooplive.com/player/" not in href:
+                    continue
+                if href in seen_urls:
+                    continue
+                
+                title = a.text.strip()
+                if not title:
+                    continue
+                    
+                seen_urls.add(href)
+                
+                # 조상 블록 탐색 heuristic
+                ancestor = a
+                ancestor_text = ""
+                found = False
+                for _ in range(5):
+                    ancestor = ancestor.find_element(By.XPATH, "..")
+                    ancestor_text = ancestor.text.strip()
+                    has_date = any(kw in ancestor_text for kw in ["전", "202"])
+                    has_duration = re.search(r'\d+:\d+', ancestor_text) is not None
+                    if has_date and has_duration:
+                        found = True
+                        break
+                        
+                if not found:
+                    continue
+                    
+                lines = [l.strip() for l in ancestor_text.split('\n') if l.strip()]
+                
+                duration = "00:00"
+                date_raw = ""
+                for line in lines:
+                    if re.match(r'^\d+:\d+(:\d+)?$', line):
+                        duration = line
+                        break
+                for line in lines:
+                    if "전" in line or re.match(r'^\d{4}-\d{2}-\d{2}$', line):
+                        date_raw = line
+                        break
+                
+                parsed_date = parse_relative_date(date_raw, base_date)
+                if not parsed_date:
+                    continue
+                    
+                # 생방송 VOD 판단 필터 (클립 제외)
+                is_live_vod = False
+                parts = duration.split(':')
+                if len(parts) == 3:
+                    is_live_vod = True
+                elif len(parts) == 2:
+                    try:
+                        minutes = int(parts[0])
+                        if minutes >= 30:
+                            is_live_vod = True
+                    except ValueError:
+                        pass
+                
+                if is_live_vod:
+                    vods.append({
+                        "title": title,
+                        "duration": duration,
+                        "date": parsed_date,
+                        "url": href
+                    })
+            except Exception:
+                continue
+        print(f"[완료] 총 {len(vods)}개의 유효한 생방송 VOD를 수집했습니다.")
+    except Exception as e:
+        print(f"[오류] VOD 수집 예외 발생: {e}")
+    return vods
+
+def apply_vod_verification(schedules_dict, vod_list):
+    """
+    모든 schedules 딕셔너리에 대해 수집된 VOD 목록을 바탕으로
+    실제 방송이 켜졌던 날의 '공지 대기' or '휴방' 일정을 '방송 진행'으로 보정합니다.
+    """
+    print("[알림] VOD 데이터 기반 일정 보정 엔진 작동 중...")
+    if not vod_list:
+        return schedules_dict
+        
+    vods_by_date = {}
+    for vod in vod_list:
+        v_date = vod.get("date")
+        if v_date:
+            if v_date not in vods_by_date:
+                vods_by_date[v_date] = []
+            vods_by_date[v_date].append(vod)
+            
+    for week_str, week_list in list(schedules_dict.items()):
+        try:
+            week_start = datetime.strptime(week_str, "%Y-%m-%d").date()
+            for day_index, item in enumerate(week_list):
+                days_of_week = ["월", "화", "수", "목", "금", "토", "일"]
+                if item.get("day") in days_of_week:
+                    day_offset = days_of_week.index(item["day"])
+                    item_date = week_start + timedelta(days=day_offset)
+                    item_date_str = item_date.strftime("%Y-%m-%d")
+                    
+                    if item_date_str in vods_by_date:
+                        matched_vods = vods_by_date[item_date_str]
+                        best_vod = matched_vods[0]
+                        vod_title = best_vod.get("title", "")
+                        
+                        current_time = item.get("time", "공지 대기")
+                        if current_time in ["공지 대기", "휴방", "방송 진행 (공지 확인)"]:
+                            item["time"] = "방송 진행 (다시보기)"
+                            
+                            detail_val = "소통 방송"
+                            detail_keywords = ["CK", "배그", "종겜", "합방", "음주", "술먹방", "여우도시", "고래시티", "방셀", "마크", "삼국지", "롤", "LOL"]
+                            matched_details = []
+                            for kw in detail_keywords:
+                                if kw.lower() in vod_title.lower():
+                                    if kw.upper() == "LOL":
+                                        matched_details.append("롤")
+                                    else:
+                                        matched_details.append(kw)
+                            if matched_details:
+                                matched_details = list(dict.fromkeys(matched_details))
+                                detail_val = ", ".join(matched_details)
+                            
+                            item["detail"] = f"{detail_val} (다시보기)"
+                            print(f"[보정 완료] {item_date_str} 일정이 VOD 기반으로 복구되었습니다: {item['time']} / {item['detail']}")
+        except Exception as e:
+            print(f"[경고] VOD 기반 일정 보정 중 에러 ({week_str}): {e}")
+            
+    return schedules_dict
 
 def compile_weekly_schedule(notices):
     today = get_kst_now().date()
@@ -801,6 +975,14 @@ def main():
             print(f"[오류] 공지사항 크롤링 단계 실패: {e}")
             traceback.print_exc()
 
+        # --- [1.5] VOD(다시보기) 수집 (예외 차단 격리) ---
+        vod_data = []
+        try:
+            vod_data = crawl_jerry_vods(driver)
+        except Exception as e:
+            print(f"[오류] VOD 다시보기 수집 실패: {e}")
+            traceback.print_exc()
+
         # --- [2] 주간 일정표 컴파일 (예외 차단 격리) ---
         schedule_data = []
         try:
@@ -993,6 +1175,9 @@ def main():
                     existing_schedules[week_str] = temp_schedule
             except Exception as e:
                 print(f"[경고] 과거 일정 재컴파일 중 에러 ({week_str}): {e}")
+
+        # --- [VOD 데이터 기반 일정 보정] ---
+        existing_schedules = apply_vod_verification(existing_schedules, vod_data)
 
         # --- [수동 수정 오버라이드 병합 후처리] ---
         existing_schedules = merge_overrides_to_schedules(existing_schedules)
