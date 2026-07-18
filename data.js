@@ -1,5 +1,5 @@
 const JERRY_DATA = {
-    "updated_at": "2026-07-19 03:38:25",
+    "updated_at": "2026-07-19 04:52:52",
     "is_live": true,
     "notice_text": "여러분 저희 아니언니 멸망전 업 \n부탁드릴게요 긴급합니다 ㅠㅠㅠ 부탁드려요...\nhttps://gamevote.sooplive.com/\n\n\n제발요!!!!!!!!!!!!!!!!!!!!!!!!!!!!!",
     "images": [],
