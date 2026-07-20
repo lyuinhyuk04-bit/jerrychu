@@ -1,5 +1,5 @@
 const JERRY_DATA = {
-    "updated_at": "2026-07-20 10:14:07",
+    "updated_at": "2026-07-20 13:56:21",
     "is_live": false,
     "notice_text": "머지?\n꿈에서 일기썼나...\n\n\n오늘은 뽀스 패션쇼 콘텐츠를 진행했다\n생각보다 애들이 진심으로\n뽀스와 잘 어울리게 의상을 준비했다\n하나같이 이쁘고 잘어울렸다!\n하지만 ㅎㅡㅎ벗\n3개팀 중 우리 의상이 인기가\n가장좋아따 뿌듯했다!\n\n\n그다음 짧게 지력과\n마크 연습을하고\n오랜만에 후열소통을\n재밌게 진행했다ㅎㅅㅎ\n소통은 시간이 참 빠른 것 같다\n눈깜빡하니 소통한지 2시간이 지났당\n배고파서 인사드리고\n일찍 방종해따\n방종 후 짜짜파게를 끓여먹고\n쉬다가 깜빡잠들고 지금 일기를 쓴다ㅎ...\n츄앙이들 모두 고생많았구\n이번주도 화이팅 해보아요!\n저는 휴방 잘하구\n수요일날 뵙겠습니당\n오늘도 쫗은밤 ~~~ ❤️",
     "images": [],
@@ -600,6 +600,7 @@ const JERRY_DATA = {
         ]
     },
     "fanarts": [
+        "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/36796a5da6556ac8f.png",
         "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/10526a53e4a53eb37.png",
         "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/47956a5337ee44fd5.png",
         "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/33576a5337ee728a1.png",
@@ -626,8 +627,6 @@ const JERRY_DATA = {
         "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/94476a1a66ca75ead.png",
         "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/36936a19a35cbd8f6.png",
         "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/67126a196e22aa7d9.png",
-        "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/96496a186bc3ef52c.png",
-        "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/39776a183cbe15826.jpg",
-        "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/88016a183cba49608.png"
+        "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/96496a186bc3ef52c.png"
     ]
 };
