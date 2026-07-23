@@ -1,9 +1,15 @@
 const JERRY_DATA = {
-    "updated_at": "2026-07-23 18:45:00",
+    "updated_at": "2026-07-23 20:38:01",
     "is_live": true,
-    "notice_text": "스킬공개가 늦어진다고해욤\n밤 8시 라구해서\n저두 좀 더 일하고 쉬다가\n저녁에 올게욤 오후 6시 생각중\n  정수기 점검도 온다구해서\n마무리하구 올게욤\n잠 다 깼는뎅 ㅋㅡㅋ\n킬까말까 고민 많이하다\n저녁에 피곤할까 츄단해써요.\n오늘도 쫗은하루 보내시고\n저녁에 뵈어요 ~~~ ❤️",
+    "notice_text": "https://www.sooplive.com/station/cnsgkcnehd74/post/202213903\n\n\n마크 테스터 모집하고있숩니당\n엄청 기대되는데 맘같아선\n제가하고싶운데.. 플레이 하는 사람들은 안된다고해서\n부탁드려요!!!\n한번만요!!!",
     "images": [],
     "notices": [
+        {
+            "title": "부탁드립니다 RPG 좋아하시는 횬님들",
+            "date": "2026-07-23 19:30:34",
+            "url": "https://www.sooplive.com/station/rariruro/post/202265001",
+            "content": "https://www.sooplive.com/station/cnsgkcnehd74/post/202213903\n\n\n마크 테스터 모집하고있숩니당\n엄청 기대되는데 맘같아선\n제가하고싶운데.. 플레이 하는 사람들은 안된다고해서\n부탁드려요!!!\n한번만요!!!"
+        },
         {
             "title": "흠냥",
             "date": "2026-07-23 12:31:50",
@@ -207,12 +213,6 @@ const JERRY_DATA = {
             "date": "2026-06-29 03:21:58",
             "url": "https://www.sooplive.com/station/rariruro/post/200002327",
             "content": "일기 짧게 쓸거임요\n어차피 안 읽자나 -ㅁ-;\n\n\n삼연서버마크 처음으로 해봤는데\n뽀스가 팔라딘 히든 해보라고해서\n했는 데 은근 재밌는 것 같기도하고..\n \n원래 나서는 성격 아니라 오더 안하는데\n오늘 처음으로 오더츄 해보았습니다.\n대신목이 넘모아프네용...\n \n끝나고 나머지 공부도 쪼끔 했습니당\n월요일 원래 휴방인데 쌀레나로\n늦게 방송 키도록 하겠씁니당!\n \n늘 감사해요 응원해주고\n봐주셔서 ㅎ-ㅎ❤️\n \n쫗은 꿈 꿔요 츄앙이들❤️"
-        },
-        {
-            "title": "❤️제리츄 일정❤️",
-            "date": "2026-06-29 01:43:54",
-            "url": "https://www.sooplive.com/station/rariruro/post/199995159",
-            "content": "https://jerrychu.vercel.app/\n\n\n \n \n참고하시옵서소"
         },
         {
             "title": "오늘 일기는",
