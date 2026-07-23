@@ -1,5 +1,5 @@
 const JERRY_DATA = {
-    "updated_at": "2026-07-23 20:38:01",
+    "updated_at": "2026-07-23 22:15:15",
     "is_live": true,
     "notice_text": "https://www.sooplive.com/station/cnsgkcnehd74/post/202213903\n\n\n마크 테스터 모집하고있숩니당\n엄청 기대되는데 맘같아선\n제가하고싶운데.. 플레이 하는 사람들은 안된다고해서\n부탁드려요!!!\n한번만요!!!",
     "images": [],
