@@ -1,6 +1,6 @@
 const JERRY_DATA = {
-    "updated_at": "2026-07-27 03:49:54",
-    "is_live": true,
+    "updated_at": "2026-07-27 05:03:11",
+    "is_live": false,
     "notice_text": "새벽 영업 뚜ㅣ러왔씁니다\n가보짜아~~~\n주무시는 분들은 좋은 꿈 꾸고\n심심하면 놀러와요❤️",
     "images": [],
     "notices": [
