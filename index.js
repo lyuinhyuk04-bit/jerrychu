@@ -837,6 +837,8 @@ function initEvents() {
     }
 
     function renderEventPreviews() {
+        const previewContainer = document.getElementById("event-thumbnail-preview-container");
+        const fileInput = document.getElementById("event-thumbnail-file");
         if (!previewContainer) return;
         previewContainer.innerHTML = "";
         
@@ -987,12 +989,11 @@ function initEvents() {
                     document.getElementById("event-url").value = ogData.url || url;
                     
                     if (ogData.image) {
-                        window.eventThumbnailBase64 = ogData.image;
-                        if (previewImg) previewImg.src = ogData.image;
-                        if (previewContainer) previewContainer.style.display = "block";
+                        window.eventThumbnailBase64s = [ogData.image];
+                        renderEventPreviews();
                     } else {
-                        window.eventThumbnailBase64 = "";
-                        if (previewContainer) previewContainer.style.display = "none";
+                        window.eventThumbnailBase64s = [];
+                        renderEventPreviews();
                     }
                     alert("이벤트 정보를 정상적으로 로드했습니다!");
                 } else {
@@ -1137,7 +1138,7 @@ function openEventEditModal(eventId) {
     window.editingEventId = eventId;
     window.eventThumbnailBase64s = event.images || (event.image ? [event.image] : []);
     
-    document.getElementById("event-edit-modal-title").innerText = "이벤트 수정";
+    document.getElementById("event-edit-modal-title").innerText = "이벤트 등록";
     document.getElementById("event-title").value = event.title;
     document.getElementById("event-start-date").value = event.startDate;
     document.getElementById("event-end-date").value = event.endDate;
@@ -1153,7 +1154,7 @@ function openEventEditModal(eventId) {
     
     renderEventPreviews();
 
-    if (btnDeleteEvent) btnDeleteEvent.style.display = "inline-flex";
+    if (btnDeleteEvent) btnDeleteEvent.style.display = "none";
     
     const eventEditModal = document.getElementById("event-edit-modal");
     if (eventEditModal) eventEditModal.style.display = "flex";
