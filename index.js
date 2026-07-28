@@ -750,7 +750,7 @@ function initEvents() {
     if (btnOpenEventAdd) {
         btnOpenEventAdd.addEventListener("click", () => {
             window.editingEventId = null;
-            window.eventThumbnailBase64 = "";
+            window.eventThumbnailBase64s = [];
             document.getElementById("event-edit-modal-title").innerText = "이벤트 등록";
             
             // 폼 초기화
@@ -811,27 +811,102 @@ function initEvents() {
         }
     }
 
-    // 4) 썸네일 이미지 업로드 시 Base64 변환 및 압축 캐싱
+    // 4) 썸네일 이미지 업로드 시 Base64 변환 및 압축 캐싱 (다중 이미지 지원)
     if (fileInput) {
         fileInput.addEventListener("change", (e) => {
-            const file = e.target.files[0];
-            if (file) {
-                resizeAndEncodeImage(file, (base64Str) => {
-                    window.eventThumbnailBase64 = base64Str;
-                    if (previewImg) previewImg.src = base64Str;
-                    if (previewContainer) previewContainer.style.display = "block";
-                });
+            const files = e.target.files;
+            if (files && files.length > 0) {
+                if (!window.eventThumbnailBase64s) {
+                    window.eventThumbnailBase64s = [];
+                }
+                
+                let loadedCount = 0;
+                const targetCount = files.length;
+                
+                for (let i = 0; i < files.length; i++) {
+                    resizeAndEncodeImage(files[i], (base64Str) => {
+                        window.eventThumbnailBase64s.push(base64Str);
+                        loadedCount++;
+                        if (loadedCount === targetCount) {
+                            renderEventPreviews();
+                        }
+                    });
+                }
             }
         });
     }
 
-    // 5) 이미지 미리보기 제거
-    if (btnRemovePreview) {
-        btnRemovePreview.addEventListener("click", () => {
-            window.eventThumbnailBase64 = "";
-            if (fileInput) fileInput.value = "";
-            if (previewContainer) previewContainer.style.display = "none";
-        });
+    function renderEventPreviews() {
+        if (!previewContainer) return;
+        previewContainer.innerHTML = "";
+        
+        if (window.eventThumbnailBase64s && window.eventThumbnailBase64s.length > 0) {
+            const imgWrap = document.createElement("div");
+            imgWrap.style.display = "flex";
+            imgWrap.style.flexWrap = "wrap";
+            imgWrap.style.gap = "8px";
+            imgWrap.style.justify = "center";
+            imgWrap.style.marginBottom = "8px";
+            
+            window.eventThumbnailBase64s.forEach((base64, index) => {
+                const item = document.createElement("div");
+                item.style.position = "relative";
+                item.style.display = "inline-block";
+                
+                const img = document.createElement("img");
+                img.src = base64;
+                img.style.maxHeight = "80px";
+                img.style.borderRadius = "6px";
+                img.style.border = "1px solid var(--border-color)";
+                
+                const delBtn = document.createElement("button");
+                delBtn.type = "button";
+                delBtn.innerHTML = "&times;";
+                delBtn.style.position = "absolute";
+                delBtn.style.top = "-4px";
+                delBtn.style.right = "-4px";
+                delBtn.style.background = "red";
+                delBtn.style.color = "white";
+                delBtn.style.border = "none";
+                delBtn.style.borderRadius = "50%";
+                delBtn.style.width = "18px";
+                delBtn.style.height = "18px";
+                delBtn.style.display = "flex";
+                delBtn.style.alignItems = "center";
+                delBtn.style.justifyContent = "center";
+                delBtn.style.cursor = "pointer";
+                delBtn.style.fontSize = "12px";
+                delBtn.style.fontWeight = "bold";
+                
+                delBtn.addEventListener("click", () => {
+                    window.eventThumbnailBase64s.splice(index, 1);
+                    renderEventPreviews();
+                });
+                
+                item.appendChild(img);
+                item.appendChild(delBtn);
+                imgWrap.appendChild(item);
+            });
+            
+            previewContainer.appendChild(imgWrap);
+            
+            const removeAllBtn = document.createElement("button");
+            removeAllBtn.type = "button";
+            removeAllBtn.className = "btn-editor";
+            removeAllBtn.style.padding = "4px 8px";
+            removeAllBtn.style.fontSize = "0.75rem";
+            removeAllBtn.innerHTML = `<i class="fa-solid fa-trash"></i> 전체 제거`;
+            removeAllBtn.addEventListener("click", () => {
+                window.eventThumbnailBase64s = [];
+                if (fileInput) fileInput.value = "";
+                renderEventPreviews();
+            });
+            previewContainer.appendChild(removeAllBtn);
+            
+            previewContainer.style.display = "block";
+        } else {
+            previewContainer.style.display = "none";
+        }
     }
 
     // 6) 링크 불러오기 (Open Graph 파서 API 호출 및 CORS 프록시 폴백)
@@ -962,7 +1037,8 @@ function initEvents() {
                 endDate: endDate,
                 desc: desc,
                 url: url,
-                image: window.eventThumbnailBase64
+                image: (window.eventThumbnailBase64s && window.eventThumbnailBase64s.length > 0) ? window.eventThumbnailBase64s[0] : "",
+                images: window.eventThumbnailBase64s || []
             };
 
             if (window.editingEventId) {
@@ -1059,7 +1135,7 @@ function openEventEditModal(eventId) {
     if (!event) return;
 
     window.editingEventId = eventId;
-    window.eventThumbnailBase64 = event.image || "";
+    window.eventThumbnailBase64s = event.images || (event.image ? [event.image] : []);
     
     document.getElementById("event-edit-modal-title").innerText = "이벤트 수정";
     document.getElementById("event-title").value = event.title;
@@ -1075,12 +1151,7 @@ function openEventEditModal(eventId) {
     
     if (fileInput) fileInput.value = "";
     
-    if (event.image) {
-        if (previewImg) previewImg.src = event.image;
-        if (previewContainer) previewContainer.style.display = "block";
-    } else {
-        if (previewContainer) previewContainer.style.display = "none";
-    }
+    renderEventPreviews();
 
     if (btnDeleteEvent) btnDeleteEvent.style.display = "inline-flex";
     
@@ -1118,11 +1189,22 @@ function openEventDetailModal(eventId) {
     const imgContainer = document.getElementById("event-detail-img-container");
     const detailImg = document.getElementById("event-detail-img");
     
-    if (event.image) {
-        if (detailImg) detailImg.src = event.image;
-        if (imgContainer) imgContainer.style.display = "block";
+    const eventImages = event.images || (event.image ? [event.image] : []);
+    if (eventImages && eventImages.length > 0) {
+        let imagesHtml = "";
+        eventImages.forEach((imgSrc) => {
+            imagesHtml += `<img src="${imgSrc}" class="event-detail-slide-img" style="max-width: 100%; max-height: 350px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); flex-shrink:0; scroll-snap-align:center;" alt="포스터" />`;
+        });
+        
+        imgContainer.innerHTML = `
+            <div id="event-detail-images-wrapper" style="display: flex; gap: 10px; overflow-x: auto; padding: 10px 0; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; justify-content: center; width: 100%;">
+                ${imagesHtml}
+            </div>
+        `;
+        imgContainer.style.display = "block";
     } else {
-        if (imgContainer) imgContainer.style.display = "none";
+        imgContainer.style.display = "none";
+        imgContainer.innerHTML = "";
     }
     
     const linkBtn = document.getElementById("btn-detail-link");
