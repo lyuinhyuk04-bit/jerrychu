@@ -235,9 +235,16 @@
 
     <!-- 이벤트 등록/수정 모달 -->
     <div id="event-edit-modal" class="modal">
-        <div class="modal-content-wrapper glass-card" style="max-width: 500px;">
+        <div class="modal-content-wrapper glass-card" style="max-width: 500px; max-height: 90vh; overflow-y: auto;">
             <span id="event-edit-modal-close" class="modal-close">&times;</span>
-            <h3 id="event-edit-modal-title">이벤트 등록</h3>
+            
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding-right: 25px;">
+                <h3 id="event-edit-modal-title" style="margin: 0; font-size: 1.3rem;">이벤트 등록</h3>
+                <div class="modal-actions" style="margin: 0; display: flex; gap: 8px; align-items: center;">
+                    <button type="button" id="btn-delete-event" class="btn-editor" style="display: none; background: rgba(255, 75, 75, 0.15); color: hsl(0, 85%, 45%); border-color: hsla(0, 85%, 45%, 0.3); padding: 6px 12px; font-size: 0.85rem;"><i class="fa-solid fa-trash"></i> 삭제</button>
+                    <button type="button" id="btn-save-event" class="btn-submit" style="margin-top: 0; padding: 6px 16px; font-size: 0.85rem;">저장하기</button>
+                </div>
+            </div>
             
             <!-- 등록 방식 선택 탭 -->
             <div class="event-type-tabs" style="display: flex; gap: 8px; margin-bottom: 15px;">
@@ -291,11 +298,6 @@
                         <img id="event-thumbnail-preview" src="" style="max-height: 120px; border-radius: 8px; border: 1px solid var(--border-color);" alt="미리보기" />
                         <button type="button" id="btn-remove-preview" class="btn-editor" style="margin-top: 5px; padding: 4px 8px; font-size: 0.75rem;"><i class="fa-solid fa-trash"></i> 제거</button>
                     </div>
-                </div>
-
-                <div class="modal-actions" style="margin-top: 15px; display: flex; justify-content: flex-end; gap: 8px;">
-                    <button type="button" id="btn-delete-event" class="btn-editor" style="display: none; background: rgba(255, 75, 75, 0.15); color: hsl(0, 85%, 45%); border-color: hsla(0, 85%, 45%, 0.3);"><i class="fa-solid fa-trash"></i> 삭제</button>
-                    <button type="button" id="btn-save-event" class="btn-submit" style="margin-top: 0; padding: 8px 20px;">저장하기</button>
                 </div>
             </div>
         </div>
