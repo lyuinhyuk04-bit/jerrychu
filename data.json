@@ -1,9 +1,15 @@
 {
-    "updated_at": "2026-07-30 09:19:04",
-    "is_live": false,
-    "notice_text": "오늘은 11시 30분 뱅온입니당!\n몰입도 올리기위해 삼국지 PPT함 더 봐볼게욤\n33 330 990 연차 룰렛\n100, 1000개 혜자뽑기 있쒀요.\n중간에 도파민 핀볼까쥐 ~~\n곧 뵈어요 ㅎㅡㅎ\n쫗은하루",
+    "updated_at": "2026-07-30 12:40:13",
+    "is_live": true,
+    "notice_text": "모 세팅한다구 시간 순삭 ㅎㅡㅎ\n오늘은 오후 12시 30분 안에\n뱅온할게요 ㅎㅅㅎ\n점심은 머드시나요?\n난 머먹지 \n오늘도 도파민핀볼, 뽑기 가보쟈\n쫗흔하루 보내시면서\n곧 뵈어요!",
     "images": [],
     "notices": [
+        {
+            "title": "하잇",
+            "date": "2026-07-30 12:05:19",
+            "url": "https://www.sooplive.com/station/rariruro/post/202874251",
+            "content": "모 세팅한다구 시간 순삭 ㅎㅡㅎ\n오늘은 오후 12시 30분 안에\n뱅온할게요 ㅎㅅㅎ\n점심은 머드시나요?\n난 머먹지 \n오늘도 도파민핀볼, 뽑기 가보쟈\n쫗흔하루 보내시면서\n곧 뵈어요!"
+        },
         {
             "title": "휴 혜자방송",
             "date": "2026-07-29 10:56:29",
@@ -191,12 +197,6 @@
             "content": "포스터만들구 일하다보니\n왜 벌써 새벽 2시인거지요~~?_?\n일기 까먹기 전에 끄적끄적 해보겠소.\n오늘 오후 1시부터 8시 조금 넘어까지\n위나라 모두와 연습했는데\n진짜 너무 재밌었어요 ㅎ-ㅎ\n\n\n뭔가 버인친구들과 하다가\n다른 팀원분들과도 하니까\n놓쳤던 부분도 잡게되고 공부도 많이되는 것 같아욤\n그리구\n오늘도 레전드 api 도파민 사다리 흐흐흐\n나 요즘 사다리운 미쳐써 감사합니다 ❤️\n그다음 후열로 소통하면서\n다른분들 api 공약을 봤는 데...\n이거야 뭐 대대적인 변경이 필요하겠소...\n허허허\n\n\n아...아무튼 그래서 바쁠예정\n지금도 일 어느정도 마무리하고\n이제 막 쉬려구욤\n오늘은 밤 6시에 와서\n테이큰보고\n오후 9시에 미스테리 대저택 w. 화양\n콘텐츠 있어요 많관부~~~\n오늘도 감사한 하루입니다.\n모두 쫗은 밤 보내세요~~~❤️"
         },
         {
-            "title": "오뱅",
-            "date": "2026-07-11 12:18:57",
-            "url": "https://www.sooplive.com/station/rariruro/post/201151275",
-            "content": "오후 1시부터\n위나라 삼연서버 연습있습니당\n오늘 딥하게 한다구해서 아마\n거의 6 ~ 7시간 진행할듯 해요ㅎㅎ...\n\n\n그래서 오늘은 오후 12시 30분 쯤\n오도록 하겠습니당\n오늘 집중해서\n끝까지 잘 해보고싶네욤...\n점심식사 맛있게하시구\n오늘도 쫗은 주말 보내세요\n곧 뵈어요 ~~🧡"
-        },
-        {
             "title": "흐ㅓ이흉",
             "date": "2026-07-11 01:50:19",
             "url": "https://www.sooplive.com/station/rariruro/post/201124709",
@@ -267,7 +267,7 @@
         {
             "day": "목",
             "date": "7/30",
-            "time": "공지 대기",
+            "time": "오후 12:30 방송",
             "detail": "소통 방송"
         },
         {
@@ -544,7 +544,7 @@
             {
                 "day": "토",
                 "date": "7/11",
-                "time": "오후 12:30 방송",
+                "time": "오후 1:00 방송",
                 "detail": "소통 방송"
             },
             {
@@ -620,7 +620,7 @@
             {
                 "day": "목",
                 "date": "7/30",
-                "time": "공지 대기",
+                "time": "오후 12:30 방송",
                 "detail": "소통 방송"
             },
             {
@@ -645,24 +645,19 @@
     },
     "fanarts": [
         "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/19506a5eda65c3b4e.jpg",
-        "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/89546a5eda67dcaf7.png",
+        "https://res.sooplive.com/images/channel/en_US/ImageLoadingLight.gif",
         "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/36796a5da6556ac8f.png",
         "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/10526a53e4a53eb37.png",
         "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/47956a5337ee44fd5.png",
-        "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/33576a5337ee728a1.png",
-        "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/24636a535c2170690.png",
         "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/51666a50ee2c0aab6.png",
         "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/14836a50ef673f597.gif",
         "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/60406a50e700c9bd3.gif",
         "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/40176a50e3b4744e5.png",
-        "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/32736a50e2a00c066.png",
-        "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/17506a50e395e28cb.gif",
         "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/75536a45d4691f5e9.png",
         "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/13796a4166bbe19e5.png",
         "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/93826a4151243f24b.png",
         "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/32116a414f584c641.png",
         "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/86416a41502e448e2.png",
-        "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/29896a4150d32d73e.png",
         "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/11306a414d82db230.png",
         "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/67506a414c7f8d25c.png",
         "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/19496a4115b75a670.jpeg",
