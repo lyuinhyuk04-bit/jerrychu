@@ -1,6 +1,6 @@
 const JERRY_DATA = {
-    "updated_at": "2026-07-31 01:59:04",
-    "is_live": false,
+    "updated_at": "2026-07-31 03:22:05",
+    "is_live": true,
     "notice_text": "풀트세팅 하는중 흠흠 ㅋ...\n오랜만에 새벽에 간단하게\n놀아보자구 ㅎㅅㅎ\n일단 12시 회의끝나고 재공지 써요!\nㅎㅡㅎ 이따가 보아요.",
     "images": [],
     "notices": [
