@@ -666,10 +666,53 @@ function renderMonthlyCalendar() {
             dayCard.classList.add("stream");
         }
 
+        // 해당 날짜에 진행 중인 이벤트(jerry_events) 검색하여 뱃지 조립
+        let dayEvents = [];
+        try {
+            const savedEvts = localStorage.getItem("jerry_events");
+            const allEvts = savedEvts ? JSON.parse(savedEvts) : [];
+            dayEvents = allEvts.filter(evt => {
+                const start = new Date(evt.startDate.replace(/-/g, "/"));
+                start.setHours(0,0,0,0);
+                const end = new Date(evt.endDate.replace(/-/g, "/"));
+                end.setHours(23,59,59,999);
+                const current = new Date(year, month - 1, day);
+                return current >= start && current <= end;
+            });
+        } catch(err) {}
+
+        let eventBadgesHtml = "";
+        if (dayEvents.length > 0) {
+            dayEvents.forEach(evt => {
+                eventBadgesHtml += `
+                    <div class="day-event-badge" title="${evt.title}" style="
+                        font-size: 0.72rem;
+                        background: var(--gradient-hero);
+                        color: #fff;
+                        padding: 2px 6px;
+                        border-radius: 4px;
+                        margin-top: 4px;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        white-space: nowrap;
+                        max-width: 100%;
+                        display: flex;
+                        align-items: center;
+                        gap: 4px;
+                        box-shadow: 0 2px 6px rgba(142, 68, 232, 0.15);
+                    ">
+                        <i class="fa-solid fa-gift" style="font-size: 0.6rem;"></i>
+                        <span>${evt.title}</span>
+                    </div>
+                `;
+            });
+        }
+
         dayCard.innerHTML = `
             <div class="day-number">${day}</div>
             <div class="day-time-text">${timeText}</div>
             ${detailText ? `<div class="day-detail-text" title="${detailText}">${detailText}</div>` : ''}
+            ${eventBadgesHtml}
         `;
 
         dayCard.addEventListener("click", () => {
@@ -1233,10 +1276,11 @@ function getEventStatus(startDateStr, endDateStr) {
     const today = new Date();
     today.setHours(0, 0, 0, 0); // KST 자정 기준 설정
     
-    const start = new Date(startDateStr);
+    // 모바일 브라우저(Safari 등) 및 타임존 파싱 호환성을 위해 대시(-)를 슬래시(/)로 치환하여 객체 생성
+    const start = new Date(startDateStr.replace(/-/g, "/"));
     start.setHours(0, 0, 0, 0);
     
-    const end = new Date(endDateStr);
+    const end = new Date(endDateStr.replace(/-/g, "/"));
     end.setHours(23, 59, 59, 999);
 
     if (today < start) {
