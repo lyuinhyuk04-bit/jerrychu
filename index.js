@@ -1178,6 +1178,18 @@ function openEventEditModal(eventId) {
         events = saved ? JSON.parse(saved) : [];
     } catch (e) {}
 
+    // 과거 데이터 호환성 보장 (id가 없는 이벤트들에 고유 ID 부여)
+    let hasMigration = false;
+    events.forEach((e, idx) => {
+        if (!e.id) {
+            e.id = "evt_" + (new Date().getTime() + idx);
+            hasMigration = true;
+        }
+    });
+    if (hasMigration) {
+        localStorage.setItem("jerry_events", JSON.stringify(events));
+    }
+
     const event = events.find(e => e.id === eventId);
     if (!event) return;
 
@@ -1305,6 +1317,18 @@ function renderEvents() {
         const saved = localStorage.getItem("jerry_events");
         events = saved ? JSON.parse(saved) : [];
     } catch (e) {}
+
+    // 과거 데이터 호환성 보장 (id가 없는 이벤트들에 고유 ID 부여)
+    let hasMigration = false;
+    events.forEach((e, idx) => {
+        if (!e.id) {
+            e.id = "evt_" + (new Date().getTime() + idx);
+            hasMigration = true;
+        }
+    });
+    if (hasMigration) {
+        localStorage.setItem("jerry_events", JSON.stringify(events));
+    }
 
     gridElem.innerHTML = "";
 
