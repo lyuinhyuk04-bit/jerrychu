@@ -769,6 +769,9 @@ window.eventThumbnailBase64 = ""; // 전역 이미지 임시 캐시
 window.editingEventId = null; // 수정 중인 이벤트 ID
 
 function initEvents() {
+    if (window.isEventsInitialized) return;
+    window.isEventsInitialized = true;
+
     const btnOpenEventAdd = document.getElementById("btn-open-event-add");
     const eventEditModal = document.getElementById("event-edit-modal");
     const eventEditModalClose = document.getElementById("event-edit-modal-close");
