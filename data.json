@@ -1,6 +1,6 @@
 {
-    "updated_at": "2026-08-13 00:12:29",
-    "is_live": true,
+    "updated_at": "2026-08-13 01:12:36",
+    "is_live": false,
     "notice_text": "올만에 저녁뱅ㅋ-ㅋ\n짧뱅하면서 수다떨고\n일정 잡아볼거에욤\n아까 낮에 이어서 하려고했는데\n숲이슈가 있어서 ㅇ-ㅇ \n2부 가보쟈\n오후 9시 30분 뱅온",
     "images": [],
     "notices": [
@@ -708,6 +708,8 @@
         ]
     },
     "fanarts": [
+        "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/58581786548284138.png",
+        "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/31001786548286554.png",
         "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/19506a5eda65c3b4e.jpg",
         "https://res.sooplive.com/images/channel/en_US/ImageLoadingLight.gif",
         "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/36796a5da6556ac8f.png",
@@ -730,7 +732,6 @@
         "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/13366a260c9927bb3.png",
         "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/22646a1a66b0bc519.png",
         "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/94476a1a66ca75ead.png",
-        "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/36936a19a35cbd8f6.png",
-        "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/67126a196e22aa7d9.png"
+        "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/36936a19a35cbd8f6.png"
     ]
 }
