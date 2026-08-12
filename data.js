@@ -1,5 +1,5 @@
 const JERRY_DATA = {
-    "updated_at": "2026-08-12 18:52:12",
+    "updated_at": "2026-08-12 19:49:32",
     "is_live": false,
     "notice_text": "https://www.sooplive.com/station/ecvhao/post/204050719#comment_noti119645349\n\n\n진짜 고민 많이하다가 해보고싶어서\n용기내서 지원했습니당.... \n도아주실분 구함 ..ㅎ-ㅎ !!!",
     "images": [],
