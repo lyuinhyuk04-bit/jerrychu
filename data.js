@@ -1,14 +1,20 @@
 const JERRY_DATA = {
-    "updated_at": "2026-08-13 23:04:54",
+    "updated_at": "2026-08-14 00:13:09",
     "is_live": true,
-    "notice_text": "https://www.sooplive.com/station/243000/post/204193191#comment_noti119732031\n\n\n축구를 하고싶다면 꼭\n배워야할 선생님이라고 합ㄴ비다...\n너무 탐납니다... !!!\n한번만 도아주십시오!!!",
+    "notice_text": "제리츄 방송성장하라고 한번씩만..눌러주시면 안될까염...히..히\nhttps://www.sooplive.com/station/chaenna02/post/204225197#comment_noti119734079\n\n\n내동생 아이도루 챈나의 경도 한번도 안해봤ㅎㄴ둔데 ㅠㅠㅠㅠ\n진짜 해보고싶었어요!! 한번만여!!!",
     "images": [],
     "notices": [
+        {
+            "title": "하...요즘 하고싶은 게 너무많은데",
+            "date": "2026-08-13 23:26:53",
+            "url": "https://www.sooplive.com/station/rariruro/post/204227089",
+            "content": "제리츄 방송성장하라고 한번씩만..눌러주시면 안될까염...히..히\nhttps://www.sooplive.com/station/chaenna02/post/204225197#comment_noti119734079\n\n\n내동생 아이도루 챈나의 경도 한번도 안해봤ㅎㄴ둔데 ㅠㅠㅠㅠ\n진짜 해보고싶었어요!! 한번만여!!!"
+        },
         {
             "title": "와 배우려고하니까 이런기회가",
             "date": "2026-08-13 22:41:32",
             "url": "https://www.sooplive.com/station/rariruro/post/204221505",
-            "content": "https://www.sooplive.com/station/243000/post/204193191#comment_noti119732031\n\n\n축구를 하고싶다면 꼭\n배워야할 선생님이라고 합ㄴ비다...\n너무 탐납니다... !!!\n한번만 도아주십시오!!!"
+            "content": "https://www.sooplive.com/station/243000/post/204193191#comment_noti119732031\n\n\n축구를 하고싶다면 꼭\n배워야할 선생님이라고 합ㄴ비다...\n너무 탐납니다... !!!\n한번만 도아주십시오!!!\nhttps://www.sooplive.com/station/chaenna02/post/204225197#comment_noti119734079\n\n\n내동생 아이도루 챈나의 경도 한번도 안해봤ㅎㄴ둔데 ㅠㅠㅠㅠ\n진짜 해보고싶었어요!! 한번만여!!!"
         },
         {
             "title": "심심해서 2부 키기",
@@ -141,12 +147,6 @@ const JERRY_DATA = {
             "date": "2026-07-29 02:50:30",
             "url": "https://www.sooplive.com/station/rariruro/post/202765085",
             "content": "벌써 3일후면 삼국지 시작이네요..\n실감이 나지 않네\n오늘 삼국지 PPT보니까\n더더더 하고싶어요 휴...!!\n오늘도 많이 후원해주셔서\n감사합니다 ㅜㅅㅜ...\n \n\n\n하루 한끼 제대로 먹기가 힘드넴..\n방종하자마자 라면머금 ㅎㅅㅎ\n일 좀하다가 아침일찍 올 수 있음\n올게욤 오늘도 좋은 밤 보내세요!"
-        },
-        {
-            "title": "오뱅은",
-            "date": "2026-07-28 17:36:14",
-            "url": "https://www.sooplive.com/station/rariruro/post/202707011",
-            "content": "츄하\n오늘은 오후 6시 30분에\n방송키도록 하겠습니당ㅎㅡㅎ\n 8시에 드디어 전체적인 삼국지\nPPT가 나온다고 해서 많이 설레네욤\n오늘와서 뽑기판 제대로 해보고\n재밌게 같이봐욤\n레전드혜자 뽑끼판 어서오세요!"
         },
         {
             "title": "우앗",
@@ -591,7 +591,7 @@ const JERRY_DATA = {
                 "day": "화",
                 "date": "7/28",
                 "time": "오후 6:30 방송",
-                "detail": "소통 방송"
+                "detail": "음주"
             },
             {
                 "day": "수",
