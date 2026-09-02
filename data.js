@@ -1,6 +1,6 @@
 const JERRY_DATA = {
-    "updated_at": "2026-09-02 08:27:25",
-    "is_live": true,
+    "updated_at": "2026-09-02 10:16:18",
+    "is_live": false,
     "notice_text": ">>> \n해캣몬 위키\n\n   <<<\n해캣몬 API 목록\n룰렛 항목 100개, 300개(3회), 500개(5회) 연차 있습니당\n1000(11회), 3000개(33회), 5000개(33회) + 확률업",
     "images": [],
     "notices": [
