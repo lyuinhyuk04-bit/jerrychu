@@ -460,7 +460,7 @@ def apply_vod_verification(schedules_dict, vod_list):
                         
                         current_time = item.get("time", "공지 대기")
                         if current_time in ["공지 대기", "휴방", "방송 진행 (공지 확인)"]:
-                            item["time"] = "방송 진행 (다시보기)"
+                            item["time"] = "방송 진행"
                             
                             detail_val = "소통 방송"
                             detail_keywords = ["CK", "배그", "종겜", "합방", "음주", "술먹방", "여우도시", "고래시티", "방셀", "마크", "삼국지", "롤", "LOL"]
@@ -475,7 +475,7 @@ def apply_vod_verification(schedules_dict, vod_list):
                                 matched_details = list(dict.fromkeys(matched_details))
                                 detail_val = ", ".join(matched_details)
                             
-                            item["detail"] = f"{detail_val} (다시보기)"
+                            item["detail"] = detail_val
                             print(f"[보정 완료] {item_date_str} 일정이 VOD 기반으로 복구되었습니다: {item['time']} / {item['detail']}")
         except Exception as e:
             print(f"[경고] VOD 기반 일정 보정 중 에러 ({week_str}): {e}")
