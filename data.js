@@ -1,5 +1,5 @@
 const JERRY_DATA = {
-    "updated_at": "2026-09-09 07:49:18",
+    "updated_at": "2026-09-09 09:46:27",
     "is_live": false,
     "notice_text": "롤링페이퍼\n\n\n모.. 별건 아니구!\n제가 내일 생일이라 롤링페이퍼\n읽는 시간 가질까 해서\n\n\n한 마디씩 해주시면 감사하겠습니당❤️",
     "images": [],
