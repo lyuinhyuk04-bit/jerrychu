@@ -1,6 +1,6 @@
 const JERRY_DATA = {
-    "updated_at": "2026-09-09 09:46:27",
-    "is_live": false,
+    "updated_at": "2026-09-09 14:24:34",
+    "is_live": true,
     "notice_text": "롤링페이퍼\n\n\n모.. 별건 아니구!\n제가 내일 생일이라 롤링페이퍼\n읽는 시간 가질까 해서\n\n\n한 마디씩 해주시면 감사하겠습니당❤️",
     "images": [],
     "notices": [
@@ -520,6 +520,7 @@ const JERRY_DATA = {
         ]
     },
     "fanarts": [
+        "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/26741788922849123.png",
         "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/58581786548284138.png",
         "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/31001786548286554.png",
         "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/19506a5eda65c3b4e.jpg",
@@ -543,7 +544,6 @@ const JERRY_DATA = {
         "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/28366a26353b89c97.png",
         "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/13366a260c9927bb3.png",
         "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/22646a1a66b0bc519.png",
-        "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/94476a1a66ca75ead.png",
-        "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/36936a19a35cbd8f6.png"
+        "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/94476a1a66ca75ead.png"
     ]
 };
