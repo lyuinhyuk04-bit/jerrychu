@@ -1,5 +1,5 @@
 const JERRY_DATA = {
-    "updated_at": "2026-09-10 05:23:04",
+    "updated_at": "2026-09-10 07:41:46",
     "is_live": true,
     "notice_text": "나하나 쯤이야 말구 진짤루...\n업 한번만 눌러주시면 안댈까요\n꼭 하고싶은데...\n>>> \n마크 업업업\n\n  <<<",
     "images": [],
