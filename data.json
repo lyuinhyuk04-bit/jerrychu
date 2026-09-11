@@ -1,6 +1,6 @@
 {
-    "updated_at": "2026-09-11 18:43:16",
-    "is_live": false,
+    "updated_at": "2026-09-11 22:53:43",
+    "is_live": true,
     "notice_text": "넘모 피곤하지만\n생일축하 넘 감사하다구\n인사드리고 싶어서 끄적중\n여러분들이 있기에\n제가있습니다 늘 감사하는 마음으로\n열심히 할게욤\n축하해주신 스트리머분들 시청자분들\n모두 감사드려요\n좋은 하루 보내세요!\n(오늘 점호외에 휴뱅입니다 참고!)",
     "images": [],
     "notices": [
@@ -526,6 +526,7 @@
         ]
     },
     "fanarts": [
+        "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/90171789126474626.png",
         "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/26741788922849123.png",
         "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/58581786548284138.png",
         "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/31001786548286554.png",
@@ -548,8 +549,6 @@
         "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/19496a4115b75a670.jpeg",
         "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/11456a41146ac77fd.jpeg",
         "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/28366a26353b89c97.png",
-        "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/13366a260c9927bb3.png",
-        "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/22646a1a66b0bc519.png",
-        "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/94476a1a66ca75ead.png"
+        "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/13366a260c9927bb3.png"
     ]
 }
