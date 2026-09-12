@@ -1,5 +1,5 @@
 const JERRY_DATA = {
-    "updated_at": "2026-09-13 03:08:05",
+    "updated_at": "2026-09-13 05:34:19",
     "is_live": false,
     "notice_text": "으아 코막혀서 한계느껴서 방종 ㅎ-ㅎ\n오늘 즉흥이 눈나로 방송킨건데\n갑자기 버인마을 하자고 막 꼬셔가지고\n하려고 소통하면서  api 야무치케 받고있눈데\n놀랍게도 소통끝나니 끝나있었어 또륵\n이거 츄피하기 아니죠?\n그러다 뽀쓰가 디코오라고 하셔서\n놀다가 급 배그파티 만들어졌어욤 \nw. 뽀쓰, 비쥬, 뀨복\n원래 소소하게 하려구 했는 데 \n재밌게 하라구 여기저기서 막 걸어주시는 데\n어쩌다보니 각방 9000개.. 아니\n감사합니다 열심히할게요 ❤️\n말도안되는 뽀쓰 운전으로 2시간 만에 치킨먹구\n후열소통 까지 재밌게 즐겼씁니당 ㅎ-ㅎ❤️\n그러다가 갑자기 새벽에 살짝 미쳐날뛰고싶어서\n귀여운 친구들한테 장난도 치고 헤헤 \n더 놀고싶었는 데 알러지 때문에\n쵸큼 힘들어서 오늘은 일찍 들어가욤\n오뱅은 자고일어나서 공지! \n처음으로 노래책을 만들어 볼 예정입니당\n노래책 만들구 또 즉흥이 제리로\n이것저것 함 해볼게요 ^0^\n오늘도 많은 후원과 자리해 주셔서 감사합니다\n쫗은 밤 보내세요",
     "images": [],
@@ -538,12 +538,14 @@ const JERRY_DATA = {
         ]
     },
     "fanarts": [
+        "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/49181789237044720.png",
+        "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/91641789237049725.png",
+        "https://res.sooplive.com/images/channel/en_US/ImageLoadingLight.gif",
         "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/90171789126474626.png",
         "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/26741788922849123.png",
         "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/58581786548284138.png",
         "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/31001786548286554.png",
         "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/19506a5eda65c3b4e.jpg",
-        "https://res.sooplive.com/images/channel/en_US/ImageLoadingLight.gif",
         "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/36796a5da6556ac8f.png",
         "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/10526a53e4a53eb37.png",
         "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/47956a5337ee44fd5.png",
@@ -560,7 +562,6 @@ const JERRY_DATA = {
         "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/67506a414c7f8d25c.png",
         "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/19496a4115b75a670.jpeg",
         "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/11456a41146ac77fd.jpeg",
-        "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/28366a26353b89c97.png",
-        "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/13366a260c9927bb3.png"
+        "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/28366a26353b89c97.png"
     ]
 };
