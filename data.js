@@ -1,5 +1,5 @@
 const JERRY_DATA = {
-    "updated_at": "2026-09-16 14:08:38",
+    "updated_at": "2026-09-16 18:57:22",
     "is_live": false,
     "notice_text": "일기 잘 읽지도 않으면서\n일기써달라고 하셔서 일기씀 ㅎ-ㅎ\n오늘 진짜 방송키기전에 역대급 코찔찔\n이라서 방송할 수 있을까 고민하다\n기다리실 우리 츄앙이들 보고싶어서 일단 킴 ㅎ-ㅎ\n(칭.찬)\n듀엣가요제 같은 거 함 나가보고싶어서\n츄엔터 만들었습니당 ( *︾▽︾)\n일단 비쥬 서브보컬로 뽑아씁니다\n저는 사장이에요 츄사장 겸 메인보컬 ㅋ\n(반박 안 받음)\n추후 더 뽑아볼ㄲㅔ요 울 가수들 ㅎㅁㅎ\n그러다가 무의식의 흐름으로\n막 소통했는데 저보고\n막 연애도 못해봤을 것 같다고하고\n갑질 연애할 것 같다하구 깔짝거렸을 것 같다구\n깔짝츄라고 하신분들 가만두지 않겠읍니다.\n오늘은 알러지 최고조인 날이라\n일찍 갔는데 그래두 여러분들이랑 소통해서\n재밌었어요 ㅎ-ㅎ 다들 쫗은 밤 보내시구\n이번주도 화이팅 해보아요\n전 고정휴방이라 푹 쉬고 병원가따올께욤\n다들 쫗은 밤 ❤️",
     "images": [],
@@ -570,8 +570,6 @@ const JERRY_DATA = {
         ]
     },
     "fanarts": [
-        "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/49181789237044720.png",
-        "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/91641789237049725.png",
         "https://res.sooplive.com/images/channel/en_US/ImageLoadingLight.gif",
         "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/90171789126474626.png",
         "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/26741788922849123.png",
