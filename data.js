@@ -1,5 +1,5 @@
 const JERRY_DATA = {
-    "updated_at": "2026-09-20 16:00:53",
+    "updated_at": "2026-09-20 21:14:21",
     "is_live": true,
     "notice_text": "축하드립니다 오늘\n같이 놀아드리는 찬스가 생겼습니다\n맛있는걸로 부탁드립니다\n아시게쬬 ^6",
     "images": [],
@@ -504,6 +504,7 @@ const JERRY_DATA = {
         ]
     },
     "fanarts": [
+        "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/73341789894459194.png",
         "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/49181789237044720.png",
         "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/91641789237049725.png",
         "https://res.sooplive.com/images/channel/en_US/ImageLoadingLight.gif",
@@ -527,7 +528,6 @@ const JERRY_DATA = {
         "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/11306a414d82db230.png",
         "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/67506a414c7f8d25c.png",
         "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/19496a4115b75a670.jpeg",
-        "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/11456a41146ac77fd.jpeg",
-        "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/28366a26353b89c97.png"
+        "https://stimg.sooplive.com/NORMAL_BBS/7/23077767/11456a41146ac77fd.jpeg"
     ]
 };
