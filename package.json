@@ -1,39 +1,33 @@
 {
-  "name": "jerrychu-soop-app",
-  "version": "0.1.0",
-  "private": true,
-  "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint"
-  },
+  "...": "...",                     // 기존 내용 그대로 두세요
+
+  // ---------- 기존 deprecated 패키지 교체 ----------
   "dependencies": {
-    "@fullcalendar/daygrid": "^6.1.15",
-    "@fullcalendar/interaction": "^6.1.15",
-    "@fullcalendar/react": "^6.1.15",
-    "@fullcalendar/timegrid": "^6.1.15",
-    "@supabase/supabase-js": "^2.45.6",
-    "canvas-confetti": "^1.9.4",
-    "clsx": "^2.1.1",
-    "date-fns": "^3.6.0",
-    "framer-motion": "^11.11.9",
-    "lucide-react": "^0.453.0",
-    "next": "^14.2.15",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "tailwind-merge": "^2.5.4"
+    // rimraf → 최신 v4 로 교체
+    "rimraf": "^4.4.1",
+
+    // inflight → lru-cache 로 교체 (코드에 직접 사용처가 있으면 아래 예시 참고)
+    "lru-cache": "^10.2.0",
+
+    // glob (가능하면 v10 로統一)
+    "glob": "^10.3.10"
   },
+
+  // ---------- devDependencies(개발용) ----------
   "devDependencies": {
-    "@types/canvas-confetti": "^1.9.0",
-    "@types/node": "^20.16.11",
-    "@types/react": "^18.3.11",
-    "@types/react-dom": "^18.3.1",
-    "autoprefixer": "^10.4.20",
-    "eslint": "^8.57.1",
-    "eslint-config-next": "^14.2.15",
-    "postcss": "^8.4.47",
-    "tailwindcss": "^3.4.14",
-    "typescript": "^5.6.3"
+    // eslint 최신 버전
+    "eslint": "^9.0.0",
+
+    // @humanwhocodes/* → @eslint/* 로 교체
+    "@eslint/config-array": "^1.0.0",
+    "@eslint/object-schema": "^2.0.0"
+  },
+
+  // ---------- npm 9+ 에서 강제 최신버전 지정 ----------
+  "overrides": {
+    // 중복 의존성을 모두 최신 glob 으로 강제
+    "glob": "^10.3.10",
+    // rimraf도 최신 버전으로 강제
+    "rimraf": "^4.4.1"
   }
 }
