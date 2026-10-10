@@ -1,6 +1,6 @@
 const JERRY_DATA = {
-    "updated_at": "2026-10-10 17:47:16",
-    "is_live": false,
+    "updated_at": "2026-10-10 23:51:45",
+    "is_live": true,
     "notice_text": "",
     "images": [],
     "notices": [
