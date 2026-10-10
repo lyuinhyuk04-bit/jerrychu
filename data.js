@@ -1,6 +1,6 @@
 const JERRY_DATA = {
-    "updated_at": "2026-10-10 23:51:45",
-    "is_live": true,
+    "updated_at": "2026-10-11 04:01:36",
+    "is_live": false,
     "notice_text": "",
     "images": [],
     "notices": [
@@ -129,12 +129,6 @@ const JERRY_DATA = {
             "date": "2026-09-06 02:18:01",
             "url": "https://www.sooplive.com/station/rariruro/post/206336189",
             "content": "뀨복 해솔땜에 정신적으로 힘드네요..\n매일 새벽에 얼굴 화끈거리다 못해\n혈압 올라 터질 것 같아요..\n방송 여기까지하구..\n오늘 밤 9시에 화양 미스테리 이야기 \n콘텐츠 가지고 올게욤 ...\n잘쟈.."
-        },
-        {
-            "title": "하...",
-            "date": "2026-09-05 03:59:59",
-            "url": "https://www.sooplive.com/station/rariruro/post/206250657",
-            "content": "진짜 너무 ..힘들어가지구 방종했습니당..\n새벽소통 잔잔 소통하려고 했는 데\n뀨복이의 미친 수위에 드립과\n나는상윤의 39금 매운드립 공격 받고\n정신이 혼미해져서 런 ㄹㄹㄹ\n... 나 자신없다 ...\n이..일단 마녀사냥 콘텐츠 \n노오력 해보겠스빈다...\n그럼 오늘도 방문해 주셔서 감사하구\n좋은 밤 보내세요 ❤️"
         }
     ],
     "schedule": [
@@ -171,7 +165,7 @@ const JERRY_DATA = {
         {
             "day": "토",
             "date": "10/10",
-            "time": "공지 대기",
+            "time": "휴방",
             "detail": "소통 방송"
         },
         {
@@ -612,7 +606,7 @@ const JERRY_DATA = {
             {
                 "day": "토",
                 "date": "10/10",
-                "time": "공지 대기",
+                "time": "휴방",
                 "detail": "소통 방송"
             },
             {
