@@ -37,3 +37,36 @@
     "typescript": "^5.6.3"
   }
 }
+{
+  "...": "...",                     // 기존 내용 그대로 두세요
+
+  // ---------- 기존 deprecated 패키지 교체 ----------
+  "dependencies": {
+    // rimraf → 최신 v4 로 교체
+    "rimraf": "^4.4.1",
+
+    // inflight → lru-cache 로 교체 (코드에 직접 사용처가 있으면 아래 예시 참고)
+    "lru-cache": "^10.2.0",
+
+    // glob (가능하면 v10 로統一)
+    "glob": "^10.3.10"
+  },
+
+  // ---------- devDependencies(개발용) ----------
+  "devDependencies": {
+    // eslint 최신 버전
+    "eslint": "^9.0.0",
+
+    // @humanwhocodes/* → @eslint/* 로 교체
+    "@eslint/config-array": "^1.0.0",
+    "@eslint/object-schema": "^2.0.0"
+  },
+
+  // ---------- npm 9+ 에서 강제 최신버전 지정 ----------
+  "overrides": {
+    // 중복 의존성을 모두 최신 glob 으로 강제
+    "glob": "^10.3.10",
+    // rimraf도 최신 버전으로 강제
+    "rimraf": "^4.4.1"
+  }
+}
